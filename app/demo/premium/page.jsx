@@ -2,10 +2,9 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence, useScroll, useTransform, useSpring } from 'framer-motion'
-import { Clock, ArrowUpRight, ChevronRight, Mail, Phone, MapPin } from 'lucide-react'
+import { Clock, ArrowUpRight, ChevronRight, Mail, Phone, MapPin, Menu, X } from 'lucide-react'
 import Link from 'next/link'
 
-/* ─────────────────────────── CONSTANTS ─────────────────────────── */
 const PALETTE = {
   ivory:     '#FBF9F6',
   navy:      '#1C2A39',
@@ -70,7 +69,6 @@ const SAVOIR = [
   },
 ]
 
-/* ─────────────────────────── CUSTOM CURSOR ─────────────────────── */
 function CustomCursor() {
   const cursorX = useSpring(0, { stiffness: 500, damping: 40 })
   const cursorY = useSpring(0, { stiffness: 500, damping: 40 })
@@ -88,153 +86,126 @@ function CustomCursor() {
 
   return (
     <motion.div
+      className="hidden md:block pointer-events-none fixed top-0 left-0 z-[9999] rounded-full mix-blend-normal"
       style={{
-        position:      'fixed',
-        top:           0,
-        left:          0,
-        x:             cursorX,
-        y:             cursorY,
-        width:         10,
-        height:        10,
-        borderRadius:  '50%',
-        border:        `1px solid ${PALETTE.gold}`,
-        background:    'transparent',
-        pointerEvents: 'none',
-        zIndex:        9999,
-        opacity:       visible ? 1 : 0,
-        mixBlendMode:  'normal',
+        x: cursorX,
+        y: cursorY,
+        width: 10,
+        height: 10,
+        border: `1px solid ${PALETTE.gold}`,
+        opacity: visible ? 1 : 0,
       }}
     />
   )
 }
 
-/* ─────────────────────────── NAV ────────────────────────────────── */
 function Nav() {
+  const [isOpen, setIsOpen] = useState(false)
+
   return (
-    <nav style={{
-      position:       'fixed',
-      top:            0,
-      left:           0,
-      right:          0,
-      zIndex:         100,
-      background:     PALETTE.ivory,
-      borderBottom:   `1px solid ${PALETTE.navy}22`,
-      display:        'flex',
-      alignItems:     'center',
-      justifyContent: 'space-between',
-      padding:        '0 48px',
-      height:         64,
-    }}>
-      <span style={{
-        fontFamily:    'Georgia, "Times New Roman", serif',
-        fontSize:      13,
-        letterSpacing: '0.08em',
-        color:         PALETTE.navy,
-        fontWeight:    400,
-      }}>
-        VALMONT &amp; CO — HORLOGERIE SUISSE EST. 1884
-      </span>
+    <>
+      <nav className="fixed top-0 left-0 right-0 z-[100] flex items-center justify-between px-6 md:px-12 h-16 bg-[#FBF9F6] border-b border-[#1C2A39]/10">
+        <span className="font-serif text-[11px] md:text-[13px] tracking-[0.08em] text-[#1C2A39]">
+          VALMONT &amp; CO
+          <span className="hidden md:inline"> — HORLOGERIE SUISSE EST. 1884</span>
+        </span>
 
-      <div style={{ display: 'flex', alignItems: 'center', gap: 36 }}>
-        {['Colecciones', 'Patrimonio', 'Maison'].map((item) => (
-          <motion.a
-            key={item}
-            href="#"
-            whileHover={{ color: PALETTE.gold }}
-            style={{
-              fontFamily:     '"Helvetica Neue", Helvetica, Arial, sans-serif',
-              fontSize:       11,
-              letterSpacing:  '0.16em',
-              textTransform:  'uppercase',
-              color:          PALETTE.navy,
-              textDecoration: 'none',
-              transition:     'color 0.2s',
-            }}
+        <div className="hidden md:flex items-center gap-9">
+          {['Colecciones', 'Patrimonio', 'Maison'].map((item) => (
+            <motion.a
+              key={item}
+              href="#"
+              whileHover={{ color: PALETTE.gold }}
+              className="font-sans text-[11px] tracking-[0.16em] uppercase text-[#1C2A39] transition-colors"
+            >
+              {item}
+            </motion.a>
+          ))}
+          <Link
+            href="/"
+            className="font-sans text-[11px] tracking-[0.14em] uppercase text-[#C3A370] border-l border-[#C3A370]/30 pl-6"
           >
-            {item}
-          </motion.a>
-        ))}
+            ← Catálogo
+          </Link>
+        </div>
 
-        <Link
-          href="/"
-          style={{
-            fontFamily:     '"Helvetica Neue", Helvetica, Arial, sans-serif',
-            fontSize:       11,
-            letterSpacing:  '0.14em',
-            textTransform:  'uppercase',
-            color:          PALETTE.gold,
-            textDecoration: 'none',
-            borderLeft:     `1px solid ${PALETTE.gold}44`,
-            paddingLeft:    24,
-          }}
+        <button 
+          className="md:hidden text-[#1C2A39] p-2 -mr-2"
+          onClick={() => setIsOpen(true)}
         >
-          ← Catálogo
-        </Link>
-      </div>
-    </nav>
+          <Menu size={20} />
+        </button>
+      </nav>
+
+      <AnimatePresence>
+        {isOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: '-100%' }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: '-100%' }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+            className="fixed inset-0 z-[200] bg-[#FBF9F6] flex flex-col justify-center items-center"
+          >
+            <button 
+              className="absolute top-6 right-6 text-[#1C2A39] p-2"
+              onClick={() => setIsOpen(false)}
+            >
+              <X size={24} />
+            </button>
+
+            <div className="flex flex-col items-center gap-8">
+              {['Colecciones', 'Patrimonio', 'Maison'].map((item) => (
+                <motion.a
+                  key={item}
+                  href="#"
+                  whileTap={{ scale: 0.95 }}
+                  className="font-serif text-3xl text-[#1C2A39]"
+                >
+                  {item}
+                </motion.a>
+              ))}
+              <div className="w-12 h-px bg-[#C3A370] my-4" />
+              <Link
+                href="/"
+                className="font-sans text-[12px] tracking-[0.2em] uppercase text-[#C3A370]"
+              >
+                ← Volver al Catálogo
+              </Link>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
   )
 }
 
-/* ─────────────────────────── HERO ───────────────────────────────── */
 function Hero() {
   const ref = useRef(null)
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] })
   const y = useTransform(scrollYProgress, [0, 1], [0, -80])
 
   return (
-    <section ref={ref} style={{
-      display:    'grid',
-      gridTemplateColumns: '1fr 1fr',
-      minHeight:  '100vh',
-      paddingTop: 64,
-      background: PALETTE.ivory,
-    }}>
-      {/* LEFT */}
-      <motion.div style={{
-        display:        'flex',
-        flexDirection:  'column',
-        justifyContent: 'center',
-        padding:        '80px 64px 80px 48px',
-        y,
-      }}>
+    <section ref={ref} className="grid grid-cols-1 md:grid-cols-2 min-h-screen pt-16 bg-[#FBF9F6]">
+      <motion.div 
+        style={{ y }}
+        className="flex flex-col justify-center px-6 md:px-12 py-12 md:py-20 order-2 md:order-1"
+      >
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, ease: [0.25, 0.1, 0.25, 1] }}
         >
-          <p style={{
-            fontFamily:    '"Helvetica Neue", Helvetica, Arial, sans-serif',
-            fontSize:      10,
-            letterSpacing: '0.24em',
-            textTransform: 'uppercase',
-            color:         PALETTE.gold,
-            marginBottom:  32,
-          }}>
+          <p className="font-sans text-[9px] md:text-[10px] tracking-[0.24em] uppercase text-[#C3A370] mb-6 md:mb-8">
             Nouvelle Collection 2024
           </p>
 
-          <h1 style={{
-            fontFamily:  'Georgia, "Times New Roman", serif',
-            fontSize:    'clamp(52px, 6vw, 84px)',
-            lineHeight:  1.05,
-            color:       PALETTE.navy,
-            fontWeight:  400,
-            marginBottom: 32,
-          }}>
+          <h1 className="font-serif text-[clamp(42px,10vw,84px)] leading-[1.05] text-[#1C2A39] mb-6 md:mb-8">
             The Art of<br />
             Measuring<br />
-            <em style={{ fontStyle: 'italic', color: PALETTE.gold }}>Time.</em>
+            <em className="italic text-[#C3A370]">Time.</em>
           </h1>
 
-          <p style={{
-            fontFamily:  'Georgia, "Times New Roman", serif',
-            fontSize:    17,
-            lineHeight:  1.75,
-            color:       PALETTE.stone,
-            maxWidth:    400,
-            marginBottom: 56,
-            fontStyle:   'italic',
-          }}>
+          <p className="font-serif text-[15px] md:text-[17px] leading-relaxed text-[#8C8578] max-w-[400px] mb-10 md:mb-14 italic">
             Desde 1884, cada pieza que abandona nuestros talleres en Le Brassus
             lleva consigo cuatro generaciones de maestría ininterrumpida.
           </p>
@@ -242,33 +213,14 @@ function Hero() {
           <motion.a
             href="#collections"
             whileHover={{ gap: 16 }}
-            style={{
-              display:        'inline-flex',
-              alignItems:     'center',
-              gap:            10,
-              fontFamily:     '"Helvetica Neue", Helvetica, Arial, sans-serif',
-              fontSize:       10,
-              letterSpacing:  '0.2em',
-              textTransform:  'uppercase',
-              color:          PALETTE.navy,
-              textDecoration: 'none',
-              borderBottom:   `1px solid ${PALETTE.navy}`,
-              paddingBottom:  4,
-              transition:     'gap 0.2s',
-            }}
+            whileTap={{ scale: 0.95 }}
+            className="inline-flex items-center gap-[10px] font-sans text-[10px] tracking-[0.2em] uppercase text-[#1C2A39] border-b border-[#1C2A39] pb-1 transition-all"
           >
             Explorar Colecciones <ChevronRight size={12} />
           </motion.a>
         </motion.div>
 
-        {/* Stats */}
-        <div style={{
-          display:      'flex',
-          gap:          48,
-          marginTop:    72,
-          paddingTop:   48,
-          borderTop:    `1px solid ${PALETTE.navy}18`,
-        }}>
+        <div className="flex flex-col md:flex-row gap-8 md:gap-12 mt-16 md:mt-24 pt-8 md:pt-12 border-t border-[#1C2A39]/10">
           {[
             { value: 'Desde 1884',        label: 'Manufactura' },
             { value: '47 Premios',         label: 'Géneva Observatory' },
@@ -280,22 +232,10 @@ function Hero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 + i * 0.15, duration: 0.8 }}
             >
-              <p style={{
-                fontFamily:  'Georgia, "Times New Roman", serif',
-                fontSize:    20,
-                color:       PALETTE.navy,
-                fontWeight:  400,
-                marginBottom: 4,
-              }}>
+              <p className="font-serif text-[18px] md:text-[20px] text-[#1C2A39] mb-1">
                 {s.value}
               </p>
-              <p style={{
-                fontFamily:    '"Helvetica Neue", Helvetica, Arial, sans-serif',
-                fontSize:      10,
-                letterSpacing: '0.16em',
-                textTransform: 'uppercase',
-                color:         PALETTE.stone,
-              }}>
+              <p className="font-sans text-[9px] md:text-[10px] tracking-[0.16em] uppercase text-[#8C8578]">
                 {s.label}
               </p>
             </motion.div>
@@ -303,95 +243,72 @@ function Hero() {
         </div>
       </motion.div>
 
-      {/* RIGHT — Watch image with reveal mask */}
-      <div style={{ position: 'relative', overflow: 'hidden' }}>
+      <div className="relative overflow-hidden h-[50vh] md:h-auto order-1 md:order-2">
         <motion.img
           src="https://loremflickr.com/900/1100/luxury,watch?lock=1"
-          alt="Valmont & Co — Pieza principal"
+          alt="Valmont & Co"
           initial={{ scale: 1.08 }}
           animate={{ scale: 1 }}
           transition={{ duration: 1.6, ease: [0.25, 0.1, 0.25, 1] }}
-          style={{
-            width:      '100%',
-            height:     '100%',
-            objectFit:  'cover',
-            display:    'block',
-          }}
+          className="w-full h-full object-cover block"
         />
-        {/* Sliding mask reveal */}
         <motion.div
           initial={{ scaleX: 1 }}
           animate={{ scaleX: 0 }}
           transition={{ duration: 1.2, ease: [0.76, 0, 0.24, 1], delay: 0.2 }}
-          style={{
-            position:       'absolute',
-            inset:          0,
-            background:     PALETTE.ivory,
-            transformOrigin: 'left center',
-          }}
+          className="absolute inset-0 bg-[#FBF9F6] origin-left"
         />
-        {/* Subtle gold overlay gradient */}
-        <div style={{
-          position:   'absolute',
-          inset:      0,
-          background: `linear-gradient(135deg, ${PALETTE.gold}08 0%, transparent 60%)`,
-          pointerEvents: 'none',
-        }} />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#C3A370]/5 to-transparent pointer-events-none" />
       </div>
     </section>
   )
 }
 
-/* ─────────────────────────── COLLECTIONS ────────────────────────── */
 function Collections() {
+  const carouselRef = useRef(null)
+
   return (
-    <section id="collections" style={{
-      background: PALETTE.ivory,
-      padding:    '120px 0',
-    }}>
-      <div style={{ padding: '0 48px', marginBottom: 64 }}>
+    <section id="collections" className="bg-[#FBF9F6] py-20 md:py-32 overflow-hidden">
+      <div className="px-6 md:px-12 mb-12 md:mb-16">
         <motion.div
           initial={{ opacity: 0, y: 24 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
         >
-          <p style={{
-            fontFamily:    '"Helvetica Neue", Helvetica, Arial, sans-serif',
-            fontSize:      10,
-            letterSpacing: '0.24em',
-            textTransform: 'uppercase',
-            color:         PALETTE.gold,
-            marginBottom:  16,
-          }}>
+          <p className="font-sans text-[10px] tracking-[0.24em] uppercase text-[#C3A370] mb-4">
             Manufacture 2024
           </p>
-          <h2 style={{
-            fontFamily: 'Georgia, "Times New Roman", serif',
-            fontSize:   'clamp(32px, 4vw, 52px)',
-            color:      PALETTE.navy,
-            fontWeight: 400,
-          }}>
+          <h2 className="font-serif text-[clamp(32px,8vw,52px)] text-[#1C2A39]">
             Nuestras Colecciones
           </h2>
         </motion.div>
       </div>
 
-      <div style={{
-        display:             'grid',
-        gridTemplateColumns: 'repeat(3, 1fr)',
-        gap:                 2,
-        padding:             '0 48px',
-      }}>
+      <div className="md:hidden pl-6" ref={carouselRef}>
+        <motion.div 
+          drag="x"
+          dragConstraints={carouselRef}
+          className="flex gap-4 cursor-grab active:cursor-grabbing pr-6 w-max"
+        >
+          {COLLECTIONS.map((c, i) => (
+            <div key={c.name} className="w-[280px] shrink-0">
+              <CollectionCard c={c} i={i} isMobile={true} />
+            </div>
+          ))}
+        </motion.div>
+      </div>
+
+      <div className="hidden md:grid grid-cols-3 gap-[2px] px-12">
         {COLLECTIONS.map((c, i) => (
-          <CollectionCard key={c.name} c={c} i={i} />
+          <CollectionCard key={c.name} c={c} i={i} isMobile={false} />
         ))}
       </div>
     </section>
   )
 }
 
-function CollectionCard({ c, i }) {
+function CollectionCard({ c, i, isMobile }) {
   const [hovered, setHovered] = useState(false)
 
   return (
@@ -399,103 +316,45 @@ function CollectionCard({ c, i }) {
       initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.8, delay: i * 0.15 }}
-      onHoverStart={() => setHovered(true)}
-      onHoverEnd={() => setHovered(false)}
-      style={{ cursor: 'pointer' }}
+      transition={{ duration: 0.8, delay: isMobile ? 0 : i * 0.15 }}
+      onHoverStart={() => !isMobile && setHovered(true)}
+      onHoverEnd={() => !isMobile && setHovered(false)}
+      whileTap={{ scale: 0.98 }}
+      className="cursor-pointer group block"
     >
-      <div style={{ position: 'relative', overflow: 'hidden', aspectRatio: '4/5' }}>
+      <div className="relative overflow-hidden aspect-[4/5]">
         <motion.img
           src={c.img}
           alt={c.name}
-          animate={{ filter: hovered ? 'grayscale(0%)' : 'grayscale(100%)', scale: hovered ? 1.04 : 1 }}
+          animate={{ filter: hovered && !isMobile ? 'grayscale(0%)' : 'grayscale(100%)', scale: hovered && !isMobile ? 1.04 : 1 }}
           transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
-          style={{
-            width:     '100%',
-            height:    '100%',
-            objectFit: 'cover',
-            display:   'block',
-          }}
+          className="w-full h-full object-cover block"
         />
         <motion.div
-          animate={{ opacity: hovered ? 1 : 0 }}
+          animate={{ opacity: isMobile || hovered ? 1 : 0 }}
           transition={{ duration: 0.3 }}
-          style={{
-            position:   'absolute',
-            inset:      0,
-            background: `linear-gradient(to top, ${PALETTE.navy}CC 0%, transparent 60%)`,
-            display:    'flex',
-            alignItems: 'flex-end',
-            padding:    24,
-          }}
+          className="absolute inset-0 bg-gradient-to-t from-[#1C2A39]/80 via-transparent to-transparent flex items-end p-6"
         >
-          <motion.a
-            href="#"
-            style={{
-              display:        'inline-flex',
-              alignItems:     'center',
-              gap:            8,
-              fontFamily:     '"Helvetica Neue", Helvetica, Arial, sans-serif',
-              fontSize:       10,
-              letterSpacing:  '0.18em',
-              textTransform:  'uppercase',
-              color:          PALETTE.ivory,
-              textDecoration: 'none',
-            }}
-          >
+          <span className="inline-flex items-center gap-2 font-sans text-[10px] tracking-[0.18em] uppercase text-[#FBF9F6]">
             Solicitar Información <ArrowUpRight size={12} />
-          </motion.a>
+          </span>
         </motion.div>
 
-        {/* Ref badge */}
-        <div style={{
-          position:      'absolute',
-          top:           20,
-          right:         20,
-          background:    `${PALETTE.ivory}E6`,
-          padding:       '4px 10px',
-          backdropFilter: 'blur(4px)',
-        }}>
-          <span style={{
-            fontFamily:    '"Helvetica Neue", Helvetica, Arial, sans-serif',
-            fontSize:      9,
-            letterSpacing: '0.14em',
-            color:         PALETTE.navy,
-          }}>
+        <div className="absolute top-4 right-4 md:top-5 md:right-5 bg-[#FBF9F6]/90 backdrop-blur-sm px-[10px] py-1">
+          <span className="font-sans text-[9px] tracking-[0.14em] text-[#1C2A39]">
             {c.ref}
           </span>
         </div>
       </div>
 
-      <div style={{
-        padding:    '28px 0 40px',
-        borderTop:  `1px solid ${PALETTE.navy}18`,
-      }}>
-        <p style={{
-          fontFamily:    '"Helvetica Neue", Helvetica, Arial, sans-serif',
-          fontSize:      10,
-          letterSpacing: '0.2em',
-          textTransform: 'uppercase',
-          color:         PALETTE.gold,
-          marginBottom:  8,
-        }}>
+      <div className="py-6 md:py-7 border-t border-[#1C2A39]/10">
+        <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-[#C3A370] mb-2">
           {c.name}
         </p>
-        <p style={{
-          fontFamily:  'Georgia, "Times New Roman", serif',
-          fontSize:    15,
-          lineHeight:  1.65,
-          color:       PALETTE.stone,
-          marginBottom: 16,
-          fontStyle:   'italic',
-        }}>
+        <p className="font-serif text-[14px] md:text-[15px] leading-relaxed text-[#8C8578] mb-4 italic">
           {c.desc}
         </p>
-        <p style={{
-          fontFamily:  'Georgia, "Times New Roman", serif',
-          fontSize:    18,
-          color:       PALETTE.navy,
-        }}>
+        <p className="font-serif text-[16px] md:text-[18px] text-[#1C2A39]">
           {c.price}
         </p>
       </div>
@@ -503,52 +362,26 @@ function CollectionCard({ c, i }) {
   )
 }
 
-/* ─────────────────────────── PATRIMONIO ────────────────────────── */
 function Patrimonio() {
   return (
-    <section id="patrimonio" style={{
-      background: PALETTE.ivory,
-      padding:    '120px 48px',
-      borderTop:  `1px solid ${PALETTE.navy}12`,
-    }}>
+    <section id="patrimonio" className="bg-[#FBF9F6] py-20 md:py-32 px-6 md:px-12 border-t border-[#1C2A39]/10">
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.8 }}
-        style={{ marginBottom: 80 }}
+        className="mb-16 md:mb-20"
       >
-        <p style={{
-          fontFamily:    '"Helvetica Neue", Helvetica, Arial, sans-serif',
-          fontSize:      10,
-          letterSpacing: '0.24em',
-          textTransform: 'uppercase',
-          color:         PALETTE.gold,
-          marginBottom:  16,
-        }}>
+        <p className="font-sans text-[10px] tracking-[0.24em] uppercase text-[#C3A370] mb-4">
           Depuis 1884
         </p>
-        <h2 style={{
-          fontFamily: 'Georgia, "Times New Roman", serif',
-          fontSize:   'clamp(32px, 4vw, 52px)',
-          color:      PALETTE.navy,
-          fontWeight: 400,
-          maxWidth:   520,
-        }}>
+        <h2 className="font-serif text-[clamp(32px,8vw,52px)] text-[#1C2A39] max-w-[520px]">
           Patrimonio de Excelencia
         </h2>
       </motion.div>
 
-      <div style={{ maxWidth: 760, position: 'relative' }}>
-        {/* Vertical line */}
-        <div style={{
-          position:   'absolute',
-          left:       112,
-          top:        8,
-          bottom:     8,
-          width:      1,
-          background: `${PALETTE.navy}18`,
-        }} />
+      <div className="max-w-[760px] relative">
+        <div className="absolute left-[31px] md:left-[112px] top-2 bottom-2 w-px bg-[#1C2A39]/10" />
 
         {TIMELINE.map((t, i) => (
           <motion.div
@@ -557,40 +390,15 @@ function Patrimonio() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 0.7, delay: i * 0.15 }}
-            style={{
-              display:    'flex',
-              gap:        40,
-              marginBottom: 56,
-              alignItems: 'flex-start',
-            }}
+            className="flex gap-6 md:gap-10 mb-10 md:mb-14 items-start relative z-10"
           >
-            <div style={{ width: 72, flexShrink: 0, textAlign: 'right' }}>
-              <span style={{
-                fontFamily:  'Georgia, "Times New Roman", serif',
-                fontSize:    20,
-                color:       PALETTE.gold,
-                fontWeight:  400,
-              }}>
+            <div className="w-[54px] md:w-[72px] shrink-0 text-right">
+              <span className="font-serif text-[18px] md:text-[20px] text-[#C3A370]">
                 {t.year}
               </span>
             </div>
-            {/* Dot */}
-            <div style={{
-              width:        10,
-              height:       10,
-              borderRadius: '50%',
-              background:   PALETTE.gold,
-              flexShrink:   0,
-              marginTop:    6,
-              boxShadow:    `0 0 0 4px ${PALETTE.gold}22`,
-            }} />
-            <p style={{
-              fontFamily: 'Georgia, "Times New Roman", serif',
-              fontSize:   17,
-              lineHeight: 1.7,
-              color:      PALETTE.stone,
-              fontStyle:  'italic',
-            }}>
+            <div className="w-[10px] h-[10px] rounded-full bg-[#C3A370] shrink-0 mt-1.5 shadow-[0_0_0_4px_rgba(195,163,112,0.15)]" />
+            <p className="font-serif text-[15px] md:text-[17px] leading-[1.7] text-[#8C8578] italic">
               {t.event}
             </p>
           </motion.div>
@@ -600,45 +408,25 @@ function Patrimonio() {
   )
 }
 
-/* ─────────────────────────── SAVOIR-FAIRE ───────────────────────── */
 function SavoirFaire() {
   return (
-    <section style={{
-      background: PALETTE.navy,
-      padding:    '120px 48px',
-    }}>
+    <section className="bg-[#1C2A39] py-20 md:py-32 px-6 md:px-12 overflow-hidden">
       <motion.div
         initial={{ opacity: 0, y: 24 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 0.8 }}
-        style={{ marginBottom: 72 }}
+        className="mb-12 md:mb-20"
       >
-        <p style={{
-          fontFamily:    '"Helvetica Neue", Helvetica, Arial, sans-serif',
-          fontSize:      10,
-          letterSpacing: '0.24em',
-          textTransform: 'uppercase',
-          color:         PALETTE.gold,
-          marginBottom:  16,
-        }}>
+        <p className="font-sans text-[10px] tracking-[0.24em] uppercase text-[#C3A370] mb-4">
           Artisanat Suisse
         </p>
-        <h2 style={{
-          fontFamily: 'Georgia, "Times New Roman", serif',
-          fontSize:   'clamp(32px, 4vw, 52px)',
-          color:      PALETTE.ivory,
-          fontWeight: 400,
-        }}>
+        <h2 className="font-serif text-[clamp(32px,8vw,52px)] text-[#FBF9F6]">
           Savoir-Faire
         </h2>
       </motion.div>
 
-      <div style={{
-        display:             'grid',
-        gridTemplateColumns: 'repeat(4, 1fr)',
-        gap:                 24,
-      }}>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {SAVOIR.map((s, i) => (
           <motion.div
             key={s.title}
@@ -647,40 +435,22 @@ function SavoirFaire() {
             viewport={{ once: true }}
             transition={{ duration: 0.7, delay: i * 0.12 }}
             whileHover={{ y: -6 }}
-            style={{
-              background: `${PALETTE.ivory}06`,
-              border:     `1px solid ${PALETTE.ivory}14`,
-              overflow:   'hidden',
-              cursor:     'default',
-            }}
+            className="bg-[#FBF9F6]/5 border border-[#FBF9F6]/10 overflow-hidden cursor-default"
           >
-            <div style={{ aspectRatio: '4/3', overflow: 'hidden' }}>
+            <div className="aspect-[4/3] overflow-hidden">
               <motion.img
                 src={s.img}
                 alt={s.title}
                 whileHover={{ scale: 1.06 }}
                 transition={{ duration: 0.5 }}
-                style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', filter: 'brightness(0.82)' }}
+                className="w-full h-full object-cover block brightness-[0.82]"
               />
             </div>
-            <div style={{ padding: '28px 24px 32px' }}>
-              <p style={{
-                fontFamily:    '"Helvetica Neue", Helvetica, Arial, sans-serif',
-                fontSize:      10,
-                letterSpacing: '0.2em',
-                textTransform: 'uppercase',
-                color:         PALETTE.gold,
-                marginBottom:  12,
-              }}>
+            <div className="p-6 md:p-8">
+              <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-[#C3A370] mb-3">
                 {s.title}
               </p>
-              <p style={{
-                fontFamily: 'Georgia, "Times New Roman", serif',
-                fontSize:   15,
-                lineHeight: 1.7,
-                color:      `${PALETTE.ivory}99`,
-                fontStyle:  'italic',
-              }}>
+              <p className="font-serif text-[14px] md:text-[15px] leading-[1.7] text-[#FBF9F6]/60 italic">
                 {s.desc}
               </p>
             </div>
@@ -688,28 +458,15 @@ function SavoirFaire() {
         ))}
       </div>
 
-      {/* Clock accent */}
       <motion.div
         initial={{ opacity: 0 }}
         whileInView={{ opacity: 1 }}
         viewport={{ once: true }}
         transition={{ duration: 1, delay: 0.5 }}
-        style={{
-          display:        'flex',
-          alignItems:     'center',
-          justifyContent: 'center',
-          marginTop:      72,
-          gap:            16,
-        }}
+        className="flex items-center justify-center mt-16 md:mt-20 gap-4"
       >
-        <Clock size={16} color={PALETTE.gold} />
-        <span style={{
-          fontFamily:    '"Helvetica Neue", Helvetica, Arial, sans-serif',
-          fontSize:      10,
-          letterSpacing: '0.22em',
-          textTransform: 'uppercase',
-          color:         `${PALETTE.ivory}55`,
-        }}>
+        <Clock size={16} className="text-[#C3A370]" />
+        <span className="font-sans text-[9px] md:text-[10px] tracking-[0.22em] uppercase text-[#FBF9F6]/30 text-center">
           Le Brassus, Vallée de Joux, Suisse
         </span>
       </motion.div>
@@ -717,75 +474,38 @@ function SavoirFaire() {
   )
 }
 
-/* ─────────────────────────── PRIVATE CLIENT ─────────────────────── */
 function PrivateClient() {
   const [sent, setSent] = useState(false)
 
   return (
-    <section style={{
-      background: '#F5F0E8',
-      padding:    '120px 48px',
-    }}>
-      <div style={{
-        display:             'grid',
-        gridTemplateColumns: '1fr 1fr',
-        gap:                 96,
-        maxWidth:            1100,
-        margin:              '0 auto',
-      }}>
-        {/* Left */}
+    <section className="bg-[#F5F0E8] py-20 md:py-32 px-6 md:px-12">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-24 max-w-[1100px] mx-auto">
         <motion.div
           initial={{ opacity: 0, x: -30 }}
           whileInView={{ opacity: 1, x: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
         >
-          <p style={{
-            fontFamily:    '"Helvetica Neue", Helvetica, Arial, sans-serif',
-            fontSize:      10,
-            letterSpacing: '0.24em',
-            textTransform: 'uppercase',
-            color:         PALETTE.gold,
-            marginBottom:  16,
-          }}>
+          <p className="font-sans text-[10px] tracking-[0.24em] uppercase text-[#C3A370] mb-4">
             Service Privé
           </p>
-          <h2 style={{
-            fontFamily:   'Georgia, "Times New Roman", serif',
-            fontSize:     'clamp(28px, 3.5vw, 44px)',
-            color:        PALETTE.navy,
-            fontWeight:   400,
-            marginBottom: 28,
-            lineHeight:   1.2,
-          }}>
+          <h2 className="font-serif text-[clamp(28px,7vw,44px)] text-[#1C2A39] leading-[1.2] mb-6 md:mb-7">
             Consulta<br />Privada
           </h2>
-          <p style={{
-            fontFamily:  'Georgia, "Times New Roman", serif',
-            fontSize:    16,
-            lineHeight:  1.75,
-            color:       PALETTE.stone,
-            fontStyle:   'italic',
-            marginBottom: 48,
-          }}>
+          <p className="font-serif text-[15px] md:text-[16px] leading-[1.75] text-[#8C8578] italic mb-10 md:mb-12">
             Nuestro equipo de especialistas le acompañará personalmente en la
             selección de su pieza, con total discreción y dedicación exclusiva.
           </p>
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 20 }}>
+          <div className="flex flex-col gap-5">
             {[
               { Icon: Phone,  text: '+41 21 845 XX XX' },
               { Icon: Mail,   text: 'private@valmontco.ch' },
               { Icon: MapPin, text: 'Le Brassus 1, 1348, Suiza' },
             ].map(({ Icon, text }) => (
-              <div key={text} style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                <Icon size={14} color={PALETTE.gold} />
-                <span style={{
-                  fontFamily:    '"Helvetica Neue", Helvetica, Arial, sans-serif',
-                  fontSize:      12,
-                  letterSpacing: '0.06em',
-                  color:         PALETTE.stone,
-                }}>
+              <div key={text} className="flex items-center gap-4">
+                <Icon size={14} className="text-[#C3A370]" />
+                <span className="font-sans text-[11px] md:text-[12px] tracking-[0.06em] text-[#8C8578]">
                   {text}
                 </span>
               </div>
@@ -793,7 +513,6 @@ function PrivateClient() {
           </div>
         </motion.div>
 
-        {/* Form */}
         <motion.div
           initial={{ opacity: 0, x: 30 }}
           whileInView={{ opacity: 1, x: 0 }}
@@ -807,23 +526,10 @@ function PrivateClient() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 exit={{ opacity: 0 }}
-                style={{
-                  display:        'flex',
-                  flexDirection:  'column',
-                  alignItems:     'center',
-                  justifyContent: 'center',
-                  height:         '100%',
-                  textAlign:      'center',
-                  gap:            16,
-                }}
+                className="flex flex-col items-center justify-center h-full text-center gap-4 py-20 md:py-0"
               >
-                <Clock size={32} color={PALETTE.gold} />
-                <p style={{
-                  fontFamily: 'Georgia, "Times New Roman", serif',
-                  fontSize:   22,
-                  color:      PALETTE.navy,
-                  fontStyle:  'italic',
-                }}>
+                <Clock size={32} className="text-[#C3A370]" />
+                <p className="font-serif text-[20px] md:text-[22px] text-[#1C2A39] italic">
                   Merci. Le contactaremos pronto.
                 </p>
               </motion.div>
@@ -831,7 +537,7 @@ function PrivateClient() {
               <motion.form
                 key="form"
                 onSubmit={(e) => { e.preventDefault(); setSent(true) }}
-                style={{ display: 'flex', flexDirection: 'column', gap: 20 }}
+                className="flex flex-col gap-6 md:gap-5"
               >
                 {[
                   { label: 'Nombre', type: 'text',  placeholder: 'Su nombre completo' },
@@ -839,118 +545,45 @@ function PrivateClient() {
                   { label: 'Teléfono', type: 'tel', placeholder: '+34 600 000 000' },
                 ].map((f) => (
                   <div key={f.label}>
-                    <label style={{
-                      display:       'block',
-                      fontFamily:    '"Helvetica Neue", Helvetica, Arial, sans-serif',
-                      fontSize:      9,
-                      letterSpacing: '0.2em',
-                      textTransform: 'uppercase',
-                      color:         PALETTE.stone,
-                      marginBottom:  6,
-                    }}>
+                    <label className="block font-sans text-[9px] tracking-[0.2em] uppercase text-[#8C8578] mb-1.5">
                       {f.label}
                     </label>
                     <input
                       type={f.type}
                       placeholder={f.placeholder}
                       required
-                      style={{
-                        width:        '100%',
-                        padding:      '12px 0',
-                        border:       'none',
-                        borderBottom: `1px solid ${PALETTE.navy}30`,
-                        background:   'transparent',
-                        fontFamily:   'Georgia, "Times New Roman", serif',
-                        fontSize:     15,
-                        color:        PALETTE.navy,
-                        outline:      'none',
-                        boxSizing:    'border-box',
-                      }}
+                      className="w-full py-3 border-b border-[#1C2A39]/30 bg-transparent font-serif text-[15px] text-[#1C2A39] outline-none focus:border-[#C3A370] transition-colors rounded-none placeholder:text-[#8C8578]/60"
                     />
                   </div>
                 ))}
 
-                {/* Select */}
                 <div>
-                  <label style={{
-                    display:       'block',
-                    fontFamily:    '"Helvetica Neue", Helvetica, Arial, sans-serif',
-                    fontSize:      9,
-                    letterSpacing: '0.2em',
-                    textTransform: 'uppercase',
-                    color:         PALETTE.stone,
-                    marginBottom:  6,
-                  }}>
+                  <label className="block font-sans text-[9px] tracking-[0.2em] uppercase text-[#8C8578] mb-1.5">
                     Referencia de Interés
                   </label>
-                  <select style={{
-                    width:        '100%',
-                    padding:      '12px 0',
-                    border:       'none',
-                    borderBottom: `1px solid ${PALETTE.navy}30`,
-                    background:   'transparent',
-                    fontFamily:   'Georgia, "Times New Roman", serif',
-                    fontSize:     15,
-                    color:        PALETTE.navy,
-                    outline:      'none',
-                    appearance:   'none',
-                    cursor:       'pointer',
-                  }}>
+                  <select className="w-full py-3 border-b border-[#1C2A39]/30 bg-transparent font-serif text-[15px] text-[#1C2A39] outline-none appearance-none cursor-pointer focus:border-[#C3A370] transition-colors rounded-none">
                     {COLLECTIONS.map((c) => (
                       <option key={c.name} value={c.name}>{c.name} — {c.ref}</option>
                     ))}
                   </select>
                 </div>
 
-                {/* Textarea */}
                 <div>
-                  <label style={{
-                    display:       'block',
-                    fontFamily:    '"Helvetica Neue", Helvetica, Arial, sans-serif',
-                    fontSize:      9,
-                    letterSpacing: '0.2em',
-                    textTransform: 'uppercase',
-                    color:         PALETTE.stone,
-                    marginBottom:  6,
-                  }}>
+                  <label className="block font-sans text-[9px] tracking-[0.2em] uppercase text-[#8C8578] mb-1.5">
                     Mensaje
                   </label>
                   <textarea
                     rows={4}
                     placeholder="Cuéntenos sobre sus preferencias…"
-                    style={{
-                      width:        '100%',
-                      padding:      '12px 0',
-                      border:       'none',
-                      borderBottom: `1px solid ${PALETTE.navy}30`,
-                      background:   'transparent',
-                      fontFamily:   'Georgia, "Times New Roman", serif',
-                      fontSize:     15,
-                      color:        PALETTE.navy,
-                      outline:      'none',
-                      resize:       'none',
-                      boxSizing:    'border-box',
-                    }}
+                    className="w-full py-3 border-b border-[#1C2A39]/30 bg-transparent font-serif text-[15px] text-[#1C2A39] outline-none resize-none focus:border-[#C3A370] transition-colors rounded-none placeholder:text-[#8C8578]/60"
                   />
                 </div>
 
                 <motion.button
                   type="submit"
-                  whileHover={{ background: PALETTE.navy, color: PALETTE.ivory }}
-                  style={{
-                    marginTop:     8,
-                    padding:       '16px 40px',
-                    border:        `1px solid ${PALETTE.navy}`,
-                    background:    'transparent',
-                    fontFamily:    '"Helvetica Neue", Helvetica, Arial, sans-serif',
-                    fontSize:      10,
-                    letterSpacing: '0.2em',
-                    textTransform: 'uppercase',
-                    color:         PALETTE.navy,
-                    cursor:        'pointer',
-                    transition:    'background 0.3s, color 0.3s',
-                    alignSelf:     'flex-start',
-                  }}
+                  whileHover={{ backgroundColor: '#1C2A39', color: '#FBF9F6' }}
+                  whileTap={{ scale: 0.98 }}
+                  className="mt-2 py-4 px-10 border border-[#1C2A39] bg-transparent font-sans text-[10px] tracking-[0.2em] uppercase text-[#1C2A39] cursor-pointer transition-colors self-start w-full md:w-auto"
                 >
                   Enviar Consulta
                 </motion.button>
@@ -963,96 +596,42 @@ function PrivateClient() {
   )
 }
 
-/* ─────────────────────────── PRESS QUOTE ────────────────────────── */
 function PressQuote() {
   return (
-    <section style={{
-      background: PALETTE.navy,
-      padding:    '100px 48px',
-      textAlign:  'center',
-    }}>
+    <section className="bg-[#1C2A39] py-20 md:py-24 px-6 md:px-12 text-center">
       <motion.div
         initial={{ opacity: 0, y: 32 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
         transition={{ duration: 1 }}
       >
-        <div style={{
-          width:        40,
-          height:       1,
-          background:   PALETTE.gold,
-          margin:       '0 auto 40px',
-        }} />
-        <blockquote style={{
-          fontFamily:  'Georgia, "Times New Roman", serif',
-          fontSize:    'clamp(20px, 3vw, 34px)',
-          fontStyle:   'italic',
-          color:       PALETTE.ivory,
-          lineHeight:  1.55,
-          maxWidth:    820,
-          margin:      '0 auto',
-          fontWeight:  400,
-        }}>
+        <div className="w-10 h-px bg-[#C3A370] mx-auto mb-8 md:mb-10" />
+        <blockquote className="font-serif text-[clamp(18px,4vw,34px)] italic text-[#FBF9F6] leading-[1.55] max-w-[820px] mx-auto font-normal">
           "A monument of Swiss craft. Valmont &amp; Co has done what we thought
           was impossible."
         </blockquote>
-        <p style={{
-          fontFamily:    '"Helvetica Neue", Helvetica, Arial, sans-serif',
-          fontSize:      10,
-          letterSpacing: '0.2em',
-          textTransform: 'uppercase',
-          color:         PALETTE.gold,
-          marginTop:     32,
-        }}>
+        <p className="font-sans text-[9px] md:text-[10px] tracking-[0.2em] uppercase text-[#C3A370] mt-8">
           — Hodinkee, 2024
         </p>
-        <div style={{
-          width:        40,
-          height:       1,
-          background:   PALETTE.gold,
-          margin:       '40px auto 0',
-        }} />
+        <div className="w-10 h-px bg-[#C3A370] mx-auto mt-8 md:mt-10" />
       </motion.div>
     </section>
   )
 }
 
-/* ─────────────────────────── FOOTER ────────────────────────────── */
 function Footer() {
   return (
-    <footer style={{
-      background:  PALETTE.ivory,
-      borderTop:   `1px solid ${PALETTE.navy}12`,
-      padding:     '48px 48px',
-    }}>
-      <div style={{
-        display:        'flex',
-        alignItems:     'center',
-        justifyContent: 'space-between',
-        marginBottom:   32,
-      }}>
-        <span style={{
-          fontFamily:    'Georgia, "Times New Roman", serif',
-          fontSize:      18,
-          color:         PALETTE.navy,
-          fontWeight:    400,
-          letterSpacing: '0.04em',
-        }}>
+    <footer className="bg-[#FBF9F6] border-t border-[#1C2A39]/10 px-6 md:px-12 py-12">
+      <div className="flex flex-col md:flex-row items-center justify-between mb-8 md:mb-10 gap-6 text-center md:text-left">
+        <span className="font-serif text-[16px] md:text-[18px] text-[#1C2A39] tracking-[0.04em]">
           VALMONT &amp; CO
         </span>
-        <div style={{ display: 'flex', gap: 32 }}>
+        <div className="flex flex-wrap justify-center gap-6 md:gap-8">
           {['Privacidad', 'Términos', 'Cookies', 'Contacto'].map((l) => (
             <a
               key={l}
               href="#"
-              style={{
-                fontFamily:     '"Helvetica Neue", Helvetica, Arial, sans-serif',
-                fontSize:       10,
-                letterSpacing:  '0.14em',
-                textTransform:  'uppercase',
-                color:          PALETTE.stone,
-                textDecoration: 'none',
-              }}
+              className="font-sans text-[9px] md:text-[10px] tracking-[0.14em] uppercase text-[#8C8578] hover:text-[#1C2A39] transition-colors"
             >
               {l}
             </a>
@@ -1060,27 +639,11 @@ function Footer() {
         </div>
       </div>
 
-      <div style={{
-        display:        'flex',
-        alignItems:     'center',
-        justifyContent: 'space-between',
-        paddingTop:     24,
-        borderTop:      `1px solid ${PALETTE.navy}10`,
-      }}>
-        <p style={{
-          fontFamily:    '"Helvetica Neue", Helvetica, Arial, sans-serif',
-          fontSize:      10,
-          letterSpacing: '0.1em',
-          color:         `${PALETTE.stone}88`,
-        }}>
+      <div className="flex flex-col md:flex-row items-center justify-between pt-6 border-t border-[#1C2A39]/5 gap-4 text-center md:text-left">
+        <p className="font-sans text-[8px] md:text-[10px] tracking-[0.1em] text-[#8C8578]/80">
           © 2024 Valmont &amp; Co Horlogerie Suisse. Tous droits réservés.
         </p>
-        <p style={{
-          fontFamily:    'Georgia, "Times New Roman", serif',
-          fontSize:      11,
-          fontStyle:     'italic',
-          color:         PALETTE.gold,
-        }}>
+        <p className="font-serif text-[10px] md:text-[11px] italic text-[#C3A370]">
           Le Brassus, Vallée de Joux, Suisse
         </p>
       </div>
@@ -1088,22 +651,21 @@ function Footer() {
   )
 }
 
-/* ─────────────────────────── PAGE ───────────────────────────────── */
 export default function ValmontPage() {
   return (
     <>
-      <style>{`
+      <style>{\`
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         html { scroll-behavior: smooth; }
-        body { cursor: none !important; background: ${PALETTE.ivory}; }
-        a, button { cursor: none !important; }
-        input::placeholder, textarea::placeholder { color: ${PALETTE.stone}66; }
-        input:focus, textarea:focus, select:focus { border-bottom-color: ${PALETTE.gold} !important; }
-      `}</style>
+        body { background: #FBF9F6; }
+        @media (pointer: fine) {
+          body, a, button { cursor: none !important; }
+        }
+      \`}</style>
 
       <CustomCursor />
       <Nav />
-      <main>
+      <main className="overflow-hidden">
         <Hero />
         <Collections />
         <Patrimonio />

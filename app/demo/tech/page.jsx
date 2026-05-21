@@ -2,10 +2,9 @@
 
 import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence, useScroll, useTransform, useInView, useMotionValue, useSpring } from "framer-motion";
-import { Cpu, Layers, Monitor, Smartphone, Sparkles, ArrowUpRight, ChevronRight, Mail } from "lucide-react";
+import { Cpu, Layers, Monitor, Smartphone, Sparkles, ArrowUpRight, ChevronRight, Mail, Menu, X } from "lucide-react";
 import Link from "next/link";
 
-/* ─── SCRAMBLE TEXT ─────────────────────────────────────────── */
 const CHARS = "!<>-_\\/[]{}—=+*^?#ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
 function ScrambleText({ text, trigger = true, className = "", delay = 0 }) {
@@ -54,7 +53,6 @@ function ScrambleText({ text, trigger = true, className = "", delay = 0 }) {
   );
 }
 
-/* ─── ANIMATED COUNTER ──────────────────────────────────────── */
 function Counter({ end, suffix = "", duration = 2000 }) {
   const [count, setCount] = useState(0);
   const ref = useRef(null);
@@ -84,7 +82,6 @@ function Counter({ end, suffix = "", duration = 2000 }) {
   );
 }
 
-/* ─── PARTICLE FIELD ─────────────────────────────────────────── */
 function ParticleField() {
   const canvasRef = useRef(null);
 
@@ -96,7 +93,7 @@ function ParticleField() {
     let W = (canvas.width = window.innerWidth);
     let H = (canvas.height = window.innerHeight);
 
-    const particles = Array.from({ length: 90 }, () => ({
+    const particles = Array.from({ length: 50 }, () => ({
       x: Math.random() * W,
       y: Math.random() * H,
       r: Math.random() * 1.5 + 0.3,
@@ -119,14 +116,13 @@ function ParticleField() {
         if (p.x < 0 || p.x > W) p.dx *= -1;
         if (p.y < 0 || p.y > H) p.dy *= -1;
       });
-      // draw connecting lines
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
           const dist = Math.hypot(particles[i].x - particles[j].x, particles[i].y - particles[j].y);
-          if (dist < 120) {
+          if (dist < 100) {
             ctx.beginPath();
             ctx.strokeStyle = "#00d4ff";
-            ctx.globalAlpha = (1 - dist / 120) * 0.08;
+            ctx.globalAlpha = (1 - dist / 100) * 0.08;
             ctx.lineWidth = 0.5;
             ctx.moveTo(particles[i].x, particles[i].y);
             ctx.lineTo(particles[j].x, particles[j].y);
@@ -158,7 +154,6 @@ function ParticleField() {
   );
 }
 
-/* ─── CUSTOM CURSOR ──────────────────────────────────────────── */
 function CustomCursor() {
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
@@ -185,6 +180,7 @@ function CustomCursor() {
 
   return (
     <motion.div
+      className="custom-cursor"
       style={{
         x: springX,
         y: springY,
@@ -212,7 +208,6 @@ function CustomCursor() {
   );
 }
 
-/* ─── DATA ──────────────────────────────────────────────────── */
 const SERVICES = [
   {
     title: "Product Design",
@@ -286,12 +281,11 @@ const STATS = [
   { val: 3, suffix: "", label: "Años" },
 ];
 
-/* ─── MAIN PAGE ─────────────────────────────────────────────── */
 export default function AxiomStudioPage() {
   const [heroReady, setHeroReady] = useState(false);
-  const [hoveredProject, setHoveredProject] = useState(null);
   const [formData, setFormData] = useState({ name: "", company: "", type: "", budget: "" });
   const [submitted, setSubmitted] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
   const processRef = useRef(null);
   const processInView = useInView(processRef, { once: true, margin: "-100px" });
 
@@ -299,6 +293,17 @@ export default function AxiomStudioPage() {
     const t = setTimeout(() => setHeroReady(true), 400);
     return () => clearTimeout(t);
   }, []);
+
+  useEffect(() => {
+    if (menuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [menuOpen]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -327,12 +332,11 @@ export default function AxiomStudioPage() {
     >
       <CustomCursor />
 
-      {/* ── GLOBAL STYLES ── */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
         * { box-sizing: border-box; margin: 0; padding: 0; }
         ::selection { background: #00d4ff33; color: #00d4ff; }
-        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar { width: 4px; height: 4px; }
         ::-webkit-scrollbar-track { background: #020617; }
         ::-webkit-scrollbar-thumb { background: #00d4ff44; border-radius: 2px; }
         .mesh-bg {
@@ -361,11 +365,134 @@ export default function AxiomStudioPage() {
         input::placeholder, textarea::placeholder {
           color: #475569;
         }
+        .custom-cursor { display: none; }
+        @media (pointer: fine) {
+          .custom-cursor { display: block; }
+        }
+        .projects-scroll {
+          display: flex;
+          overflow-x: auto;
+          gap: 1rem;
+          scroll-snap-type: x mandatory;
+          padding-bottom: 2rem;
+          -webkit-overflow-scrolling: touch;
+        }
+        .project-card-wrap {
+          flex: 0 0 85%;
+          scroll-snap-align: center;
+        }
+        .project-card-inner {
+          position: relative;
+          border-radius: 16px;
+          overflow: hidden;
+          cursor: pointer;
+          aspect-ratio: 3/4;
+          border: 1px solid #0f172a;
+        }
+        .project-img {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          filter: grayscale(40%) brightness(0.6);
+          transition: all 0.6s ease;
+        }
+        .project-hover-overlay {
+          position: absolute;
+          inset: 0;
+          opacity: 1;
+          border-radius: 16px;
+          transition: opacity 0.3s ease;
+        }
+        .project-details {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          padding: 1.5rem;
+          transform: translateY(0);
+          transition: transform 0.3s ease;
+        }
+        .project-link {
+          margin-top: 0.8rem;
+          display: flex;
+          align-items: center;
+          gap: 0.4rem;
+          font-size: 0.8rem;
+          font-weight: 600;
+          opacity: 1;
+          transition: opacity 0.3s ease;
+        }
+        @media (min-width: 768px) {
+          .projects-scroll {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            overflow-x: visible;
+            padding-bottom: 0;
+          }
+          .project-card-wrap {
+            flex: unset;
+          }
+          .project-img {
+            filter: grayscale(60%) brightness(0.5);
+          }
+          .project-hover-overlay {
+            opacity: 0;
+          }
+          .project-details {
+            transform: translateY(10px);
+          }
+          .project-link {
+            opacity: 0;
+          }
+          .project-card-inner:hover .project-img {
+            filter: grayscale(0%) brightness(0.7);
+          }
+          .project-card-inner:hover .project-hover-overlay {
+            opacity: 1;
+          }
+          .project-card-inner:hover .project-details {
+            transform: translateY(-6px);
+          }
+          .project-card-inner:hover .project-link {
+            opacity: 1;
+          }
+        }
+        .mobile-menu-overlay {
+          position: fixed;
+          inset: 0;
+          background: rgba(2, 6, 23, 0.98);
+          z-index: 99;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          justify-content: center;
+          gap: 2rem;
+          opacity: 0;
+          pointer-events: none;
+          transition: opacity 0.3s ease;
+        }
+        .mobile-menu-overlay.open {
+          opacity: 1;
+          pointer-events: auto;
+        }
+        .hero-title {
+          font-size: clamp(2.5rem, 10vw, 7rem);
+          font-weight: 900;
+          line-height: 1.05;
+          letter-spacing: -0.03em;
+          margin-bottom: 1.5rem;
+          background: linear-gradient(135deg, #f1f5f9 30%, #00d4ff 70%, #7c3aed 100%);
+          -webkit-background-clip: text;
+          -webkit-text-fill-color: transparent;
+        }
+        .mobile-hidden { display: none; }
+        .desktop-hidden { display: flex; }
+        @media (min-width: 768px) {
+          .mobile-hidden { display: flex; }
+          .desktop-hidden { display: none; }
+        }
       `}</style>
 
-      {/* ═══════════════════════════════════════════════════════
-          NAV
-      ══════════════════════════════════════════════════════════ */}
       <motion.nav
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -379,23 +506,22 @@ export default function AxiomStudioPage() {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          padding: "0 2rem",
-          height: 64,
+          padding: "0 1.5rem",
+          height: 72,
           background: "rgba(2, 6, 23, 0.85)",
           backdropFilter: "blur(20px)",
           borderBottom: "1px solid #ffffff08",
         }}
       >
-        {/* Left */}
         <Link
           href="/"
+          className="mobile-hidden"
           style={{
             color: "#64748b",
             textDecoration: "none",
             fontSize: "0.8rem",
             letterSpacing: "0.05em",
             fontWeight: 500,
-            display: "flex",
             alignItems: "center",
             gap: "0.4rem",
             transition: "color 0.2s",
@@ -406,7 +532,6 @@ export default function AxiomStudioPage() {
           ← Catálogo
         </Link>
 
-        {/* Logo */}
         <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
           <div
             style={{
@@ -433,11 +558,10 @@ export default function AxiomStudioPage() {
           </span>
         </div>
 
-        {/* CTA */}
         <motion.button
           whileHover={{ scale: 1.03 }}
-          whileTap={{ scale: 0.97 }}
-          className="glow-border"
+          whileTap={{ scale: 0.95 }}
+          className="glow-border mobile-hidden"
           style={{
             background: "transparent",
             border: "1px solid #00d4ff55",
@@ -448,7 +572,6 @@ export default function AxiomStudioPage() {
             fontWeight: 600,
             letterSpacing: "0.06em",
             cursor: "pointer",
-            display: "flex",
             alignItems: "center",
             gap: "0.35rem",
             transition: "all 0.3s",
@@ -456,11 +579,64 @@ export default function AxiomStudioPage() {
         >
           Iniciar Proyecto <ArrowUpRight size={13} />
         </motion.button>
+
+        <button
+          className="desktop-hidden"
+          onClick={() => setMenuOpen(!menuOpen)}
+          style={{
+            background: "none",
+            border: "none",
+            color: "#e2e8f0",
+            cursor: "pointer",
+            padding: "0.5rem",
+          }}
+        >
+          {menuOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
       </motion.nav>
 
-      {/* ═══════════════════════════════════════════════════════
-          HERO
-      ══════════════════════════════════════════════════════════ */}
+      <div className={`mobile-menu-overlay ${menuOpen ? "open" : ""}`}>
+        {["Servicios", "Portfolio", "Equipo", "Contacto"].map((item, i) => (
+          <a
+            key={item}
+            href="#"
+            onClick={() => setMenuOpen(false)}
+            style={{
+              color: "#f1f5f9",
+              textDecoration: "none",
+              fontSize: "2rem",
+              fontWeight: 800,
+              letterSpacing: "-0.02em",
+              transform: menuOpen ? "translateY(0)" : "translateY(20px)",
+              opacity: menuOpen ? 1 : 0,
+              transition: `all 0.4s ease ${i * 0.1}s`,
+            }}
+          >
+            {item}
+          </a>
+        ))}
+        <motion.button
+          whileTap={{ scale: 0.95 }}
+          onClick={() => setMenuOpen(false)}
+          style={{
+            background: "linear-gradient(135deg, #00d4ff, #0ea5e9)",
+            color: "#020617",
+            border: "none",
+            padding: "1rem 2.5rem",
+            borderRadius: 8,
+            fontWeight: 700,
+            fontSize: "1rem",
+            letterSpacing: "0.04em",
+            marginTop: "2rem",
+            transform: menuOpen ? "translateY(0)" : "translateY(20px)",
+            opacity: menuOpen ? 1 : 0,
+            transition: "all 0.4s ease 0.4s",
+          }}
+        >
+          Iniciar Proyecto
+        </motion.button>
+      </div>
+
       <section
         className="mesh-bg"
         style={{
@@ -471,21 +647,20 @@ export default function AxiomStudioPage() {
           alignItems: "center",
           justifyContent: "center",
           textAlign: "center",
-          padding: "120px 2rem 4rem",
+          padding: "140px 1.5rem 4rem",
           overflow: "hidden",
         }}
       >
         <ParticleField />
 
-        {/* Glows */}
         <div
           style={{
             position: "absolute",
             top: "20%",
             left: "50%",
             transform: "translateX(-50%)",
-            width: 800,
-            height: 400,
+            width: "80vw",
+            height: "40vh",
             background: "radial-gradient(ellipse, #7c3aed15 0%, transparent 70%)",
             pointerEvents: "none",
           }}
@@ -495,8 +670,8 @@ export default function AxiomStudioPage() {
             position: "absolute",
             bottom: "10%",
             left: "20%",
-            width: 300,
-            height: 300,
+            width: "40vw",
+            height: "40vw",
             background: "radial-gradient(ellipse, #00d4ff10 0%, transparent 70%)",
             pointerEvents: "none",
           }}
@@ -506,9 +681,8 @@ export default function AxiomStudioPage() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 0.2 }}
-          style={{ position: "relative", zIndex: 2, maxWidth: 900 }}
+          style={{ position: "relative", zIndex: 2, maxWidth: 900, width: "100%" }}
         >
-          {/* Badge */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -526,6 +700,7 @@ export default function AxiomStudioPage() {
               color: "#00d4ff",
               fontWeight: 600,
               letterSpacing: "0.1em",
+              whiteSpace: "nowrap",
             }}
           >
             <span
@@ -538,102 +713,98 @@ export default function AxiomStudioPage() {
               }}
             />
             <style>{`@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }`}</style>
-            DIGITAL PRODUCT STUDIO · EST. 2022
+            DIGITAL PRODUCT STUDIO
           </motion.div>
 
-          {/* Headline */}
           <motion.h1
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
-            style={{
-              fontSize: "clamp(3rem, 8vw, 7rem)",
-              fontWeight: 900,
-              lineHeight: 1.02,
-              letterSpacing: "-0.03em",
-              marginBottom: "1.8rem",
-              background: "linear-gradient(135deg, #f1f5f9 30%, #00d4ff 70%, #7c3aed 100%)",
-              WebkitBackgroundClip: "text",
-              WebkitTextFillColor: "transparent",
-            }}
+            className="hero-title"
           >
             <ScrambleText text={"DIGITAL PRODUCTS\nTHAT MATTER."} trigger={heroReady} delay={200} />
           </motion.h1>
 
-          {/* Subtitle */}
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.9 }}
             style={{
-              fontSize: "clamp(1rem, 2vw, 1.2rem)",
+              fontSize: "clamp(1rem, 4vw, 1.2rem)",
               color: "#64748b",
               maxWidth: 580,
               margin: "0 auto 3rem",
-              lineHeight: 1.7,
+              lineHeight: 1.6,
+              padding: "0 1rem",
             }}
           >
             Diseñamos y construimos herramientas digitales que transforman industrias. Desde apps SaaS hasta plataformas interactivas.
           </motion.p>
 
-          {/* CTAs */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1.1 }}
-            style={{ display: "flex", gap: "1rem", justifyContent: "center", flexWrap: "wrap" }}
+            style={{ display: "flex", gap: "1rem", justifyContent: "center", flexDirection: "column", alignItems: "center" }}
           >
-            <motion.button
-              whileHover={{ scale: 1.04, boxShadow: "0 0 40px #00d4ff44" }}
-              whileTap={{ scale: 0.97 }}
-              style={{
-                background: "linear-gradient(135deg, #00d4ff, #0ea5e9)",
-                color: "#020617",
-                border: "none",
-                padding: "0.9rem 2rem",
-                borderRadius: 8,
-                fontWeight: 700,
-                fontSize: "0.9rem",
-                letterSpacing: "0.04em",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                gap: "0.5rem",
-              }}
-            >
-              Ver Portfolio <ArrowUpRight size={16} />
-            </motion.button>
-            <motion.button
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.97 }}
-              style={{
-                background: "transparent",
-                color: "#e2e8f0",
-                border: "1px solid #334155",
-                padding: "0.9rem 2rem",
-                borderRadius: 8,
-                fontWeight: 600,
-                fontSize: "0.9rem",
-                letterSpacing: "0.04em",
-                cursor: "pointer",
-                display: "flex",
-                alignItems: "center",
-                gap: "0.5rem",
-              }}
-            >
-              Hablar con el equipo <ChevronRight size={16} />
-            </motion.button>
+            <div style={{ display: "flex", gap: "1rem", flexDirection: "row", flexWrap: "wrap", justifyContent: "center", width: "100%" }}>
+              <motion.button
+                whileHover={{ scale: 1.04, boxShadow: "0 0 40px #00d4ff44" }}
+                whileTap={{ scale: 0.95 }}
+                style={{
+                  background: "linear-gradient(135deg, #00d4ff, #0ea5e9)",
+                  color: "#020617",
+                  border: "none",
+                  padding: "1rem 2rem",
+                  borderRadius: 8,
+                  fontWeight: 700,
+                  fontSize: "0.95rem",
+                  letterSpacing: "0.04em",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "0.5rem",
+                  width: "100%",
+                  maxWidth: 280,
+                }}
+              >
+                Ver Portfolio <ArrowUpRight size={18} />
+              </motion.button>
+              <motion.button
+                whileHover={{ scale: 1.04 }}
+                whileTap={{ scale: 0.95 }}
+                style={{
+                  background: "transparent",
+                  color: "#e2e8f0",
+                  border: "1px solid #334155",
+                  padding: "1rem 2rem",
+                  borderRadius: 8,
+                  fontWeight: 600,
+                  fontSize: "0.95rem",
+                  letterSpacing: "0.04em",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  gap: "0.5rem",
+                  width: "100%",
+                  maxWidth: 280,
+                }}
+              >
+                Hablar con el equipo <ChevronRight size={18} />
+              </motion.button>
+            </div>
           </motion.div>
         </motion.div>
 
-        {/* Scroll indicator */}
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1.5 }}
           style={{
             position: "absolute",
-            bottom: 40,
+            bottom: 30,
             left: "50%",
             transform: "translateX(-50%)",
             display: "flex",
@@ -654,21 +825,18 @@ export default function AxiomStudioPage() {
         </motion.div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════
-          SERVICES GRID
-      ══════════════════════════════════════════════════════════ */}
-      <section style={{ padding: "7rem 2rem", maxWidth: 1200, margin: "0 auto" }}>
+      <section style={{ padding: "5rem 1.5rem", maxWidth: 1200, margin: "0 auto" }}>
         <motion.div
           variants={stagger}
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, margin: "-80px" }}
         >
-          <motion.div variants={fadeUp} style={{ marginBottom: "3.5rem" }}>
+          <motion.div variants={fadeUp} style={{ marginBottom: "3rem" }}>
             <p style={{ color: "#00d4ff", fontSize: "0.72rem", letterSpacing: "0.15em", fontWeight: 600, marginBottom: "0.8rem" }}>
               SERVICIOS
             </p>
-            <h2 style={{ fontSize: "clamp(2rem, 4vw, 3.5rem)", fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 1.1 }}>
+            <h2 style={{ fontSize: "clamp(2rem, 8vw, 3.5rem)", fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 1.1 }}>
               Lo que construimos
             </h2>
           </motion.div>
@@ -678,7 +846,7 @@ export default function AxiomStudioPage() {
             style={{
               display: "grid",
               gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
-              gap: "1.5px",
+              gap: "1rem",
             }}
           >
             {SERVICES.map((svc) => {
@@ -688,11 +856,12 @@ export default function AxiomStudioPage() {
                   key={svc.num}
                   variants={fadeUp}
                   data-cursor
+                  whileTap={{ scale: 0.97 }}
                   style={{
                     background: "#0a0f1e",
                     border: "1px solid #0f172a",
-                    borderRadius: 12,
-                    padding: "2.5rem",
+                    borderRadius: 16,
+                    padding: "2rem",
                     position: "relative",
                     overflow: "hidden",
                     cursor: "pointer",
@@ -705,7 +874,6 @@ export default function AxiomStudioPage() {
                     boxShadow: "0 20px 60px #00d4ff10, inset 0 0 60px #00d4ff05",
                   }}
                 >
-                  {/* Glow on hover */}
                   <div
                     style={{
                       position: "absolute",
@@ -727,7 +895,7 @@ export default function AxiomStudioPage() {
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      marginBottom: "1.8rem",
+                      marginBottom: "1.5rem",
                     }}
                   >
                     <Icon size={20} color="#00d4ff" />
@@ -736,13 +904,13 @@ export default function AxiomStudioPage() {
                   <h3 style={{ fontSize: "1.15rem", fontWeight: 700, marginBottom: "0.8rem", color: "#f1f5f9" }}>
                     {svc.title}
                   </h3>
-                  <p style={{ color: "#64748b", fontSize: "0.88rem", lineHeight: 1.65 }}>{svc.desc}</p>
+                  <p style={{ color: "#64748b", fontSize: "0.9rem", lineHeight: 1.6 }}>{svc.desc}</p>
 
                   <div
                     style={{
                       position: "absolute",
-                      bottom: "1.5rem",
-                      right: "1.8rem",
+                      bottom: "1rem",
+                      right: "1.5rem",
                       fontSize: "2.5rem",
                       fontWeight: 900,
                       color: "#0f172a",
@@ -760,41 +928,40 @@ export default function AxiomStudioPage() {
         </motion.div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════
-          CASE STUDIES
-      ══════════════════════════════════════════════════════════ */}
       <section
         style={{
-          padding: "6rem 2rem",
+          padding: "5rem 0 5rem 1.5rem",
           background: "#040a14",
           borderTop: "1px solid #0f172a",
           borderBottom: "1px solid #0f172a",
+          overflow: "hidden"
         }}
       >
-        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+        <div style={{ maxWidth: 1200, margin: "0 auto", paddingRight: "1.5rem" }}>
           <motion.div
             variants={stagger}
             initial="hidden"
             whileInView="visible"
             viewport={{ once: true }}
           >
-            <motion.div variants={fadeUp} style={{ marginBottom: "3.5rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "1rem" }}>
+            <motion.div variants={fadeUp} style={{ marginBottom: "2.5rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "1rem" }}>
               <div>
                 <p style={{ color: "#7c3aed", fontSize: "0.72rem", letterSpacing: "0.15em", fontWeight: 600, marginBottom: "0.8rem" }}>
                   PORTFOLIO
                 </p>
-                <h2 style={{ fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 800, letterSpacing: "-0.03em" }}>
+                <h2 style={{ fontSize: "clamp(2rem, 8vw, 3rem)", fontWeight: 800, letterSpacing: "-0.03em" }}>
                   Casos de estudio
                 </h2>
               </div>
               <motion.button
                 whileHover={{ x: 4 }}
+                whileTap={{ scale: 0.95 }}
                 style={{
                   background: "transparent",
                   border: "none",
                   color: "#00d4ff",
                   cursor: "pointer",
-                  fontSize: "0.85rem",
+                  fontSize: "0.9rem",
                   fontWeight: 600,
                   display: "flex",
                   alignItems: "center",
@@ -802,47 +969,28 @@ export default function AxiomStudioPage() {
                   letterSpacing: "0.04em",
                 }}
               >
-                Ver todos <ArrowUpRight size={14} />
+                Ver todos <ArrowUpRight size={16} />
               </motion.button>
             </motion.div>
+          </motion.div>
+        </div>
 
-            <motion.div
-              variants={stagger}
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
-                gap: "1.5rem",
-              }}
-            >
-              {PROJECTS.map((p, i) => (
-                <motion.div
-                  key={p.name}
-                  variants={fadeUp}
-                  onMouseEnter={() => setHoveredProject(i)}
-                  onMouseLeave={() => setHoveredProject(null)}
-                  data-cursor
-                  style={{
-                    position: "relative",
-                    borderRadius: 16,
-                    overflow: "hidden",
-                    cursor: "pointer",
-                    aspectRatio: i === 0 ? "4/3" : "3/4",
-                    border: "1px solid #0f172a",
-                  }}
-                >
+        <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+          <div className="projects-scroll">
+            {PROJECTS.map((p, i) => (
+              <motion.div
+                key={p.name}
+                data-cursor
+                whileTap={{ scale: 0.98 }}
+                className="project-card-wrap"
+              >
+                <div className="project-card-inner">
                   <img
                     src={p.img}
                     alt={p.name}
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      objectFit: "cover",
-                      filter: hoveredProject === i ? "grayscale(0%) brightness(0.7)" : "grayscale(60%) brightness(0.5)",
-                      transition: "all 0.6s ease",
-                    }}
+                    className="project-img"
                   />
 
-                  {/* Base overlay */}
                   <div
                     style={{
                       position: "absolute",
@@ -851,71 +999,37 @@ export default function AxiomStudioPage() {
                     }}
                   />
 
-                  {/* Hover overlay */}
-                  <AnimatePresence>
-                    {hoveredProject === i && (
-                      <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        transition={{ duration: 0.3 }}
-                        style={{
-                          position: "absolute",
-                          inset: 0,
-                          background: `linear-gradient(135deg, ${p.color}22, transparent)`,
-                          borderRadius: 16,
-                          border: `1px solid ${p.color}44`,
-                        }}
-                      />
-                    )}
-                  </AnimatePresence>
+                  <div
+                    className="project-hover-overlay"
+                    style={{
+                      background: `linear-gradient(135deg, ${p.color}22, transparent)`,
+                      border: `1px solid ${p.color}44`,
+                    }}
+                  />
 
-                  {/* Text */}
-                  <div style={{ position: "absolute", bottom: 0, left: 0, right: 0, padding: "1.5rem" }}>
-                    <motion.div
-                      animate={{ y: hoveredProject === i ? -6 : 0 }}
-                      transition={{ duration: 0.3 }}
+                  <div className="project-details">
+                    <p style={{ color: p.color, fontSize: "0.65rem", letterSpacing: "0.15em", fontWeight: 600, marginBottom: "0.4rem" }}>
+                      {p.cat} · {p.year}
+                    </p>
+                    <h3 style={{ fontSize: "1.4rem", fontWeight: 800, color: "#f1f5f9" }}>{p.name}</h3>
+                    <div
+                      className="project-link"
+                      style={{ color: p.color }}
                     >
-                      <p style={{ color: p.color, fontSize: "0.65rem", letterSpacing: "0.15em", fontWeight: 600, marginBottom: "0.4rem" }}>
-                        {p.cat} · {p.year}
-                      </p>
-                      <h3 style={{ fontSize: "1.4rem", fontWeight: 800, color: "#f1f5f9" }}>{p.name}</h3>
-                    </motion.div>
-                    <AnimatePresence>
-                      {hoveredProject === i && (
-                        <motion.div
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          exit={{ opacity: 0 }}
-                          style={{
-                            marginTop: "0.8rem",
-                            display: "flex",
-                            alignItems: "center",
-                            gap: "0.4rem",
-                            color: p.color,
-                            fontSize: "0.8rem",
-                            fontWeight: 600,
-                          }}
-                        >
-                          Ver caso <ArrowUpRight size={14} />
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
+                      Ver caso <ArrowUpRight size={14} />
+                    </div>
                   </div>
-                </motion.div>
-              ))}
-            </motion.div>
-          </motion.div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════
-          PROCESS
-      ══════════════════════════════════════════════════════════ */}
       <section
         ref={processRef}
         className="mesh-bg"
-        style={{ padding: "8rem 2rem", maxWidth: 1200, margin: "0 auto" }}
+        style={{ padding: "6rem 1.5rem", maxWidth: 1200, margin: "0 auto" }}
       >
         <motion.div
           variants={stagger}
@@ -927,25 +1041,23 @@ export default function AxiomStudioPage() {
             <p style={{ color: "#00d4ff", fontSize: "0.72rem", letterSpacing: "0.15em", fontWeight: 600, marginBottom: "0.8rem" }}>
               PROCESO
             </p>
-            <h2 style={{ fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 800, letterSpacing: "-0.03em" }}>
+            <h2 style={{ fontSize: "clamp(2rem, 8vw, 3rem)", fontWeight: 800, letterSpacing: "-0.03em" }}>
               Cómo trabajamos
             </h2>
           </motion.div>
 
-          {/* Timeline */}
-          <div style={{ position: "relative", overflowX: "auto" }}>
+          <div style={{ position: "relative", overflowX: "auto", paddingBottom: "1rem", WebkitOverflowScrolling: "touch" }}>
             <div
               style={{
                 display: "flex",
                 alignItems: "flex-start",
                 gap: 0,
-                minWidth: 700,
+                minWidth: 800,
                 padding: "0 1rem",
               }}
             >
               {STEPS.map((step, i) => (
                 <div key={step.num} style={{ flex: 1, position: "relative" }}>
-                  {/* Line */}
                   {i < STEPS.length - 1 && (
                     <div style={{ position: "absolute", top: 20, left: "50%", right: "-50%", height: 1, zIndex: 0 }}>
                       <motion.div
@@ -962,7 +1074,6 @@ export default function AxiomStudioPage() {
                   )}
 
                   <div style={{ textAlign: "center", position: "relative", zIndex: 1 }}>
-                    {/* Node */}
                     <motion.div
                       initial={{ scale: 0, opacity: 0 }}
                       animate={processInView ? { scale: 1, opacity: 1 } : {}}
@@ -1001,12 +1112,9 @@ export default function AxiomStudioPage() {
         </motion.div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════
-          TEAM
-      ══════════════════════════════════════════════════════════ */}
       <section
         style={{
-          padding: "7rem 2rem",
+          padding: "5rem 1.5rem",
           background: "#040a14",
           borderTop: "1px solid #0f172a",
         }}
@@ -1018,11 +1126,11 @@ export default function AxiomStudioPage() {
             whileInView="visible"
             viewport={{ once: true }}
           >
-            <motion.div variants={fadeUp} style={{ marginBottom: "3.5rem", textAlign: "center" }}>
+            <motion.div variants={fadeUp} style={{ marginBottom: "3rem", textAlign: "center" }}>
               <p style={{ color: "#7c3aed", fontSize: "0.72rem", letterSpacing: "0.15em", fontWeight: 600, marginBottom: "0.8rem" }}>
                 EQUIPO
               </p>
-              <h2 style={{ fontSize: "clamp(2rem, 4vw, 3rem)", fontWeight: 800, letterSpacing: "-0.03em" }}>
+              <h2 style={{ fontSize: "clamp(2rem, 8vw, 3rem)", fontWeight: 800, letterSpacing: "-0.03em" }}>
                 Las personas detrás
               </h2>
               <p style={{ color: "#64748b", marginTop: "1rem", fontSize: "0.95rem" }}>
@@ -1043,6 +1151,7 @@ export default function AxiomStudioPage() {
                   key={member.name}
                   variants={fadeUp}
                   data-cursor
+                  whileTap={{ scale: 0.98 }}
                   className="card-hover"
                   style={{
                     borderRadius: 16,
@@ -1070,11 +1179,11 @@ export default function AxiomStudioPage() {
                       }}
                     />
                   </div>
-                  <div style={{ padding: "1.2rem" }}>
-                    <h3 style={{ fontWeight: 700, fontSize: "1rem", color: "#f1f5f9", marginBottom: "0.3rem" }}>
+                  <div style={{ padding: "1.5rem" }}>
+                    <h3 style={{ fontWeight: 700, fontSize: "1.1rem", color: "#f1f5f9", marginBottom: "0.3rem" }}>
                       {member.name}
                     </h3>
-                    <p style={{ color: "#64748b", fontSize: "0.78rem", letterSpacing: "0.02em" }}>{member.role}</p>
+                    <p style={{ color: "#64748b", fontSize: "0.85rem", letterSpacing: "0.02em" }}>{member.role}</p>
                   </div>
                 </motion.div>
               ))}
@@ -1083,12 +1192,9 @@ export default function AxiomStudioPage() {
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════
-          STATS
-      ══════════════════════════════════════════════════════════ */}
       <section
         style={{
-          padding: "6rem 2rem",
+          padding: "5rem 1.5rem",
           borderTop: "1px solid #0f172a",
           borderBottom: "1px solid #0f172a",
           background: "linear-gradient(135deg, #020617, #080d1c)",
@@ -1102,8 +1208,8 @@ export default function AxiomStudioPage() {
             viewport={{ once: true }}
             style={{
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-              gap: "2rem",
+              gridTemplateColumns: "repeat(2, 1fr)",
+              gap: "2.5rem 1.5rem",
               textAlign: "center",
             }}
           >
@@ -1111,7 +1217,7 @@ export default function AxiomStudioPage() {
               <motion.div key={s.label} variants={fadeUp}>
                 <div
                   style={{
-                    fontSize: "clamp(3rem, 5vw, 5rem)",
+                    fontSize: "clamp(2.5rem, 8vw, 5rem)",
                     fontWeight: 900,
                     letterSpacing: "-0.04em",
                     lineHeight: 1,
@@ -1132,12 +1238,9 @@ export default function AxiomStudioPage() {
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════
-          CTA / CONTACT
-      ══════════════════════════════════════════════════════════ */}
       <section
         className="mesh-bg"
-        style={{ padding: "8rem 2rem" }}
+        style={{ padding: "6rem 1.5rem" }}
       >
         <div style={{ maxWidth: 700, margin: "0 auto", textAlign: "center" }}>
           <motion.div
@@ -1152,7 +1255,7 @@ export default function AxiomStudioPage() {
             <motion.h2
               variants={fadeUp}
               style={{
-                fontSize: "clamp(2.5rem, 6vw, 5rem)",
+                fontSize: "clamp(2rem, 8vw, 5rem)",
                 fontWeight: 900,
                 letterSpacing: "-0.03em",
                 lineHeight: 1.05,
@@ -1164,7 +1267,7 @@ export default function AxiomStudioPage() {
             >
               Construyamos algo brutal.
             </motion.h2>
-            <motion.p variants={fadeUp} style={{ color: "#64748b", marginBottom: "3rem", fontSize: "1rem", lineHeight: 1.7 }}>
+            <motion.p variants={fadeUp} style={{ color: "#64748b", marginBottom: "3rem", fontSize: "1rem", lineHeight: 1.6 }}>
               Cuéntanos tu idea y te respondemos en menos de 24h con una propuesta inicial.
             </motion.p>
 
@@ -1177,14 +1280,14 @@ export default function AxiomStudioPage() {
                   animate="visible"
                   exit={{ opacity: 0, y: -20 }}
                   onSubmit={handleSubmit}
-                  style={{ display: "flex", flexDirection: "column", gap: "1rem", textAlign: "left" }}
+                  style={{ display: "flex", flexDirection: "column", gap: "1.2rem", textAlign: "left" }}
                 >
                   {[
                     { key: "name", label: "Nombre", placeholder: "Tu nombre completo", type: "text" },
                     { key: "company", label: "Empresa", placeholder: "Nombre de tu empresa o proyecto", type: "text" },
                   ].map((field) => (
                     <motion.div key={field.key} variants={fadeUp}>
-                      <label style={{ display: "block", fontSize: "0.75rem", color: "#64748b", fontWeight: 600, letterSpacing: "0.08em", marginBottom: "0.4rem" }}>
+                      <label style={{ display: "block", fontSize: "0.75rem", color: "#64748b", fontWeight: 600, letterSpacing: "0.08em", marginBottom: "0.5rem" }}>
                         {field.label.toUpperCase()}
                       </label>
                       <input
@@ -1197,10 +1300,10 @@ export default function AxiomStudioPage() {
                           width: "100%",
                           background: "#0a0f1e",
                           border: "1px solid #1e293b",
-                          borderRadius: 8,
-                          padding: "0.85rem 1rem",
+                          borderRadius: 12,
+                          padding: "1rem 1.2rem",
                           color: "#e2e8f0",
-                          fontSize: "0.9rem",
+                          fontSize: "1rem",
                           transition: "border-color 0.2s",
                         }}
                         onFocus={(e) => (e.target.style.borderColor = "#00d4ff44")}
@@ -1210,7 +1313,7 @@ export default function AxiomStudioPage() {
                   ))}
 
                   <motion.div variants={fadeUp}>
-                    <label style={{ display: "block", fontSize: "0.75rem", color: "#64748b", fontWeight: 600, letterSpacing: "0.08em", marginBottom: "0.4rem" }}>
+                    <label style={{ display: "block", fontSize: "0.75rem", color: "#64748b", fontWeight: 600, letterSpacing: "0.08em", marginBottom: "0.5rem" }}>
                       TIPO DE PROYECTO
                     </label>
                     <select
@@ -1221,11 +1324,12 @@ export default function AxiomStudioPage() {
                         width: "100%",
                         background: "#0a0f1e",
                         border: "1px solid #1e293b",
-                        borderRadius: 8,
-                        padding: "0.85rem 1rem",
+                        borderRadius: 12,
+                        padding: "1rem 1.2rem",
                         color: formData.type ? "#e2e8f0" : "#475569",
-                        fontSize: "0.9rem",
+                        fontSize: "1rem",
                         cursor: "pointer",
+                        WebkitAppearance: "none",
                       }}
                     >
                       <option value="" disabled>Selecciona una opción...</option>
@@ -1238,7 +1342,7 @@ export default function AxiomStudioPage() {
                   </motion.div>
 
                   <motion.div variants={fadeUp}>
-                    <label style={{ display: "block", fontSize: "0.75rem", color: "#64748b", fontWeight: 600, letterSpacing: "0.08em", marginBottom: "0.4rem" }}>
+                    <label style={{ display: "block", fontSize: "0.75rem", color: "#64748b", fontWeight: 600, letterSpacing: "0.08em", marginBottom: "0.5rem" }}>
                       PRESUPUESTO ESTIMADO
                     </label>
                     <select
@@ -1249,11 +1353,12 @@ export default function AxiomStudioPage() {
                         width: "100%",
                         background: "#0a0f1e",
                         border: "1px solid #1e293b",
-                        borderRadius: 8,
-                        padding: "0.85rem 1rem",
+                        borderRadius: 12,
+                        padding: "1rem 1.2rem",
                         color: formData.budget ? "#e2e8f0" : "#475569",
-                        fontSize: "0.9rem",
+                        fontSize: "1rem",
                         cursor: "pointer",
+                        WebkitAppearance: "none",
                       }}
                     >
                       <option value="" disabled>Selecciona un rango...</option>
@@ -1264,7 +1369,7 @@ export default function AxiomStudioPage() {
                     </select>
                   </motion.div>
 
-                  <motion.div variants={fadeUp} style={{ paddingTop: "0.5rem" }}>
+                  <motion.div variants={fadeUp} style={{ paddingTop: "1rem" }}>
                     <motion.button
                       type="submit"
                       whileHover={{ scale: 1.02, boxShadow: "0 0 40px #00d4ff44" }}
@@ -1274,10 +1379,10 @@ export default function AxiomStudioPage() {
                         background: "linear-gradient(135deg, #00d4ff, #0ea5e9)",
                         color: "#020617",
                         border: "none",
-                        padding: "1rem",
-                        borderRadius: 8,
+                        padding: "1.2rem",
+                        borderRadius: 12,
                         fontWeight: 800,
-                        fontSize: "0.9rem",
+                        fontSize: "1rem",
                         letterSpacing: "0.06em",
                         cursor: "pointer",
                         display: "flex",
@@ -1286,7 +1391,7 @@ export default function AxiomStudioPage() {
                         gap: "0.5rem",
                       }}
                     >
-                      Enviar propuesta <ArrowUpRight size={16} />
+                      Enviar propuesta <ArrowUpRight size={18} />
                     </motion.button>
                   </motion.div>
                 </motion.form>
@@ -1296,7 +1401,7 @@ export default function AxiomStudioPage() {
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   style={{
-                    padding: "3rem",
+                    padding: "3rem 1.5rem",
                     background: "#00d4ff08",
                     border: "1px solid #00d4ff22",
                     borderRadius: 16,
@@ -1305,21 +1410,21 @@ export default function AxiomStudioPage() {
                 >
                   <div
                     style={{
-                      width: 56,
-                      height: 56,
+                      width: 64,
+                      height: 64,
                       borderRadius: "50%",
                       background: "linear-gradient(135deg, #00d4ff, #7c3aed)",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
                       margin: "0 auto 1.5rem",
-                      fontSize: "1.5rem",
+                      fontSize: "1.8rem",
                     }}
                   >
                     ✓
                   </div>
-                  <h3 style={{ fontWeight: 800, fontSize: "1.3rem", marginBottom: "0.6rem" }}>¡Recibido!</h3>
-                  <p style={{ color: "#64748b", fontSize: "0.9rem" }}>
+                  <h3 style={{ fontWeight: 800, fontSize: "1.5rem", marginBottom: "0.8rem" }}>¡Recibido!</h3>
+                  <p style={{ color: "#64748b", fontSize: "1rem", lineHeight: 1.6 }}>
                     Te contactamos en menos de 24h. Mientras tanto, echa un vistazo a nuestros casos de estudio.
                   </p>
                 </motion.div>
@@ -1329,13 +1434,10 @@ export default function AxiomStudioPage() {
         </div>
       </section>
 
-      {/* ═══════════════════════════════════════════════════════
-          FOOTER
-      ══════════════════════════════════════════════════════════ */}
       <footer
         style={{
           borderTop: "1px solid #0f172a",
-          padding: "3rem 2rem",
+          padding: "3rem 1.5rem",
           background: "#020617",
         }}
       >
@@ -1344,92 +1446,90 @@ export default function AxiomStudioPage() {
             maxWidth: 1200,
             margin: "0 auto",
             display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            flexWrap: "wrap",
-            gap: "1.5rem",
+            flexDirection: "column",
+            gap: "2rem",
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-            <div
-              style={{
-                width: 24,
-                height: 24,
-                background: "linear-gradient(135deg, #00d4ff, #7c3aed)",
-                borderRadius: 5,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <Cpu size={13} color="#fff" />
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: "1.5rem" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <div
+                style={{
+                  width: 32,
+                  height: 32,
+                  background: "linear-gradient(135deg, #00d4ff, #7c3aed)",
+                  borderRadius: 8,
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                <Cpu size={18} color="#fff" />
+              </div>
+              <span style={{ fontWeight: 800, fontSize: "1rem", letterSpacing: "0.12em", color: "#334155" }}>
+                AXIOM.STUDIO
+              </span>
             </div>
-            <span style={{ fontWeight: 800, fontSize: "0.85rem", letterSpacing: "0.12em", color: "#334155" }}>
-              AXIOM.STUDIO
-            </span>
-          </div>
 
-          <div style={{ display: "flex", gap: "2rem" }}>
-            {["Servicios", "Portfolio", "Equipo", "Contacto"].map((item) => (
+            <div style={{ display: "flex", flexWrap: "wrap", justifyContent: "center", gap: "1.5rem" }}>
+              {["Servicios", "Portfolio", "Equipo", "Contacto"].map((item) => (
+                <a
+                  key={item}
+                  href="#"
+                  style={{
+                    color: "#334155",
+                    textDecoration: "none",
+                    fontSize: "0.9rem",
+                    letterSpacing: "0.04em",
+                    fontWeight: 500,
+                    transition: "color 0.2s",
+                  }}
+                  onMouseEnter={(e) => (e.currentTarget.style.color = "#00d4ff")}
+                  onMouseLeave={(e) => (e.currentTarget.style.color = "#334155")}
+                >
+                  {item}
+                </a>
+              ))}
+            </div>
+
+            <div style={{ display: "flex", alignItems: "center", gap: "0.8rem" }}>
               <a
-                key={item}
-                href="#"
+                href="mailto:hola@axiom.studio"
                 style={{
                   color: "#334155",
                   textDecoration: "none",
-                  fontSize: "0.78rem",
-                  letterSpacing: "0.04em",
-                  fontWeight: 500,
+                  fontSize: "0.9rem",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
                   transition: "color 0.2s",
                 }}
                 onMouseEnter={(e) => (e.currentTarget.style.color = "#00d4ff")}
                 onMouseLeave={(e) => (e.currentTarget.style.color = "#334155")}
               >
-                {item}
+                <Mail size={16} />
+                hola@axiom.studio
               </a>
-            ))}
+            </div>
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: "0.8rem" }}>
-            <a
-              href="mailto:hola@axiom.studio"
-              style={{
-                color: "#334155",
-                textDecoration: "none",
-                fontSize: "0.75rem",
-                display: "flex",
-                alignItems: "center",
-                gap: "0.4rem",
-                transition: "color 0.2s",
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = "#00d4ff")}
-              onMouseLeave={(e) => (e.currentTarget.style.color = "#334155")}
-            >
-              <Mail size={13} />
-              hola@axiom.studio
-            </a>
+          <div
+            style={{
+              paddingTop: "2rem",
+              borderTop: "1px solid #0f172a",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: "0.8rem",
+              textAlign: "center"
+            }}
+          >
+            <p style={{ color: "#1e293b", fontSize: "0.75rem", letterSpacing: "0.06em" }}>
+              © 2024 AXIOM.STUDIO · Todos los derechos reservados
+            </p>
+            <p style={{ color: "#1e293b", fontSize: "0.75rem", letterSpacing: "0.06em" }}>
+              Madrid · Lisboa · Berlín
+            </p>
           </div>
-        </div>
-
-        <div
-          style={{
-            maxWidth: 1200,
-            margin: "2rem auto 0",
-            paddingTop: "2rem",
-            borderTop: "1px solid #0f172a",
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
-            flexWrap: "wrap",
-            gap: "1rem",
-          }}
-        >
-          <p style={{ color: "#1e293b", fontSize: "0.7rem", letterSpacing: "0.06em" }}>
-            © 2024 AXIOM.STUDIO · Todos los derechos reservados
-          </p>
-          <p style={{ color: "#1e293b", fontSize: "0.7rem", letterSpacing: "0.06em" }}>
-            Madrid · Lisboa · Berlín
-          </p>
         </div>
       </footer>
     </div>

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react";
 import { LazyMotion, domAnimation, m, AnimatePresence, useInView } from "framer-motion";
-import { ShoppingBag, Clock, Zap, ArrowUpRight, Mail } from "lucide-react";
+import { ShoppingBag, Clock, Zap, ArrowUpRight, Mail, Menu, X } from "lucide-react";
 import Link from "next/link";
 
 const SIZES = [
@@ -62,6 +62,7 @@ function Cursor() {
   const [hovered, setHovered] = useState(false);
 
   useEffect(() => {
+    if (window.matchMedia("(hover: none) and (pointer: coarse)").matches) return;
     const move = (e) => setPos({ x: e.clientX, y: e.clientY });
     const over = (e) => {
       if (e.target.closest("a,button,[data-hover]")) setHovered(true);
@@ -78,7 +79,7 @@ function Cursor() {
   }, []);
 
   return (
-    <>
+    <div className="hidden md:block">
       <m.div
         className="fixed top-0 left-0 z-[9999] pointer-events-none"
         animate={{ x: pos.x - 6, y: pos.y - 6, scale: hovered ? 0 : 1 }}
@@ -97,20 +98,15 @@ function Cursor() {
           border: "1.5px solid #FFE500", mixBlendMode: "difference",
         }}
       />
-    </>
+    </div>
   );
 }
 
 function TimeBox({ value, label }) {
   return (
-    <div style={{
-      border: "2.5px solid #111", background: "#111", color: "#FFE500",
-      minWidth: 80, padding: "12px 18px", textAlign: "center",
-    }}>
-      <div style={{ fontFamily: "monospace", fontSize: "clamp(2rem,5vw,3.5rem)", fontWeight: 900, lineHeight: 1 }}>
-        {value}
-      </div>
-      <div style={{ fontSize: 10, letterSpacing: 3, color: "#888", marginTop: 4 }}>{label}</div>
+    <div className="flex-1 flex flex-col items-center justify-center bg-[#111] border-[2px] md:border-[2.5px] border-[#111] text-[#FFE500] py-3 md:py-4 px-2 md:px-4 min-w-[65px] md:min-w-[90px]">
+      <div className="font-mono text-3xl md:text-5xl font-black leading-none">{value}</div>
+      <div className="text-[9px] md:text-[11px] tracking-[2px] md:tracking-[4px] text-[#888] mt-1 md:mt-2">{label}</div>
     </div>
   );
 }
@@ -123,6 +119,23 @@ export default function DeadstockPage() {
   const [cartCount] = useState(2);
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+  const carouselRef = useRef(null);
+  const [sliderWidth, setSliderWidth] = useState(0);
+
+  useEffect(() => {
+    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
+    checkMobile();
+    window.addEventListener("resize", checkMobile);
+    return () => window.removeEventListener("resize", checkMobile);
+  }, []);
+
+  useEffect(() => {
+    if (carouselRef.current && isMobile) {
+      setSliderWidth(carouselRef.current.scrollWidth - carouselRef.current.offsetWidth);
+    }
+  }, [isMobile]);
 
   useEffect(() => {
     const id = setInterval(() => setTimeLeft(calcTimeLeft(TARGET.current)), 1000);
@@ -138,80 +151,104 @@ export default function DeadstockPage() {
   const heroRef = useRef(null);
   const heroInView = useInView(heroRef, { once: true });
 
+  const MENU_LINKS = ["LATEST DROP", "ARCHIVE", "LOOKBOOK", "ABOUT"];
+
   return (
     <LazyMotion features={domAnimation}>
-      <div style={{ background: "#F5F0E8", color: "#111", fontFamily: "'Arial Black', Arial, sans-serif", cursor: "none", overflowX: "hidden" }}>
+      <div className="bg-[#F5F0E8] text-[#111] font-sans overflow-x-hidden md:cursor-none w-full min-h-screen relative">
         <Cursor />
 
-        <nav style={{
-          position: "fixed", top: 0, left: 0, right: 0, zIndex: 1000,
-          background: "#F5F0E8", borderBottom: "2.5px solid #111",
-          display: "flex", alignItems: "center", justifyContent: "space-between",
-          padding: "0 2rem", height: 60,
-        }}>
-          <Link href="/" style={{
-            fontFamily: "monospace", fontSize: 12, fontWeight: 700,
-            color: "#111", textDecoration: "none", letterSpacing: 2,
-            display: "flex", alignItems: "center", gap: 6,
-            borderRight: "2px solid #111", paddingRight: "1.5rem",
-          }}>
-            ← Catálogo
-          </Link>
+        <AnimatePresence>
+          {menuOpen && (
+            <m.div
+              initial={{ y: "-100%" }}
+              animate={{ y: 0 }}
+              exit={{ y: "-100%" }}
+              transition={{ type: "tween", duration: 0.5, ease: [0.76, 0, 0.24, 1] }}
+              className="fixed inset-0 z-[1001] bg-[#111] text-[#F5F0E8] flex flex-col pt-24 px-6 md:px-12"
+            >
+              <div className="flex flex-col gap-6 md:gap-8 mt-10">
+                {MENU_LINKS.map((link, i) => (
+                  <m.div
+                    key={link}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ delay: 0.2 + i * 0.1 }}
+                  >
+                    <Link
+                      href="/"
+                      onClick={() => setMenuOpen(false)}
+                      className="text-5xl md:text-7xl font-black uppercase tracking-tighter hover:text-[#FFE500] active:scale-95 transition-all inline-block"
+                    >
+                      {link}
+                    </Link>
+                  </m.div>
+                ))}
+              </div>
+              <div className="mt-auto pb-10 flex justify-between items-center border-t border-[#333] pt-6">
+                <span className="font-mono text-[10px] tracking-widest text-[#888]">NO RESTOCK. EVER.</span>
+                <div className="flex gap-4">
+                  {["IG", "TW", "DC"].map((s) => (
+                    <a key={s} href="#" className="font-mono text-[10px] tracking-widest hover:text-[#FFE500]">{s}</a>
+                  ))}
+                </div>
+              </div>
+            </m.div>
+          )}
+        </AnimatePresence>
 
-          <div style={{ fontFamily: "monospace", fontSize: "clamp(1rem,2.5vw,1.4rem)", fontWeight: 900, letterSpacing: -1 }}>
-            DEAD//STOCK
+        <nav className="fixed top-0 left-0 right-0 z-[1002] bg-[#F5F0E8] border-b-[2.5px] border-[#111] h-14 md:h-16 flex items-center justify-between px-3 md:px-8">
+          <div className="flex items-center h-full">
+            <button
+              onClick={() => setMenuOpen(!menuOpen)}
+              className="h-full flex items-center justify-center pr-4 md:pr-6 border-r-[2.5px] border-[#111] hover:bg-[#FFE500] active:bg-[#FFE500] transition-colors bg-transparent cursor-pointer outline-none"
+            >
+              {menuOpen ? <X size={24} color={menuOpen ? "#FFE500" : "#111"} className="mix-blend-difference" /> : <Menu size={24} color="#111" />}
+            </button>
+            <Link href="/" className="hidden md:flex items-center gap-2 font-mono text-[11px] font-black tracking-[2px] px-6 border-r-[2.5px] border-[#111] h-full hover:bg-[#FFE500] transition-colors">
+              ← BACK
+            </Link>
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: 6, borderLeft: "2px solid #111", paddingLeft: "1.5rem" }}>
-            <ShoppingBag size={20} strokeWidth={2.5} />
-            <span style={{ fontFamily: "monospace", fontSize: 12, fontWeight: 900, background: "#FFE500", borderRadius: "50%", width: 20, height: 20, display: "flex", alignItems: "center", justifyContent: "center", border: "1.5px solid #111" }}>
+          <div className="font-mono text-lg md:text-2xl font-black tracking-tighter absolute left-1/2 -translate-x-1/2 mix-blend-difference text-white pointer-events-none">
+            DEADSTOCK
+          </div>
+
+          <div className="flex items-center h-full pl-4 md:pl-6 border-l-[2.5px] border-[#111] hover:bg-[#FFE500] cursor-pointer transition-colors active:scale-95">
+            <ShoppingBag size={20} strokeWidth={2.5} className={menuOpen ? "text-[#F5F0E8] mix-blend-difference" : "text-[#111]"} />
+            <span className="font-mono text-[10px] md:text-xs font-black bg-[#FFE500] text-[#111] rounded-full w-5 h-5 md:w-6 md:h-6 flex items-center justify-center border-[1.5px] border-[#111] ml-2">
               {cartCount}
             </span>
           </div>
         </nav>
 
-        <section ref={heroRef} style={{
-          minHeight: "100vh", paddingTop: 60, display: "flex", flexDirection: "column",
-          justifyContent: "center", alignItems: "center", textAlign: "center",
-          borderBottom: "2.5px solid #111", position: "relative",
-          background: "#F5F0E8",
-        }}>
+        <section ref={heroRef} className="min-h-[100svh] pt-14 md:pt-16 flex flex-col justify-center items-center text-center border-b-[2.5px] border-[#111] relative px-4">
           <m.div
             initial={{ opacity: 0, y: -10 }}
             animate={heroInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.4 }}
-            style={{
-              display: "inline-flex", alignItems: "center", gap: 8,
-              background: "#FFE500", border: "2px solid #111",
-              padding: "6px 18px", marginBottom: 24, fontFamily: "monospace",
-              fontSize: 12, fontWeight: 900, letterSpacing: 3,
-            }}
+            className="inline-flex items-center gap-2 bg-[#FFE500] border-2 border-[#111] px-3 py-1.5 md:px-4 md:py-2 mb-6 md:mb-8 font-mono text-[9px] md:text-xs font-black tracking-widest mt-6 md:mt-0"
           >
-            <span style={{ width: 8, height: 8, borderRadius: "50%", background: "#FF3B3B", display: "inline-block", animation: "pulse 1s infinite" }} />
-            DROP IS ACTIVE — WHILE STOCK LASTS
+            <span className="w-2 h-2 rounded-full bg-[#FF3B3B] inline-block animate-pulse" />
+            DROP IS ACTIVE
           </m.div>
 
           <m.h1
-            initial={{ opacity: 0, y: 60 }}
+            initial={{ opacity: 0, y: 40 }}
             animate={heroInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.7, delay: 0.1 }}
-            style={{
-              fontFamily: "'Arial Black', Arial, sans-serif",
-              fontSize: "clamp(3rem, 12vw, 11rem)",
-              fontWeight: 900, lineHeight: 0.88,
-              letterSpacing: -4, textTransform: "uppercase",
-              margin: "0 0 12px",
-            }}
+            className="font-black text-[clamp(3.5rem,15vw,11rem)] leading-[0.85] tracking-tighter uppercase m-0"
           >
             THE DROP<br />
-            <span style={{ color: "#FFE500", WebkitTextStroke: "3px #111" }}>IS LIVE</span>
+            <span className="text-[#FFE500] style-stroke">IS LIVE</span>
           </m.h1>
 
           <m.p
             initial={{ opacity: 0 }}
             animate={heroInView ? { opacity: 1 } : {}}
-            transition={{ delay: 0.5 }}
-            style={{ fontFamily: "monospace", fontSize: 13, letterSpacing: 3, color: "#555", marginBottom: 40 }}
+            transition={{ delay: 0.4 }}
+            className="font-mono text-[10px] md:text-sm tracking-[2px] md:tracking-[4px] text-[#555] my-8 px-2 leading-relaxed"
           >
             IRON CURTAIN JACKET SS25 — LIMITED TO 100 UNITS
           </m.p>
@@ -219,112 +256,101 @@ export default function DeadstockPage() {
           <m.div
             initial={{ opacity: 0, y: 30 }}
             animate={heroInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ delay: 0.6 }}
-            style={{ display: "flex", gap: 4, marginBottom: 60 }}
+            transition={{ delay: 0.5 }}
+            className="flex gap-1 md:gap-2 w-full max-w-[340px] md:max-w-2xl px-1"
           >
-            <TimeBox value={timeLeft.days}    label="DAYS"    />
-            <TimeBox value={timeLeft.hours}   label="HRS"     />
-            <TimeBox value={timeLeft.minutes} label="MIN"     />
-            <TimeBox value={timeLeft.seconds} label="SEC"     />
+            <TimeBox value={timeLeft.days} label="DAYS" />
+            <TimeBox value={timeLeft.hours} label="HRS" />
+            <TimeBox value={timeLeft.minutes} label="MIN" />
+            <TimeBox value={timeLeft.seconds} label="SEC" />
           </m.div>
         </section>
 
-        <div style={{
-          background: "#111", borderBottom: "2.5px solid #FFE500",
-          overflow: "hidden", padding: "14px 0", whiteSpace: "nowrap",
-        }}>
+        <div className="bg-[#111] border-b-[2.5px] border-[#FFE500] overflow-hidden py-3 whitespace-nowrap">
           <m.div
             animate={{ x: ["0%", "-50%"] }}
-            transition={{ duration: 18, repeat: Infinity, ease: "linear" }}
-            style={{ display: "inline-block" }}
+            transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
+            className="inline-block"
           >
             {[...Array(6)].map((_, i) => (
-              <span key={i} style={{ fontFamily: "monospace", fontSize: 14, fontWeight: 900, letterSpacing: 4, color: "#FFE500", marginRight: 0 }}>
+              <span key={i} className="font-mono text-[11px] md:text-sm font-black tracking-widest text-[#FFE500] mr-2">
                 {MARQUEE_TEXT}
               </span>
             ))}
           </m.div>
         </div>
 
-        <section style={{
-          display: "grid", gridTemplateColumns: "1fr 1fr",
-          borderBottom: "2.5px solid #111",
-        }}>
+        <section className="flex flex-col lg:grid lg:grid-cols-2 border-b-[2.5px] border-[#111]">
           <m.div
-            initial={{ opacity: 0, x: -40 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.7 }}
-            style={{ borderRight: "2.5px solid #111", overflow: "hidden", minHeight: 600 }}
+            className="border-b-[2.5px] lg:border-b-0 lg:border-r-[2.5px] border-[#111] overflow-hidden h-[55vh] lg:h-auto min-h-[400px] lg:min-h-[700px] relative"
           >
             <m.img
               src="https://loremflickr.com/900/900/streetwear,urban,jacket?lock=1"
               alt="IRON CURTAIN JACKET SS25"
-              whileHover={{ scale: 1.04 }}
-              transition={{ duration: 0.5 }}
-              style={{ width: "100%", height: "100%", objectFit: "cover", display: "block" }}
+              whileHover={!isMobile ? { scale: 1.05 } : {}}
+              transition={{ duration: 0.6 }}
+              className="w-full h-full object-cover block absolute inset-0"
             />
           </m.div>
 
           <m.div
-            initial={{ opacity: 0, x: 40 }}
-            whileInView={{ opacity: 1, x: 0 }}
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.7 }}
-            style={{ padding: "3rem 3rem", display: "flex", flexDirection: "column", justifyContent: "center", gap: 28 }}
+            transition={{ duration: 0.6 }}
+            className="p-6 md:p-12 lg:p-16 flex flex-col justify-center gap-8 md:gap-10"
           >
             <div>
-              <div style={{ fontFamily: "monospace", fontSize: 11, letterSpacing: 4, color: "#888", marginBottom: 8 }}>
+              <div className="font-mono text-[10px] md:text-[11px] tracking-[3px] text-[#888] mb-3">
                 SS25 COLLECTION · OUTERWEAR
               </div>
-              <h2 style={{ fontFamily: "'Arial Black', Arial, sans-serif", fontSize: "clamp(1.6rem,3.5vw,3rem)", fontWeight: 900, lineHeight: 1, margin: 0 }}>
+              <h2 className="font-black text-[clamp(2.2rem,6vw,4rem)] leading-[0.9] m-0 tracking-tighter uppercase">
                 IRON CURTAIN<br />JACKET SS25
               </h2>
             </div>
 
-            <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
-              <div style={{ flex: 1, background: "#111", height: 6, borderRadius: 0 }}>
-                <div style={{ width: "23%", background: "#FFE500", height: "100%" }} />
+            <div className="flex items-center gap-4">
+              <div className="flex-1 bg-[#111] h-2">
+                <div className="w-[23%] bg-[#FFE500] h-full" />
               </div>
-              <span style={{ fontFamily: "monospace", fontSize: 11, fontWeight: 900, whiteSpace: "nowrap" }}>
+              <span className="font-mono text-[10px] md:text-xs font-black whitespace-nowrap">
                 23 / 100 REMAINING
               </span>
             </div>
 
-            <div style={{ display: "flex", alignItems: "baseline", gap: 12 }}>
-              <span style={{ fontFamily: "'Arial Black', Arial, sans-serif", fontSize: "clamp(2rem,4vw,3rem)", fontWeight: 900 }}>€320</span>
-              <span style={{ fontFamily: "monospace", fontSize: 11, color: "#888", letterSpacing: 2 }}>INCL. TAX</span>
+            <div className="flex items-baseline gap-4">
+              <span className="font-black text-4xl md:text-5xl lg:text-6xl">€320</span>
+              <span className="font-mono text-[10px] md:text-[11px] text-[#888] tracking-widest">INCL. TAX</span>
             </div>
 
             <div>
-              <div style={{ fontFamily: "monospace", fontSize: 11, letterSpacing: 3, marginBottom: 12, color: "#555" }}>SELECT SIZE</div>
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 6 }}>
+              <div className="font-mono text-[10px] md:text-[11px] tracking-[3px] mb-4 text-[#555]">SELECT SIZE</div>
+              <div className="grid grid-cols-3 gap-2 md:gap-3">
                 {SIZES.map((sz) => (
                   <button
                     key={sz.label}
                     onClick={() => !sz.soldOut && setSelectedSize(sz.label)}
                     disabled={sz.soldOut}
-                    style={{
-                      border: `2px solid ${selectedSize === sz.label ? "#FFE500" : "#111"}`,
-                      background: selectedSize === sz.label ? "#111" : "transparent",
-                      color: sz.soldOut ? "#bbb" : selectedSize === sz.label ? "#FFE500" : "#111",
-                      fontFamily: "monospace", fontWeight: 900, fontSize: 13, letterSpacing: 2,
-                      padding: "10px 0", cursor: sz.soldOut ? "not-allowed" : "pointer",
-                      textDecoration: sz.soldOut ? "line-through" : "none",
-                      position: "relative", transition: "all 0.15s",
-                      boxShadow: selectedSize === sz.label ? "3px 3px 0 #FFE500" : "none",
-                    }}
+                    className={`
+                      relative py-3 md:py-4 font-mono font-black text-xs md:text-sm tracking-widest transition-all active:scale-95 outline-none
+                      ${sz.soldOut ? "cursor-not-allowed text-[#bbb] line-through border-2 border-[#ccc]" : "cursor-pointer"}
+                      ${!sz.soldOut && selectedSize === sz.label ? "bg-[#111] text-[#FFE500] border-2 border-[#111] shadow-[3px_3px_0_#FFE500]" : ""}
+                      ${!sz.soldOut && selectedSize !== sz.label ? "bg-transparent text-[#111] border-2 border-[#111] hover:bg-[#EAE4D8]" : ""}
+                    `}
                   >
                     {sz.label}
                     {sz.soldOut && (
-                      <span style={{ fontFamily: "monospace", fontSize: 8, position: "absolute", bottom: 2, right: 4, letterSpacing: 1, color: "#bbb" }}>S/O</span>
+                      <span className="font-mono text-[8px] absolute bottom-1 right-1.5 tracking-wider text-[#bbb]">S/O</span>
                     )}
                   </button>
                 ))}
               </div>
             </div>
 
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+            <div className="flex flex-col gap-3 md:gap-4 mt-2">
               <AnimatePresence mode="wait">
                 {cartAdded ? (
                   <m.div
@@ -332,12 +358,7 @@ export default function DeadstockPage() {
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 10 }}
-                    style={{
-                      background: "#FFE500", border: "2.5px solid #111",
-                      padding: "16px 28px", fontFamily: "monospace",
-                      fontWeight: 900, fontSize: 14, letterSpacing: 3,
-                      textAlign: "center", boxShadow: "4px 4px 0 #111",
-                    }}
+                    className="bg-[#FFE500] border-[2.5px] border-[#111] p-4 md:p-5 font-mono font-black text-xs md:text-sm tracking-widest text-center shadow-[4px_4px_0_#111]"
                   >
                     ✓ ADDED TO BAG
                   </m.div>
@@ -346,123 +367,141 @@ export default function DeadstockPage() {
                     key="add"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    whileHover={{ x: -3, y: -3, boxShadow: "6px 6px 0 #FFE500" }}
-                    whileTap={{ x: 0, y: 0, boxShadow: "2px 2px 0 #FFE500" }}
+                    whileHover={!isMobile && selectedSize ? { x: -3, y: -3, boxShadow: "6px 6px 0 #FFE500" } : {}}
+                    whileTap={selectedSize ? { x: 0, y: 0, boxShadow: "0px 0px 0 #FFE500", scale: 0.98 } : {}}
                     onClick={handleAddToCart}
-                    style={{
-                      background: "#111", color: "#FFE500",
-                      border: "2.5px solid #111", padding: "16px 28px",
-                      fontFamily: "monospace", fontWeight: 900, fontSize: 14,
-                      letterSpacing: 3, cursor: selectedSize ? "pointer" : "not-allowed",
-                      boxShadow: "4px 4px 0 #FFE500", opacity: selectedSize ? 1 : 0.5,
-                      display: "flex", alignItems: "center", justifyContent: "center", gap: 10,
-                    }}
+                    className={`
+                      flex items-center justify-center gap-3 bg-[#111] text-[#FFE500] border-[2.5px] border-[#111]
+                      p-4 md:p-5 font-mono font-black text-[11px] md:text-sm tracking-widest transition-all outline-none
+                      ${selectedSize ? "cursor-pointer shadow-[4px_4px_0_#FFE500] opacity-100" : "cursor-not-allowed opacity-50"}
+                    `}
                   >
                     <ShoppingBag size={18} />
                     {selectedSize ? "ADD TO BAG" : "SELECT A SIZE"}
                   </m.button>
                 )}
               </AnimatePresence>
-              <p style={{ fontFamily: "monospace", fontSize: 10, color: "#888", letterSpacing: 2, textAlign: "center" }}>
+              <p className="font-mono text-[9px] md:text-[10px] text-[#888] tracking-widest text-center mt-2">
                 NO RESTOCK · FINAL SALE · WORLDWIDE SHIPPING
               </p>
             </div>
           </m.div>
         </section>
 
-        <section style={{ borderBottom: "2.5px solid #111" }}>
-          <div style={{
-            borderBottom: "2px solid #111", padding: "24px 2rem",
-            display: "flex", justifyContent: "space-between", alignItems: "center",
-          }}>
-            <h2 style={{ fontFamily: "monospace", fontSize: 11, letterSpacing: 4, margin: 0 }}>SS25 COLLECTION</h2>
-            <button style={{ fontFamily: "monospace", fontSize: 11, letterSpacing: 3, background: "none", border: "none", cursor: "pointer", display: "flex", alignItems: "center", gap: 6 }}>
+        <section className="border-b-[2.5px] border-[#111] overflow-hidden">
+          <div className="border-b-[2.5px] border-[#111] p-4 md:p-6 px-4 md:px-8 flex justify-between items-center">
+            <h2 className="font-mono text-[10px] md:text-[11px] tracking-[4px] m-0 font-bold">SS25 COLLECTION</h2>
+            <button className="font-mono text-[9px] md:text-[11px] tracking-[3px] bg-transparent border-none cursor-pointer flex items-center gap-2 hover:text-[#FFE500] active:scale-95 transition-all font-bold outline-none">
               VIEW ALL <ArrowUpRight size={14} />
             </button>
           </div>
 
-          <div style={{
-            display: "grid",
-            gridTemplateColumns: "1fr 1fr 1fr",
-            gridTemplateRows: "auto auto",
-          }}>
-            <m.div
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              style={{
-                gridColumn: "1 / 2", gridRow: "1 / 3",
-                borderRight: "2.5px solid #111", position: "relative", overflow: "hidden",
-              }}
-            >
-              <m.img
-                src={`https://loremflickr.com/700/900/streetwear,hoodie,urban?lock=${COLLECTION[0].lock}`}
-                alt={COLLECTION[0].name}
-                whileHover={{ scale: 1.05 }}
-                transition={{ duration: 0.5 }}
-                style={{ width: "100%", height: "100%", objectFit: "cover", minHeight: 520, display: "block" }}
-              />
-              <div style={{
-                position: "absolute", bottom: 0, left: 0, right: 0,
-                background: "linear-gradient(0deg, rgba(0,0,0,0.85) 0%, transparent 100%)",
-                padding: "2rem 1.5rem",
-              }}>
-                <span style={{
-                  display: "inline-block", background: COLLECTION[0].tagColor,
-                  color: "#111", fontFamily: "monospace", fontSize: 10,
-                  fontWeight: 900, letterSpacing: 2, padding: "3px 10px",
-                  marginBottom: 8,
-                }}>{COLLECTION[0].tag}</span>
-                <div style={{ fontFamily: "'Arial Black', Arial, sans-serif", fontSize: "clamp(1.2rem,2vw,1.8rem)", fontWeight: 900, color: "#fff" }}>
-                  {COLLECTION[0].name}
-                </div>
-                <div style={{ fontFamily: "monospace", fontSize: 14, color: "#FFE500", marginTop: 4 }}>{COLLECTION[0].price}</div>
-              </div>
-            </m.div>
-
-            {COLLECTION.slice(1).map((item, i) => (
+          {isMobile ? (
+            <div className="w-full relative py-6 bg-[#EAE4D8]">
               <m.div
-                key={item.name}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
+                ref={carouselRef}
+                className="flex cursor-grab active:cursor-grabbing px-4 gap-4"
+                drag="x"
+                dragConstraints={{ right: 0, left: -sliderWidth }}
+                dragElastic={0.15}
+              >
+                {COLLECTION.map((item, i) => (
+                  <m.div
+                    key={item.name}
+                    className="min-w-[80vw] border-[2.5px] border-[#111] relative bg-[#F5F0E8] flex-shrink-0 shadow-[4px_4px_0_#111]"
+                  >
+                    <div className="h-[350px] border-b-[2.5px] border-[#111] overflow-hidden relative">
+                      <img
+                        src={`https://loremflickr.com/600/800/streetwear,urban,fashion?lock=${item.lock}`}
+                        alt={item.name}
+                        className="w-full h-full object-cover pointer-events-none"
+                      />
+                      <div className="absolute top-3 left-3">
+                        <span className="font-mono text-[9px] font-black tracking-widest px-2 py-1 border-[1.5px] border-[#111]" style={{ background: item.tagColor, color: ["#FFE500", "#00D4FF"].includes(item.tagColor) ? "#111" : "#fff" }}>
+                          {item.tag}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="p-4 flex justify-between items-start">
+                      <div>
+                        <div className="font-black text-lg tracking-tight leading-none mb-2">{item.name}</div>
+                        <div className="font-mono text-xs font-black">{item.price}</div>
+                      </div>
+                    </div>
+                  </m.div>
+                ))}
+              </m.div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-3 grid-rows-[auto_auto]">
+              <m.div
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                style={{
-                  borderBottom: i < 2 ? "2.5px solid #111" : "none",
-                  borderRight: i % 2 === 0 ? "2.5px solid #111" : "none",
-                  position: "relative", overflow: "hidden",
-                }}
-                data-hover
+                className="col-start-1 col-end-2 row-start-1 row-end-3 border-r-[2.5px] border-[#111] relative overflow-hidden group"
               >
                 <m.img
-                  src={`https://loremflickr.com/500/400/streetwear,urban,fashion?lock=${item.lock}`}
-                  alt={item.name}
-                  whileHover={{ scale: 1.06 }}
-                  transition={{ duration: 0.45 }}
-                  style={{ width: "100%", height: 260, objectFit: "cover", display: "block" }}
+                  src={`https://loremflickr.com/700/900/streetwear,hoodie,urban?lock=${COLLECTION[0].lock}`}
+                  alt={COLLECTION[0].name}
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ duration: 0.6 }}
+                  className="w-full h-full object-cover min-h-[600px] block"
                 />
-                <div style={{ padding: "1rem 1.2rem", background: "#F5F0E8", borderTop: "2px solid #111" }}>
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
-                    <div>
-                      <div style={{ fontFamily: "'Arial Black', Arial, sans-serif", fontSize: 14, fontWeight: 900, lineHeight: 1.2 }}>{item.name}</div>
-                      <div style={{ fontFamily: "monospace", fontSize: 13, fontWeight: 900, marginTop: 4 }}>{item.price}</div>
-                    </div>
-                    <span style={{
-                      background: item.tagColor, color: ["#FFE500", "#00D4FF"].includes(item.tagColor) ? "#111" : "#fff",
-                      fontFamily: "monospace", fontSize: 9, fontWeight: 900, letterSpacing: 2,
-                      padding: "3px 8px", whiteSpace: "nowrap",
-                    }}>{item.tag}</span>
+                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent p-6 pt-24 pointer-events-none">
+                  <span className="inline-block text-[#111] font-mono text-[9px] font-black tracking-widest px-2 py-1 mb-3" style={{ background: COLLECTION[0].tagColor }}>
+                    {COLLECTION[0].tag}
+                  </span>
+                  <div className="font-black text-3xl xl:text-4xl text-white tracking-tighter leading-none mb-2">
+                    {COLLECTION[0].name}
                   </div>
+                  <div className="font-mono text-base text-[#FFE500] font-bold">{COLLECTION[0].price}</div>
                 </div>
               </m.div>
-            ))}
-          </div>
+
+              {COLLECTION.slice(1).map((item, i) => (
+                <m.div
+                  key={item.name}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.1 }}
+                  className="relative overflow-hidden group flex flex-col"
+                  style={{
+                    borderBottom: i < 2 ? "2.5px solid #111" : "none",
+                    borderRight: i % 2 === 0 ? "2.5px solid #111" : "none",
+                  }}
+                  data-hover
+                >
+                  <div className="overflow-hidden flex-1 relative">
+                    <m.img
+                      src={`https://loremflickr.com/500/400/streetwear,urban,fashion?lock=${item.lock}`}
+                      alt={item.name}
+                      whileHover={{ scale: 1.06 }}
+                      transition={{ duration: 0.5 }}
+                      className="w-full h-[300px] object-cover block"
+                    />
+                  </div>
+                  <div className="p-4 bg-[#F5F0E8] border-t-[2.5px] border-[#111]">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <div className="font-black text-base xl:text-lg tracking-tight leading-none mb-2">{item.name}</div>
+                        <div className="font-mono text-xs font-black">{item.price}</div>
+                      </div>
+                      <span className="font-mono text-[8px] font-black tracking-widest px-2 py-1 whitespace-nowrap" style={{ background: item.tagColor, color: ["#FFE500", "#00D4FF"].includes(item.tagColor) ? "#111" : "#fff" }}>
+                        {item.tag}
+                      </span>
+                    </div>
+                  </div>
+                </m.div>
+              ))}
+            </div>
+          )}
         </section>
 
-        <section style={{ borderBottom: "2.5px solid #111" }}>
-          <div style={{ borderBottom: "2px solid #111", padding: "24px 2rem", display: "flex", alignItems: "center", gap: 12 }}>
+        <section className="border-b-[2.5px] border-[#111]">
+          <div className="border-b-[2.5px] border-[#111] p-4 md:p-6 px-4 md:px-8 flex items-center gap-3 bg-[#EAE4D8] md:bg-transparent">
             <Clock size={16} />
-            <h2 style={{ fontFamily: "monospace", fontSize: 11, letterSpacing: 4, margin: 0 }}>DROP SCHEDULE</h2>
+            <h2 className="font-mono text-[10px] md:text-[11px] tracking-[4px] m-0 font-bold">DROP SCHEDULE</h2>
           </div>
 
           {DROPS.map((drop, i) => {
@@ -470,76 +509,68 @@ export default function DeadstockPage() {
             return (
               <m.div
                 key={drop.name}
-                initial={{ opacity: 0, x: -30 }}
+                initial={{ opacity: 0, x: isMobile ? -10 : -30 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
-                transition={{ delay: i * 0.12 }}
-                whileHover={{ paddingLeft: "3rem", background: drop.status === "LIVE" ? "#FFE500" : "#f0ebe0" }}
-                style={{
-                  display: "flex", alignItems: "center", justifyContent: "space-between",
-                  padding: "1.6rem 2rem", borderBottom: "1.5px solid #222",
-                  transition: "all 0.2s", cursor: "pointer",
-                }}
+                transition={{ delay: i * 0.1 }}
+                whileHover={!isMobile ? { paddingLeft: "3rem", backgroundColor: drop.status === "LIVE" ? "#FFE500" : "#EAE4D8" } : {}}
+                whileTap={isMobile ? { scale: 0.98, backgroundColor: drop.status === "LIVE" ? "#FFE500" : "#EAE4D8" } : {}}
+                className="flex flex-col md:flex-row md:items-center justify-between p-5 md:p-6 px-4 md:px-8 border-b-[2.5px] border-[#111] cursor-pointer transition-all gap-4 md:gap-0"
               >
-                <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-                  {drop.status === "LIVE" && <Zap size={18} color="#FFE500" fill="#FFE500" style={{ background: "#111", padding: 2 }} />}
+                <div className="flex items-start md:items-center gap-4 md:gap-5">
+                  {drop.status === "LIVE" ? (
+                    <Zap size={20} color="#FFE500" fill="#FFE500" className="bg-[#111] p-1 flex-shrink-0 mt-0.5 md:mt-0" />
+                  ) : (
+                    <div className="w-5" />
+                  )}
                   <div>
-                    <div style={{ fontFamily: "'Arial Black', Arial, sans-serif", fontSize: "clamp(0.9rem,2vw,1.2rem)", fontWeight: 900 }}>
+                    <div className="font-black text-[clamp(1rem,3vw,1.4rem)] tracking-tighter uppercase leading-none mb-2">
                       {drop.name}
                     </div>
-                    <div style={{ fontFamily: "monospace", fontSize: 11, color: "#666", letterSpacing: 2, marginTop: 4 }}>
+                    <div className="font-mono text-[9px] md:text-[10px] text-[#666] tracking-[2px]">
                       {drop.date}
                     </div>
                   </div>
                 </div>
-                <span style={{
-                  background: st.bg, color: st.color,
-                  fontFamily: "monospace", fontSize: 10, fontWeight: 900,
-                  letterSpacing: 3, padding: "5px 14px", border: "1.5px solid #111",
-                }}>
-                  {drop.status}
-                </span>
+                <div className="self-start md:self-auto ml-9 md:ml-0">
+                  <span className="font-mono text-[8px] md:text-[9px] font-black tracking-[2px] px-3 py-1.5 border-[1.5px] border-[#111]" style={{ background: st.bg, color: st.color }}>
+                    {drop.status}
+                  </span>
+                </div>
               </m.div>
             );
           })}
         </section>
 
-        <section style={{
-          background: "#111", color: "#F5F0E8",
-          padding: "8rem 2rem", borderBottom: "2.5px solid #FFE500",
-        }}>
-          <div style={{ maxWidth: 900, margin: "0 auto" }}>
+        <section className="bg-[#111] text-[#F5F0E8] py-16 md:py-24 px-4 md:px-8 border-b-[2.5px] border-[#FFE500]">
+          <div className="max-w-[900px] mx-auto">
             <m.div
               initial={{ opacity: 0, y: 40 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.7 }}
             >
-              <div style={{ fontFamily: "monospace", fontSize: 11, letterSpacing: 4, color: "#666", marginBottom: 24 }}>
+              <div className="font-mono text-[9px] md:text-[11px] tracking-[4px] text-[#666] mb-6">
                 ABOUT THE BRAND
               </div>
-              <h2 style={{
-                fontFamily: "'Arial Black', Arial, sans-serif",
-                fontSize: "clamp(2.5rem,8vw,7rem)", fontWeight: 900,
-                lineHeight: 0.9, letterSpacing: -3, margin: "0 0 3rem",
-              }}>
+              <h2 className="font-black text-[clamp(2.5rem,8vw,7rem)] leading-[0.85] tracking-tighter mb-8 md:mb-12 uppercase">
                 We don't<br />
-                <span style={{ color: "#FFE500" }}>restock.</span>
+                <span className="text-[#FFE500]">restock.</span>
               </h2>
-              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "3rem" }}>
-                <p style={{ fontFamily: "monospace", fontSize: 15, lineHeight: 1.9, color: "#bbb", margin: 0 }}>
+              <div className="flex flex-col md:grid md:grid-cols-2 gap-8 md:gap-12">
+                <p className="font-mono text-xs md:text-sm leading-[1.8] text-[#bbb] m-0 pr-4">
                   DEADSTOCK was born from the idea that scarcity isn't a gimmick — it's a principle.
                   Every piece we put out into the world is a deliberate, unrepeatable moment. Once it's gone,
                   it's gone. No reruns. No second chances. That's the deal.
                 </p>
-                <p style={{ fontFamily: "monospace", fontSize: 15, lineHeight: 1.9, color: "#bbb", margin: 0 }}>
+                <p className="font-mono text-xs md:text-sm leading-[1.8] text-[#bbb] m-0 pr-4">
                   We obsess over materials, silhouettes, and construction. Not to justify a price tag,
                   but because we believe what you wear should outlast the hype. Built for the real ones.
                   Worn by people who know. If you're reading this, you already get it.
                 </p>
               </div>
 
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: 0, marginTop: "5rem", borderTop: "1.5px solid #333" }}>
+              <div className="flex flex-col md:grid md:grid-cols-3 gap-10 md:gap-0 mt-16 md:mt-20 border-t-[1.5px] border-[#333] pt-10">
                 {[
                   { n: "100", label: "UNITS PER DROP" },
                   { n: "0%",  label: "RESTOCK RATE" },
@@ -551,15 +582,12 @@ export default function DeadstockPage() {
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: i * 0.1 }}
-                    style={{
-                      padding: "2.5rem 0", borderRight: i < 2 ? "1px solid #333" : "none",
-                      paddingLeft: i > 0 ? "2rem" : 0,
-                    }}
+                    className={`md:py-8 ${i < 2 ? "md:border-r border-[#333]" : ""} ${i > 0 ? "md:pl-8 lg:pl-10" : ""}`}
                   >
-                    <div style={{ fontFamily: "'Arial Black', Arial, sans-serif", fontSize: "clamp(2rem,5vw,4rem)", fontWeight: 900, color: "#FFE500", lineHeight: 1 }}>
+                    <div className="font-black text-5xl md:text-6xl lg:text-7xl text-[#FFE500] leading-none mb-3">
                       {s.n}
                     </div>
-                    <div style={{ fontFamily: "monospace", fontSize: 10, letterSpacing: 3, color: "#666", marginTop: 8 }}>
+                    <div className="font-mono text-[9px] tracking-[3px] text-[#666]">
                       {s.label}
                     </div>
                   </m.div>
@@ -569,22 +597,18 @@ export default function DeadstockPage() {
           </div>
         </section>
 
-        <section style={{ borderBottom: "2.5px solid #111", padding: "6rem 2rem" }}>
-          <div style={{ maxWidth: 700, margin: "0 auto", textAlign: "center" }}>
+        <section className="border-b-[2.5px] border-[#111] py-16 md:py-24 px-4 md:px-8 bg-[#EAE4D8]">
+          <div className="max-w-[650px] mx-auto text-center">
             <m.div
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
             >
-              <Mail size={32} style={{ marginBottom: 20, stroke: "#111" }} />
-              <h2 style={{
-                fontFamily: "'Arial Black', Arial, sans-serif",
-                fontSize: "clamp(1.8rem,5vw,4rem)", fontWeight: 900,
-                lineHeight: 1, letterSpacing: -2, margin: "0 0 1rem",
-              }}>
+              <Mail size={32} strokeWidth={1.5} className="mb-6 md:mb-8 mx-auto text-[#111]" />
+              <h2 className="font-black text-[clamp(2rem,6vw,4rem)] leading-[0.9] tracking-tighter uppercase m-0 mb-4 md:mb-5">
                 Get notified<br />before the drop.
               </h2>
-              <p style={{ fontFamily: "monospace", fontSize: 13, color: "#666", letterSpacing: 2, marginBottom: 36 }}>
+              <p className="font-mono text-[9px] md:text-[11px] text-[#666] tracking-[2px] md:tracking-[3px] mb-8 md:mb-10">
                 DROP ALERTS · EARLY ACCESS · INSIDER INFO
               </p>
 
@@ -594,12 +618,7 @@ export default function DeadstockPage() {
                     key="done"
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    style={{
-                      background: "#FFE500", border: "2.5px solid #111",
-                      padding: "20px 36px", fontFamily: "monospace",
-                      fontWeight: 900, fontSize: 14, letterSpacing: 3,
-                      boxShadow: "5px 5px 0 #111",
-                    }}
+                    className="bg-[#FFE500] border-[2.5px] border-[#111] p-5 font-mono font-black text-[10px] md:text-xs tracking-widest shadow-[5px_5px_0_#111] mx-4 md:mx-0"
                   >
                     ✓ YOU'RE ON THE LIST. STAY READY.
                   </m.div>
@@ -607,7 +626,7 @@ export default function DeadstockPage() {
                   <m.form
                     key="form"
                     onSubmit={(e) => { e.preventDefault(); if (email) setSubscribed(true); }}
-                    style={{ display: "flex", gap: 0, maxWidth: 560, margin: "0 auto" }}
+                    className="flex flex-col md:flex-row gap-4 md:gap-0 max-w-[500px] mx-auto px-4 md:px-0"
                   >
                     <input
                       type="email"
@@ -615,24 +634,13 @@ export default function DeadstockPage() {
                       onChange={(e) => setEmail(e.target.value)}
                       placeholder="YOUR EMAIL ADDRESS"
                       required
-                      style={{
-                        flex: 1, border: "2.5px solid #111", borderRight: "none",
-                        background: "transparent", padding: "14px 18px",
-                        fontFamily: "monospace", fontSize: 12, letterSpacing: 2,
-                        outline: "none", color: "#111",
-                      }}
+                      className="flex-1 border-[2.5px] border-[#111] md:border-r-0 bg-[#F5F0E8] p-4 font-mono text-[10px] tracking-widest outline-none text-[#111] placeholder:text-[#888] focus:bg-[#fff] transition-colors rounded-none"
                     />
                     <m.button
                       type="submit"
-                      whileHover={{ x: -2, y: -2, boxShadow: "5px 5px 0 #FFE500" }}
-                      whileTap={{ x: 0, y: 0 }}
-                      style={{
-                        background: "#111", color: "#FFE500",
-                        border: "2.5px solid #111", padding: "14px 24px",
-                        fontFamily: "monospace", fontWeight: 900, fontSize: 12,
-                        letterSpacing: 3, cursor: "pointer",
-                        boxShadow: "4px 4px 0 #FFE500",
-                      }}
+                      whileHover={!isMobile ? { x: -2, y: -2, boxShadow: "5px 5px 0 #FFE500" } : {}}
+                      whileTap={{ x: 0, y: 0, scale: 0.98, boxShadow: "0px 0px 0 #FFE500" }}
+                      className="bg-[#111] text-[#FFE500] border-[2.5px] border-[#111] p-4 font-mono font-black text-[10px] tracking-widest cursor-pointer shadow-[4px_4px_0_#FFE500] active:shadow-none transition-all outline-none"
                     >
                       NOTIFY ME
                     </m.button>
@@ -640,43 +648,37 @@ export default function DeadstockPage() {
                 )}
               </AnimatePresence>
 
-              <p style={{ fontFamily: "monospace", fontSize: 10, color: "#aaa", letterSpacing: 2, marginTop: 20 }}>
+              <p className="font-mono text-[8px] md:text-[9px] text-[#aaa] tracking-[2px] mt-8">
                 NO SPAM · UNSUBSCRIBE ANYTIME · DROPS ONLY
               </p>
             </m.div>
           </div>
         </section>
 
-        <footer style={{ background: "#111", color: "#F5F0E8", padding: "3rem 2rem" }}>
-          <div style={{
-            display: "flex", flexDirection: "column", gap: 28,
-            maxWidth: 1200, margin: "0 auto",
-          }}>
-            <div style={{
-              display: "flex", justifyContent: "space-between", alignItems: "flex-start",
-              borderBottom: "1px solid #333", paddingBottom: "2rem",
-              flexWrap: "wrap", gap: 20,
-            }}>
+        <footer className="bg-[#111] text-[#F5F0E8] py-12 md:py-16 px-4 md:px-8">
+          <div className="flex flex-col gap-10 md:gap-12 max-w-[1200px] mx-auto">
+            <div className="flex flex-col lg:flex-row justify-between items-start border-b border-[#333] pb-10 md:pb-12 gap-8 lg:gap-0">
               <div>
-                <div style={{ fontFamily: "monospace", fontSize: "clamp(1.2rem,3vw,2rem)", fontWeight: 900, letterSpacing: -1, marginBottom: 8 }}>
-                  DEAD//STOCK
+                <div className="font-mono text-[clamp(1.4rem,3vw,2rem)] font-black tracking-tighter mb-3 md:mb-4">
+                  DEADSTOCK
                 </div>
-                <div style={{ fontFamily: "monospace", fontSize: 11, color: "#666", letterSpacing: 2, lineHeight: 1.7 }}>
+                <div className="font-mono text-[9px] md:text-[10px] text-[#666] tracking-[2px] leading-[1.8]">
                   STREETWEAR · SS25<br />
                   DROPS EVERY SEASON<br />
                   NO RESTOCK. EVER.
                 </div>
               </div>
 
-              <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-                <div style={{ fontFamily: "monospace", fontSize: 10, letterSpacing: 4, color: "#555" }}>FOLLOW THE DROP</div>
-                <div style={{ display: "flex", gap: 24 }}>
+              <div className="flex flex-col gap-4 md:gap-5 w-full lg:w-auto">
+                <div className="font-mono text-[8px] md:text-[9px] tracking-[4px] text-[#555]">FOLLOW THE DROP</div>
+                <div className="flex flex-col md:flex-row gap-4 md:gap-6">
                   {["INSTAGRAM", "TW/X", "DISCORD"].map((s) => (
                     <m.a
                       key={s}
                       href="#"
-                      whileHover={{ color: "#FFE500", letterSpacing: 4 }}
-                      style={{ fontFamily: "monospace", fontSize: 12, fontWeight: 900, letterSpacing: 3, color: "#F5F0E8", textDecoration: "none", transition: "color 0.2s" }}
+                      whileHover={!isMobile ? { color: "#FFE500", letterSpacing: "4px" } : {}}
+                      whileTap={{ scale: 0.95 }}
+                      className="font-mono text-[10px] md:text-[11px] font-black tracking-widest text-[#F5F0E8] transition-all border-b border-[#333] md:border-none pb-2 md:pb-0 block w-full md:w-auto hover:text-[#FFE500]"
                     >
                       {s}
                     </m.a>
@@ -685,13 +687,13 @@ export default function DeadstockPage() {
               </div>
             </div>
 
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: 12 }}>
-              <span style={{ fontFamily: "monospace", fontSize: 10, color: "#555", letterSpacing: 2 }}>
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 md:gap-0">
+              <span className="font-mono text-[8px] md:text-[9px] text-[#555] tracking-[2px] order-2 md:order-1 leading-[1.8]">
                 © 2025 DEADSTOCK. ALL RIGHTS RESERVED. ALL DROPS FINAL.
               </span>
-              <div style={{ display: "flex", gap: 20 }}>
+              <div className="flex flex-wrap gap-4 md:gap-6 order-1 md:order-2">
                 {["PRIVACY", "TERMS", "SHIPPING", "RETURNS"].map((l) => (
-                  <a key={l} href="#" style={{ fontFamily: "monospace", fontSize: 10, color: "#555", textDecoration: "none", letterSpacing: 2 }}>
+                  <a key={l} href="#" className="font-mono text-[8px] md:text-[9px] text-[#555] tracking-[2px] hover:text-[#F5F0E8] transition-colors">
                     {l}
                   </a>
                 ))}
@@ -701,15 +703,12 @@ export default function DeadstockPage() {
         </footer>
 
         <style>{`
-          * { box-sizing: border-box; }
-          body { cursor: none !important; }
-          @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.3; }
+          .style-stroke {
+            -webkit-text-stroke: 1.5px #111;
           }
-          @media (max-width: 768px) {
-            section[style*="grid-template-columns: 1fr 1fr"] {
-              grid-template-columns: 1fr !important;
+          @media (min-width: 768px) {
+            .style-stroke {
+              -webkit-text-stroke: 3px #111;
             }
           }
         `}</style>
