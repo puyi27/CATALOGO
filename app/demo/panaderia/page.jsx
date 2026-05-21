@@ -1,301 +1,314 @@
-"use client";
+'use client'
 
-import React, { useEffect, useRef } from 'react';
-import { LazyMotion, domAnimation, m, useSpring, useMotionValue, useTransform } from 'framer-motion';
-import dynamic from 'next/dynamic';
-import Link from 'next/link';
-import { ChevronLeft, Wheat, Thermometer, Clock, Flame } from 'lucide-react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
+import { motion, useScroll, useTransform } from 'framer-motion'
+import Link from 'next/link'
+import { ShoppingBag, ArrowLeft, MapPin, Clock, Phone } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
-gsap.registerPlugin(ScrollTrigger);
+export default function Panaderia() {
+  const { scrollYProgress } = useScroll()
+  const yHero = useTransform(scrollYProgress, [0, 1], [0, 600])
+  const opacityHero = useTransform(scrollYProgress, [0, 0.2], [1, 0])
 
-const FlourCanvas = dynamic(() => import('./FlourCanvas'), { ssr: false });
-
-// Organic Typewriter Subtitle
-const TypewriterText = ({ text }) => {
-  const letters = Array.from(text);
-  const container = {
-    hidden: { opacity: 0 },
-    visible: (i = 1) => ({ opacity: 1, transition: { staggerChildren: 0.04, delayChildren: 0.3 * i } })
-  };
-  const child = {
-    visible: { opacity: 1, y: 0, transition: { type: 'spring', damping: 15, stiffness: 100 } },
-    hidden: { opacity: 0, y: 15 }
-  };
-  
-  return (
-    <m.div className="flex flex-wrap overflow-hidden font-serif text-[#d4a373] text-sm md:text-xl tracking-widest uppercase italic" variants={container} initial="hidden" animate="visible">
-      {letters.map((letter, index) => (
-        <m.span variants={child} key={index} className="inline-block">
-          {letter === " " ? "\u00A0" : letter}
-        </m.span>
-      ))}
-    </m.div>
-  );
-};
-
-// Custom Cursor
-function CustomCursor() {
-  const cursorX = useMotionValue(-100);
-  const cursorY = useMotionValue(-100);
-  const scale = useMotionValue(1);
-  const isHovering = useMotionValue(0);
-
-  const springConfig = { damping: 25, stiffness: 300, mass: 0.5 };
-  const cursorXSpring = useSpring(cursorX, springConfig);
-  const cursorYSpring = useSpring(cursorY, springConfig);
-  const scaleSpring = useSpring(scale, springConfig);
-  const hoverSpring = useSpring(isHovering, springConfig);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+  const [isHovering, setIsHovering] = useState(false)
 
   useEffect(() => {
-    const moveCursor = (e) => {
-      cursorX.set(e.clientX - 12);
-      cursorY.set(e.clientY - 12);
-    };
-
-    const handleMouseOver = (e) => {
-      const target = e.target;
-      if (target.tagName.toLowerCase() === 'button' || target.tagName.toLowerCase() === 'a' || target.closest('.interactive-grid')) {
-        scale.set(3);
-        isHovering.set(1);
-      } else {
-        scale.set(1);
-        isHovering.set(0);
-      }
-    };
-
-    window.addEventListener('mousemove', moveCursor);
-    window.addEventListener('mouseover', handleMouseOver);
-
-    return () => {
-      window.removeEventListener('mousemove', moveCursor);
-      window.removeEventListener('mouseover', handleMouseOver);
-    };
-  }, [cursorX, cursorY, scale, isHovering]);
+    const handleMouseMove = (e) => {
+      setMousePosition({ x: e.clientX, y: e.clientY })
+    }
+    window.addEventListener('mousemove', handleMouseMove)
+    return () => window.removeEventListener('mousemove', handleMouseMove)
+  }, [])
 
   return (
-    <m.div
-      className="fixed top-0 left-0 w-6 h-6 rounded-full border border-[#d4a373] pointer-events-none z-[9999]"
-      style={{
-        x: cursorXSpring,
-        y: cursorYSpring,
-        scale: scaleSpring,
-        backgroundColor: useTransform(hoverSpring, [0, 1], ['rgba(212, 163, 115, 0)', 'rgba(212, 163, 115, 0.2)'])
-      }}
-    />
-  );
-}
+    <div className="bg-[#FAF9F6] text-[#2C2C2C] min-h-screen font-serif overflow-hidden cursor-none">
+      <motion.div
+        className="fixed top-0 left-0 w-6 h-6 rounded-full border-2 border-[#E6C280] pointer-events-none z-50 mix-blend-difference"
+        animate={{
+          x: mousePosition.x - 12,
+          y: mousePosition.y - 12,
+          scale: isHovering ? 2 : 1,
+          backgroundColor: isHovering ? '#E6C280' : 'transparent',
+        }}
+        transition={{ type: 'spring', stiffness: 500, damping: 28, mass: 0.5 }}
+      />
 
-// Product Catalog
-const products = [
-  { id: 1, name: 'Hogaza de Masa Madre', price: '6.50 €', desc: 'Fermentación lenta de 48h con harinas ecológicas molidas a la piedra.', img: 'https://loremflickr.com/1000/1000/bread,bakery/all?lock=1' },
-  { id: 2, name: 'Baguette Rústica', price: '2.20 €', desc: 'Corteza crujiente, alveolado perfecto. Auténtica receta francesa.', img: 'https://loremflickr.com/1000/1000/bread,bakery/all?lock=2' },
-  { id: 3, name: 'Croissant A.O.P.', price: '3.00 €', desc: 'Hojaldre invertido con mantequilla de Normandía AOP. Crujido sonoro.', img: 'https://loremflickr.com/1000/1000/bread,bakery/all?lock=3' },
-  { id: 4, name: 'Centeno Bío 100%', price: '5.80 €', desc: 'Centeno integral ecológico con semillas tostadas. Alta hidratación.', img: 'https://loremflickr.com/1000/1000/bread,bakery/all?lock=4' }
-];
-
-const ProductCard = ({ product }) => (
-  <div className="interactive-grid group relative overflow-hidden bg-[#161311] border border-white/5 flex flex-col h-full rounded-2xl cursor-none">
-    <div className="relative aspect-[4/5] overflow-hidden">
-      <div className="absolute inset-0 bg-[#d4a373]/20 mix-blend-multiply z-10 group-hover:bg-transparent transition-colors duration-700" />
-      <img src={product.img} alt={product.name} className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-1000" />
-      <div className="absolute inset-0 bg-gradient-to-t from-[#161311] to-transparent z-10" />
-    </div>
-    <div className="p-8 flex flex-col flex-grow justify-end -mt-20 relative z-20">
-      <h3 className="text-2xl font-black text-white mb-2 uppercase tracking-tighter">{product.name}</h3>
-      <p className="text-[#F9F6F0]/60 font-sans font-light text-sm mb-8">{product.desc}</p>
-      
-      <div className="flex justify-between items-center border-t border-white/10 pt-6">
-        <span className="font-mono text-[#d4a373] text-xl">{product.price}</span>
-        <button className="text-xs font-mono uppercase tracking-widest text-white hover:text-[#d4a373] transition-colors bg-white/5 px-4 py-2 rounded-full border border-white/10 hover:border-[#d4a373]/50">
-          Añadir +
-        </button>
-      </div>
-    </div>
-  </div>
-);
-
-export default function PanaderiaDemo() {
-  const containerRef = useRef(null);
-  const scrollWrapperRef = useRef(null);
-
-  useEffect(() => {
-    let ctx = gsap.context(() => {
-      const sections = gsap.utils.toArray('.horizontal-panel');
-      gsap.to(sections, {
-        xPercent: -100 * (sections.length - 1),
-        ease: "none",
-        scrollTrigger: {
-          trigger: containerRef.current,
-          pin: true,
-          scrub: 1,
-          snap: 1 / (sections.length - 1),
-          end: () => "+=" + scrollWrapperRef.current.offsetWidth
-        }
-      });
-    }, containerRef);
-    return () => ctx.revert();
-  }, []);
-
-  return (
-    <LazyMotion features={domAnimation}>
-      <style dangerouslySetInnerHTML={{__html: `body { cursor: none !important; }`}} />
-      <main className="bg-[#0a0a0a] text-[#F9F6F0] font-serif selection:bg-[#d4a373] selection:text-black overflow-x-hidden min-h-screen relative">
+      <nav className="fixed top-0 left-0 w-full z-40 bg-[#FAF9F6]/80 backdrop-blur-md border-b border-[#E6C280]/20 px-6 py-4 flex justify-between items-center">
+        <Link 
+          href="/"
+          className="flex items-center gap-2 text-[#6A3E1E] hover:text-[#E6C280] transition-colors uppercase tracking-widest text-xs"
+          onMouseEnter={() => setIsHovering(true)}
+          onMouseLeave={() => setIsHovering(false)}
+        >
+          <ArrowLeft size={16} />
+          Catálogo
+        </Link>
         
-        <CustomCursor />
-
-        {/* FLOATING BACK BUTTON */}
-        <div className="fixed bottom-8 right-8 z-[100] interactive-grid">
-          <Link href="/">
-            <m.div 
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              className="flex items-center justify-center w-14 h-14 rounded-full bg-[#161311] border border-[#d4a373]/30 backdrop-blur-md text-[#d4a373] hover:bg-[#d4a373] hover:text-[#0a0a0a] transition-colors shadow-2xl group cursor-none"
-            >
-              <ChevronLeft className="w-6 h-6 group-hover:-translate-x-1 transition-transform" />
-            </m.div>
-          </Link>
+        <div className="text-2xl font-bold tracking-[0.2em] text-[#6A3E1E] text-center absolute left-1/2 -translate-x-1/2 uppercase">
+          L'Atelier du Pain
         </div>
 
-        {/* TOP BAR */}
-        <header className="fixed top-0 left-0 w-full p-8 z-50 flex justify-between items-center pointer-events-none mix-blend-difference text-white">
-          <div className="font-serif italic text-2xl tracking-widest pointer-events-auto cursor-none">
-            Masa Madre & Co.
-          </div>
-          <div className="font-sans text-xs text-[#d4a373] tracking-widest pointer-events-auto border border-[#d4a373]/20 px-6 py-2 rounded-full uppercase bg-[#0a0a0a]/50 backdrop-blur-md">
-            Obrador Artesano
-          </div>
-        </header>
+        <button 
+          className="text-[#6A3E1E] hover:text-[#E6C280] transition-colors"
+          onMouseEnter={() => setIsHovering(true)}
+          onMouseLeave={() => setIsHovering(false)}
+        >
+          <ShoppingBag size={20} />
+        </button>
+      </nav>
 
-        {/* HORIZONTAL SCROLL ORCHESTRATION */}
-        <div ref={containerRef} className="h-screen w-full overflow-hidden bg-[#0a0a0a]">
-          <div ref={scrollWrapperRef} className="flex h-full w-[400vw]">
-            
-            {/* Panel 1: Hero */}
-            <div className="horizontal-panel w-screen h-full flex flex-col justify-center relative px-6 md:px-24 shrink-0 bg-[#0a0a0a]">
-              {/* Harina Interactiva */}
-              <FlourCanvas />
-              <div className="absolute inset-0 bg-gradient-to-r from-[#0a0a0a] via-[#0a0a0a]/80 to-transparent z-10 pointer-events-none" />
-              
-              <div className="relative z-20 max-w-6xl pointer-events-none">
-                <div className="mb-12">
-                  <TypewriterText text="Agua. Harina. Sal. Tiempo." />
-                </div>
-                <h1 className="text-7xl md:text-[11rem] font-light uppercase tracking-tighter text-transparent leading-[0.8] mb-12" style={{ WebkitTextStroke: '1px #F9F6F0' }}>
-                  El Arte <br /> <span className="text-[#d4a373] font-black" style={{ WebkitTextStroke: '0px' }}>De la Masa.</span>
-                </h1>
-                <p className="text-xl md:text-3xl text-zinc-400 max-w-2xl font-serif font-light leading-relaxed italic border-l border-[#d4a373] pl-6 ml-2">
-                  Pasa el cursor por el lienzo para sentir la harina virtual. Haz scroll para acompañarnos en el ritual diario de nuestro obrador.
-                </p>
-              </div>
-              
-              <div className="absolute bottom-12 left-6 md:left-24 z-20 font-mono text-[10px] tracking-widest uppercase text-[#d4a373] flex items-center gap-4">
-                <div className="w-12 h-[1px] bg-[#d4a373]" />
-                Scroll para amasar
-              </div>
-            </div>
+      <section className="relative h-screen flex items-center justify-center overflow-hidden">
+        <motion.div 
+          className="absolute inset-0 z-0"
+          style={{ y: yHero, opacity: opacityHero }}
+        >
+          <div className="absolute inset-0 bg-black/40 z-10" />
+          <img 
+            src="https://loremflickr.com/1920/1080/bakery,flour,hands?lock=20" 
+            alt="Bakery" 
+            className="w-full h-full object-cover"
+          />
+        </motion.div>
 
-            {/* Panel 2: Amasado */}
-            <div className="horizontal-panel w-screen h-full flex items-center relative px-6 md:px-24 border-l border-white/5 shrink-0 bg-[#120f0d]">
-              <div className="max-w-4xl">
-                <div className="flex items-center gap-4 mb-6">
-                   <Wheat className="w-8 h-8 text-[#d4a373]" />
-                   <span className="font-mono text-[#d4a373] tracking-widest uppercase text-sm">Fase 01 // Autólisis</span>
-                </div>
-                <h2 className="text-6xl md:text-[8rem] font-black uppercase tracking-tighter mb-8 leading-none">
-                  Trigo <br/> Salvaje.
-                </h2>
-                <p className="text-zinc-400 font-serif italic text-xl md:text-3xl leading-relaxed max-w-2xl">
-                  Seleccionamos trigos antiguos molidos a la piedra. La primera mezcla descansa, permitiendo que las enzimas despierten el alma del cereal antes de añadir la sal.
-                </p>
-              </div>
-            </div>
-
-            {/* Panel 3: Fermentación */}
-            <div className="horizontal-panel w-screen h-full flex items-center relative px-6 md:px-24 border-l border-white/5 shrink-0 bg-[#16120f]">
-              <div className="max-w-4xl">
-                <div className="flex items-center gap-4 mb-6">
-                   <Clock className="w-8 h-8 text-[#d4a373]" />
-                   <span className="font-mono text-[#d4a373] tracking-widest uppercase text-sm">Fase 02 // Reposo en bloque</span>
-                </div>
-                <h2 className="text-6xl md:text-[8rem] font-light uppercase tracking-tighter mb-8 leading-none">
-                  El Tiempo <br/> <span className="font-black text-[#d4a373]">Es Clave.</span>
-                </h2>
-                <p className="text-zinc-400 font-serif italic text-xl md:text-3xl leading-relaxed max-w-2xl">
-                  Hasta 48 horas de fermentación retardada en frío. Desarrollamos perfiles aromáticos complejos, acidez equilibrada y una alta digestibilidad. No hay atajos.
-                </p>
-              </div>
-            </div>
-
-            {/* Panel 4: Horneado */}
-            <div className="horizontal-panel w-screen h-full flex items-center justify-end relative px-6 md:px-24 border-l border-white/5 shrink-0 bg-[#1c1613]">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_left,rgba(212,163,115,0.1)_0%,transparent_50%)] pointer-events-none" />
-              <div className="max-w-4xl text-right">
-                <div className="flex items-center justify-end gap-4 mb-6">
-                   <span className="font-mono text-[#d4a373] tracking-widest uppercase text-sm">Fase 03 // Suela de Piedra</span>
-                   <Flame className="w-8 h-8 text-[#d4a373]" />
-                </div>
-                <h2 className="text-6xl md:text-[8rem] font-black uppercase tracking-tighter mb-8 text-[#d4a373] leading-none">
-                  Fuego & <br/> Corteza.
-                </h2>
-                <p className="text-zinc-400 font-serif italic text-xl md:text-3xl leading-relaxed max-w-2xl ml-auto">
-                  Altas temperaturas y choque de vapor. La expansión final en el horno de leña crea una corteza caramelizada, gruesa y sonora, protegiendo una miga perlada.
-                </p>
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-        {/* E-COMMERCE CATALOG */}
-        <section className="py-48 px-6 bg-[#0a0a0a] border-t border-white/5">
-          <div className="max-w-[100rem] mx-auto">
-            <div className="mb-24 flex flex-col md:flex-row md:items-end justify-between gap-8">
-              <div>
-                <span className="font-mono text-[#d4a373] tracking-[0.2em] uppercase text-xs mb-4 block border border-[#d4a373]/30 px-3 py-1 inline-block">Directo del Obrador</span>
-                <h2 className="text-5xl md:text-8xl font-black uppercase tracking-tighter leading-none text-white mt-6">
-                  Nuestros<br/><span className="font-light italic">Panes.</span>
-                </h2>
-              </div>
-              <p className="max-w-md text-zinc-400 font-sans font-light text-lg">
-                Reserva online y recoge en tienda recién horneado. Producción limitada diaria para garantizar la excelencia en cada hogaza.
-              </p>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-              {products.map(product => (
-                <ProductCard key={product.id} product={product} />
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* CTA FOOTER */}
-        <section className="py-48 lg:py-64 border-t border-[#d4a373]/20 bg-[#050505] relative flex flex-col items-center text-center">
-          <div className="absolute inset-0 bg-[#d4a373]/5 mix-blend-screen pointer-events-none" />
-          
-          <h2 className="text-5xl md:text-[8rem] font-light uppercase tracking-tighter mb-16 relative z-10 text-white">
-            Pruébalo <br/> <span className="font-black italic text-[#d4a373]">Hoy Mismo.</span>
-          </h2>
-          
-          <a
-            href="mailto:pedidos@masamadre.com"
-            className="group relative px-12 py-6 md:px-20 md:py-8 border border-[#d4a373] font-sans tracking-[0.2em] text-lg uppercase overflow-hidden bg-transparent z-10 inline-block cursor-none interactive-grid rounded-full"
+        <div className="relative z-10 text-center text-[#FAF9F6] flex flex-col items-center">
+          <motion.h1 
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+            className="text-7xl md:text-9xl font-medium italic mb-6 tracking-tight"
           >
-            <span className="relative z-10 text-[#d4a373] group-hover:text-[#050505] transition-colors duration-500 font-bold">
-              Realizar Pedido
-            </span>
-            <m.div 
-              className="absolute inset-0 z-0 origin-bottom bg-[#d4a373]"
-              initial={{ scaleY: 0 }}
-              whileHover={{ scaleY: 1 }}
-              transition={{ type: "spring", stiffness: 300, damping: 30 }}
-            />
-          </a>
-        </section>
+            L'art de la patience.
+          </motion.h1>
+          <motion.p 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 1, delay: 0.5 }}
+            className="text-xl md:text-2xl uppercase tracking-[0.3em] font-light text-[#E6C280]"
+          >
+            Masa madre de 142 años.
+          </motion.p>
+        </div>
 
-      </main>
-    </LazyMotion>
-  );
+        <motion.div 
+          className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-4"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1, duration: 1 }}
+        >
+          <span className="uppercase tracking-widest text-xs text-[#FAF9F6]">Scroll</span>
+          <motion.div 
+            className="w-[1px] h-16 bg-[#E6C280]"
+            animate={{ scaleY: [0, 1, 0], originY: [0, 0, 1] }}
+            transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+          />
+        </motion.div>
+      </section>
+
+      <section className="py-32 px-6 md:px-20 bg-[#FAF9F6] relative z-20">
+        <div className="max-w-7xl mx-auto">
+          <motion.div 
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            className="text-center mb-24"
+          >
+            <h2 className="text-xs uppercase tracking-[0.4em] text-[#E6C280] mb-4">Nuestro Proceso</h2>
+            <p className="text-4xl md:text-5xl text-[#6A3E1E] italic">El ritual de cada madrugada</p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-8">
+            {[
+              { title: "La Mezcla", desc: "Agua, harina, sal y nuestra masa madre centenaria.", img: "https://loremflickr.com/800/1000/dough,mixing?lock=21" },
+              { title: "El Reposo", desc: "Fermentación lenta en frío durante 48 horas.", img: "https://loremflickr.com/800/1000/bread,dough?lock=22" },
+              { title: "El Fuego", desc: "Horneado en piedra a 250 grados para una corteza perfecta.", img: "https://loremflickr.com/800/1000/oven,baking?lock=23" }
+            ].map((step, i) => (
+              <motion.div 
+                key={i}
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ delay: i * 0.2, duration: 0.8 }}
+                className="group cursor-pointer"
+                onMouseEnter={() => setIsHovering(true)}
+                onMouseLeave={() => setIsHovering(false)}
+              >
+                <div className="overflow-hidden mb-6 aspect-[4/5] relative">
+                  <div className="absolute inset-0 bg-[#6A3E1E]/20 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <img 
+                    src={step.img} 
+                    alt={step.title}
+                    className="w-full h-full object-cover scale-105 group-hover:scale-100 transition-transform duration-700 ease-out grayscale group-hover:grayscale-0"
+                  />
+                  <div className="absolute top-4 left-4 z-20 text-[#FAF9F6] text-xl font-serif italic opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                    0{i + 1}.
+                  </div>
+                </div>
+                <h3 className="text-2xl text-[#6A3E1E] mb-3 uppercase tracking-widest">{step.title}</h3>
+                <p className="text-[#2C2C2C]/70 font-light leading-relaxed">{step.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="py-32 px-6 md:px-20 bg-[#6A3E1E] text-[#FAF9F6]">
+        <div className="max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row justify-between items-end mb-20">
+            <motion.div
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-xs uppercase tracking-[0.4em] text-[#E6C280] mb-4">Clásicos</h2>
+              <p className="text-4xl md:text-5xl italic">Recién Salidos</p>
+            </motion.div>
+            <motion.button
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="mt-6 md:mt-0 uppercase tracking-widest text-xs border-b border-[#E6C280] pb-1 hover:text-[#E6C280] transition-colors"
+              onMouseEnter={() => setIsHovering(true)}
+              onMouseLeave={() => setIsHovering(false)}
+            >
+              Ver menú completo
+            </motion.button>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[
+              { name: "Pain de Campagne", price: "4.00€", img: "https://loremflickr.com/600/800/sourdough,bread?lock=31" },
+              { name: "Croissant au Beurre", price: "2.50€", img: "https://loremflickr.com/600/800/croissant,pastry?lock=32" },
+              { name: "Fougasse aux Olives", price: "3.50€", img: "https://loremflickr.com/600/800/focaccia,olive?lock=33" },
+              { name: "Baguette Tradition", price: "1.50€", img: "https://loremflickr.com/600/800/baguette,bread?lock=34" }
+            ].map((product, i) => (
+              <motion.div 
+                key={i}
+                initial={{ opacity: 0, scale: 0.9 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ delay: i * 0.1, duration: 0.6 }}
+                className="group relative"
+                onMouseEnter={() => setIsHovering(true)}
+                onMouseLeave={() => setIsHovering(false)}
+              >
+                <div className="aspect-[3/4] overflow-hidden mb-4 border border-transparent group-hover:border-[#E6C280] transition-colors duration-500 p-2">
+                  <div className="w-full h-full overflow-hidden">
+                    <img 
+                      src={product.img} 
+                      alt={product.name}
+                      className="w-full h-full object-cover scale-100 group-hover:scale-110 transition-transform duration-700"
+                    />
+                  </div>
+                </div>
+                <div className="flex justify-between items-start pt-2">
+                  <h3 className="text-lg uppercase tracking-wide w-2/3">{product.name}</h3>
+                  <span className="text-[#E6C280] font-medium">{product.price}</span>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="py-40 px-6 bg-[#2C2C2C] text-center relative overflow-hidden flex items-center justify-center min-h-[70vh]">
+        <div className="absolute inset-0 opacity-10 pointer-events-none">
+          <img src="https://loremflickr.com/1920/1080/texture,paper?lock=50" alt="texture" className="w-full h-full object-cover" />
+        </div>
+        <motion.div 
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 1 }}
+          className="max-w-4xl mx-auto relative z-10"
+        >
+          <p className="text-3xl md:text-6xl text-[#E6C280] font-serif italic leading-tight mb-12">
+            "El buen pan no es producto del tiempo, sino de la paciencia. Cada hogaza cuenta una historia de harina, agua y manos que saben esperar."
+          </p>
+          <div className="flex flex-col items-center">
+            <div className="w-16 h-[1px] bg-[#FAF9F6]/30 mb-6" />
+            <span className="uppercase tracking-[0.3em] text-sm text-[#FAF9F6]">Jean-Paul Dubois</span>
+            <span className="text-[#FAF9F6]/50 text-xs mt-2 italic">Maître Boulanger</span>
+          </div>
+        </motion.div>
+      </section>
+
+      <section className="py-0 flex flex-col md:flex-row min-h-screen bg-[#FAF9F6]">
+        <div className="w-full md:w-1/2 relative h-[50vh] md:h-screen">
+          <img 
+            src="https://loremflickr.com/1000/1500/storefront,bakery?lock=41" 
+            alt="Storefront"
+            className="w-full h-full object-cover"
+          />
+        </div>
+        <div className="w-full md:w-1/2 flex items-center justify-center p-12 md:p-24">
+          <motion.div 
+            initial={{ opacity: 0, x: 50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.8 }}
+            className="w-full max-w-md"
+          >
+            <h2 className="text-4xl md:text-5xl text-[#6A3E1E] italic mb-12">Nuestra Casa</h2>
+            
+            <div className="space-y-8 text-[#2C2C2C]">
+              <div className="flex items-start gap-6">
+                <MapPin className="text-[#E6C280] shrink-0 mt-1" />
+                <div>
+                  <h4 className="uppercase tracking-widest text-sm font-bold mb-2">Visítanos</h4>
+                  <p className="font-light leading-relaxed">Rue de l'Artisan, 12<br />75003 Paris, France</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-6">
+                <Clock className="text-[#E6C280] shrink-0 mt-1" />
+                <div>
+                  <h4 className="uppercase tracking-widest text-sm font-bold mb-2">Horario</h4>
+                  <p className="font-light leading-relaxed">Martes a Domingo<br />06:30 - 19:00</p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-6">
+                <Phone className="text-[#E6C280] shrink-0 mt-1" />
+                <div>
+                  <h4 className="uppercase tracking-widest text-sm font-bold mb-2">Contacto</h4>
+                  <p className="font-light leading-relaxed">+33 1 23 45 67 89<br />bonjour@atelierdupain.fr</p>
+                </div>
+              </div>
+            </div>
+
+            <button 
+              className="mt-16 w-full py-4 border border-[#6A3E1E] text-[#6A3E1E] uppercase tracking-widest text-sm hover:bg-[#6A3E1E] hover:text-[#FAF9F6] transition-colors duration-300"
+              onMouseEnter={() => setIsHovering(true)}
+              onMouseLeave={() => setIsHovering(false)}
+            >
+              Hacer un encargo
+            </button>
+          </motion.div>
+        </div>
+      </section>
+
+      <footer className="bg-[#FAF9F6] pt-20 pb-10 px-6 border-t border-[#6A3E1E]/10">
+        <div className="max-w-7xl mx-auto flex flex-col items-center">
+          <div className="text-3xl font-bold tracking-[0.2em] text-[#6A3E1E] uppercase mb-12">
+            L'Atelier du Pain
+          </div>
+          
+          <div className="flex gap-8 mb-16 text-sm uppercase tracking-widest text-[#2C2C2C]/60">
+            <a href="#" className="hover:text-[#6A3E1E] transition-colors">Instagram</a>
+            <a href="#" className="hover:text-[#6A3E1E] transition-colors">Facebook</a>
+            <a href="#" className="hover:text-[#6A3E1E] transition-colors">Prensa</a>
+          </div>
+
+          <div className="w-full flex flex-col md:flex-row justify-between items-center text-xs text-[#2C2C2C]/40 uppercase tracking-widest pt-8 border-t border-[#6A3E1E]/10">
+            <p>© 2026 L'Atelier du Pain</p>
+            <div className="flex gap-4 mt-4 md:mt-0">
+              <a href="#" className="hover:text-[#6A3E1E] transition-colors">Privacidad</a>
+              <a href="#" className="hover:text-[#6A3E1E] transition-colors">Términos</a>
+            </div>
+          </div>
+        </div>
+      </footer>
+    </div>
+  )
 }

@@ -1,279 +1,271 @@
-"use client";
+"use client"
 
-import React, { useRef, useState, useEffect } from 'react';
-import { LazyMotion, domAnimation, m, useScroll, useTransform, useSpring, useMotionValue, AnimatePresence } from 'framer-motion';
-import dynamic from 'next/dynamic';
-import Link from 'next/link';
-import { ChevronLeft, Droplets, Sun, Wind, Sprout, Leaf } from 'lucide-react';
+import { useState, useEffect, useRef } from "react"
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion"
+import Link from "next/link"
+import { Menu, ArrowLeft, Droplet, Sun, Sprout } from "lucide-react"
 
-const OilWebGL = dynamic(() => import('./OilWebGL'), { ssr: false });
-
-// Organic Typewriter Subtitle
-const TypewriterText = ({ text }) => {
-  const letters = Array.from(text);
-  const container = {
-    hidden: { opacity: 0 },
-    visible: (i = 1) => ({ opacity: 1, transition: { staggerChildren: 0.05, delayChildren: 0.2 * i } })
-  };
-  const child = {
-    visible: { opacity: 1, y: 0, transition: { type: 'spring', damping: 12, stiffness: 200 } },
-    hidden: { opacity: 0, y: 20 }
-  };
+export default function FincaLaAlmazara() {
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
+  const [isMenuOpen, setIsMenuOpen] = useState(false)
+  const containerRef = useRef(null)
   
-  return (
-    <m.div className="flex flex-wrap overflow-hidden font-serif text-[#d4af37] text-sm md:text-lg tracking-widest uppercase italic" variants={container} initial="hidden" animate="visible">
-      {letters.map((letter, index) => (
-        <m.span variants={child} key={index} className="inline-block">
-          {letter === " " ? "\u00A0" : letter}
-        </m.span>
-      ))}
-    </m.div>
-  );
-};
-
-// Fluid Cursor
-function CustomCursor() {
-  const cursorX = useMotionValue(-100);
-  const cursorY = useMotionValue(-100);
-  const scale = useMotionValue(1);
-  const isHovering = useMotionValue(0);
-
-  const springConfig = { damping: 20, stiffness: 200, mass: 0.5 };
-  const cursorXSpring = useSpring(cursorX, springConfig);
-  const cursorYSpring = useSpring(cursorY, springConfig);
-  const scaleSpring = useSpring(scale, springConfig);
-  const hoverSpring = useSpring(isHovering, springConfig);
-
-  useEffect(() => {
-    const moveCursor = (e) => {
-      cursorX.set(e.clientX - 16);
-      cursorY.set(e.clientY - 16);
-    };
-
-    const handleMouseOver = (e) => {
-      const target = e.target;
-      if (target.tagName.toLowerCase() === 'button' || target.tagName.toLowerCase() === 'a' || target.closest('.interactive-target')) {
-        scale.set(2.5);
-        isHovering.set(1);
-      } else {
-        scale.set(1);
-        isHovering.set(0);
-      }
-    };
-
-    window.addEventListener('mousemove', moveCursor);
-    window.addEventListener('mouseover', handleMouseOver);
-
-    return () => {
-      window.removeEventListener('mousemove', moveCursor);
-      window.removeEventListener('mouseover', handleMouseOver);
-    };
-  }, [cursorX, cursorY, scale, isHovering]);
-
-  return (
-    <m.div
-      className="fixed top-0 left-0 w-8 h-8 rounded-full border border-[#d4af37] pointer-events-none z-[9999]"
-      style={{
-        x: cursorXSpring,
-        y: cursorYSpring,
-        scale: scaleSpring,
-        backgroundColor: useTransform(hoverSpring, [0, 1], ['rgba(212, 175, 55, 0)', 'rgba(212, 175, 55, 0.1)']),
-        backdropFilter: useTransform(hoverSpring, [0, 1], ['blur(0px)', 'blur(4px)'])
-      }}
-    />
-  );
-}
-
-export default function AlmazaraDemo() {
-  const containerRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start start", "end start"]
-  });
+    offset: ["start start", "end end"]
+  })
 
-  // Parallax values
-  const y1 = useTransform(scrollYProgress, [0, 1], [0, 300]);
-  const y2 = useTransform(scrollYProgress, [0, 1], [0, -200]);
-  const y3 = useTransform(scrollYProgress, [0, 1], [0, 500]);
-  const scaleImage = useTransform(scrollYProgress, [0, 1], [1, 1.2]);
-  const opacity = useTransform(scrollYProgress, [0, 0.4], [1, 0]);
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      setMousePos({ x: e.clientX, y: e.clientY })
+    }
+    window.addEventListener("mousemove", handleMouseMove)
+    return () => window.removeEventListener("mousemove", handleMouseMove)
+  }, [])
+
+  const navVariants = {
+    hidden: { y: -100, opacity: 0 },
+    visible: { y: 0, opacity: 1, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } }
+  }
+
+  const textReveal = {
+    hidden: { y: 100, opacity: 0 },
+    visible: { y: 0, opacity: 1, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } }
+  }
+
+  const oils = [
+    {
+      name: "Picual Reserva",
+      price: "24€",
+      notes: "Notas de tomate verde, higuera y hierba recién cortada.",
+      image: "https://loremflickr.com/600/800/oliveoil,bottle?lock=1"
+    },
+    {
+      name: "Arbequina Suave",
+      price: "22€",
+      notes: "Aromas a manzana, plátano y almendra dulce.",
+      image: "https://loremflickr.com/600/800/oliveoil,bottle?lock=2"
+    },
+    {
+      name: "Blend Familiar",
+      price: "28€",
+      notes: "Equilibrio perfecto con toques de alcachofa y nuez.",
+      image: "https://loremflickr.com/600/800/oliveoil,bottle?lock=3"
+    }
+  ]
+
+  const stats = [
+    { value: "0", label: "Huella de Carbono", icon: Droplet },
+    { value: "100%", label: "Energía Solar", icon: Sun },
+    { value: "100%", label: "Riego Goteo Inteligente", icon: Sprout }
+  ]
 
   return (
-    <LazyMotion features={domAnimation}>
-      <style dangerouslySetInnerHTML={{__html: `body { cursor: none !important; }`}} />
-      <main className="bg-[#12140f] text-[#e8eadf] font-serif selection:bg-[#d4af37] selection:text-[#12140f] overflow-hidden" ref={containerRef}>
-        
-        <CustomCursor />
-        
-        {/* Dynamic Background */}
-        <OilWebGL />
+    <div ref={containerRef} className="relative min-h-screen bg-[#F5F5E1] text-[#3B4F2D] font-serif overflow-hidden selection:bg-[#3B4F2D] selection:text-[#F5F5E1]">
+      <motion.div 
+        className="fixed top-0 left-0 w-6 h-6 border border-[#3B4F2D] rounded-full pointer-events-none z-50 mix-blend-difference hidden md:block"
+        animate={{ x: mousePos.x - 12, y: mousePos.y - 12 }}
+        transition={{ type: "spring", stiffness: 150, damping: 15, mass: 0.1 }}
+      />
 
-        {/* FLOATING BACK BUTTON */}
-        <div className="fixed bottom-8 right-8 z-[100] interactive-target">
-          <Link href="/">
-            <m.div 
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              className="flex items-center justify-center w-14 h-14 rounded-full bg-[#d4af37]/10 border border-[#d4af37]/30 backdrop-blur-md text-[#d4af37] hover:bg-[#d4af37] hover:text-[#12140f] transition-colors shadow-2xl group cursor-none"
-            >
-              <ChevronLeft className="w-6 h-6 group-hover:-translate-x-1 transition-transform" />
-            </m.div>
-          </Link>
-        </div>
+      <motion.nav 
+        variants={navVariants}
+        initial="hidden"
+        animate="visible"
+        className="fixed top-0 left-0 w-full p-6 flex justify-between items-center z-40 mix-blend-difference text-[#F5F5E1]"
+      >
+        <Link href="/" className="flex items-center gap-2 text-sm uppercase tracking-widest hover:opacity-70 transition-opacity">
+          <ArrowLeft size={16} />
+          <span>Catálogo</span>
+        </Link>
+        <div className="text-xl tracking-[0.3em] font-light">LA ALMAZARA</div>
+        <button onClick={() => setIsMenuOpen(!isMenuOpen)} className="hover:opacity-70 transition-opacity">
+          <Menu size={24} />
+        </button>
+      </motion.nav>
 
-        {/* HEADER */}
-        <header className="fixed top-0 left-0 w-full p-8 z-50 flex justify-between items-center pointer-events-none mix-blend-difference">
-          <div className="font-serif text-2xl tracking-widest text-[#d4af37] uppercase pointer-events-auto cursor-none">
-            La Dorada.
-          </div>
-          <div className="font-sans text-xs tracking-widest uppercase border border-[#d4af37]/50 text-[#d4af37] px-4 py-2 rounded-full pointer-events-auto bg-[#12140f]/50 backdrop-blur-md">
-            Cosecha 2026
-          </div>
-        </header>
-
-        {/* HERO ELEGANCE */}
-        <section className="relative min-h-screen flex flex-col justify-center px-6 md:px-24 z-10 pt-32 pb-20 pointer-events-none overflow-hidden">
-          <m.div className="max-w-[100rem] mx-auto w-full" style={{ opacity }}>
-            <div className="mb-12">
-               <TypewriterText text="Extracción en frío. Primera prensada." />
-            </div>
-            
-            <h1 className="text-7xl md:text-[12rem] lg:text-[15rem] font-light tracking-tighter leading-[0.75] mb-12 text-[#e8eadf]">
-              Oro <br /> <span className="font-black text-[#d4af37] italic" style={{ paddingRight: '20px' }}>Líquido.</span>
-            </h1>
-            
-            <div className="max-w-3xl border-l border-[#d4af37] pl-8 ml-2">
-               <p className="text-2xl md:text-4xl text-[#e8eadf]/80 font-light leading-relaxed">
-                 Nuestra tierra no produce aceite, esculpe un néctar ancestral. Desde el olivo centenario hasta tu mesa, sin filtros, puro origen.
-               </p>
-            </div>
-          </m.div>
-        </section>
-
-        {/* PROCESO - PARALLAX IMMERSION */}
-        <section className="relative py-48 lg:py-64 px-6 md:px-24 z-10 pointer-events-none overflow-hidden">
-          <div className="max-w-[100rem] mx-auto grid grid-cols-1 lg:grid-cols-2 gap-24 items-center">
-            
-            <div className="flex flex-col gap-16">
-              <m.div style={{ y: y2 }}>
-                <span className="font-sans text-[#d4af37] tracking-[0.3em] uppercase text-sm mb-6 block">01 / El Origen</span>
-                <h2 className="text-5xl md:text-8xl font-black uppercase tracking-tighter text-[#e8eadf] leading-none mb-8">
-                  Raíces <br/> <span className="text-[#d4af37] italic font-light">Eternas.</span>
-                </h2>
-                <p className="text-xl md:text-3xl text-[#e8eadf]/70 max-w-xl leading-relaxed font-light">
-                  Olivos milenarios anclados en suelo calizo. Respetamos los tiempos de la naturaleza, cosechando en el equinoccio de otoño cuando la aceituna guarda su máxima expresión fenólica.
-                </p>
-              </m.div>
-            </div>
-
-            <div className="relative h-[120vh] w-full">
-              {/* Main Parallax Image */}
-              <m.div 
-                style={{ y: y1 }} 
-                className="absolute top-0 right-0 w-[85%] h-[70%] overflow-hidden rounded-tl-[150px] rounded-br-[150px] border border-[#d4af37]/20 interactive-target pointer-events-auto group"
-              >
-                <div className="absolute inset-0 bg-[#d4af37]/20 mix-blend-overlay z-10 group-hover:bg-transparent transition-colors duration-1000" />
-                <m.img 
-                  style={{ scale: scaleImage }}
-                  src="https://loremflickr.com/1000/1000/olive,farm/all?lock=1" 
-                  alt="Olivares" 
-                  className="w-full h-full object-cover grayscale contrast-125 sepia-[.3]" 
-                />
-              </m.div>
-              
-              {/* Floating Detail Image */}
-              <m.div 
-                style={{ y: y3 }} 
-                className="absolute bottom-10 left-0 w-[65%] h-[50%] overflow-hidden z-20 rounded-tr-[100px] rounded-bl-[100px] border border-[#d4af37]/30 shadow-2xl interactive-target pointer-events-auto group"
-              >
-                <div className="absolute inset-0 bg-black/40 z-10 group-hover:bg-transparent transition-colors duration-1000" />
-                <img 
-                  src="https://loremflickr.com/1000/1000/olive,farm/all?lock=2" 
-                  alt="Extracción" 
-                  className="w-full h-full object-cover grayscale contrast-125 sepia-[.5] group-hover:scale-110 transition-transform duration-[2s]" 
-                />
-              </m.div>
-            </div>
-
-          </div>
-        </section>
-
-        {/* GALERÍA DE PRODUCTOS (BENTO) */}
-        <section className="py-32 px-6 md:px-24 bg-[#12140f] z-20 relative">
-          <div className="max-w-[100rem] mx-auto">
-            <h2 className="text-4xl md:text-7xl font-light uppercase tracking-widest text-[#d4af37] mb-24 text-center">Nuestra Bodega</h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              {/* Producto 1 */}
-              <div className="group border border-[#d4af37]/20 rounded-t-full overflow-hidden interactive-target cursor-none bg-[#1a1c15]">
-                <div className="aspect-[2/3] overflow-hidden relative">
-                  <div className="absolute inset-0 bg-[#d4af37]/10 z-10 group-hover:opacity-0 transition-opacity duration-700" />
-                  <img src="https://loremflickr.com/1000/1000/olive,farm/all?lock=3" className="w-full h-full object-cover grayscale sepia-[0.3] group-hover:scale-110 group-hover:grayscale-0 transition-all duration-[1.5s] ease-out" alt="Picual" />
-                </div>
-                <div className="p-10 text-center">
-                  <span className="font-sans text-xs tracking-[0.2em] uppercase text-[#d4af37] mb-4 block">Edición Limitada</span>
-                  <h3 className="text-3xl font-black mb-4">Picual Intenso</h3>
-                  <p className="text-[#e8eadf]/60 font-light font-sans mb-8">Notas de hierba fresca, tomate y almendra verde. Picor final elegante.</p>
-                  <button className="border-b border-[#d4af37] text-[#d4af37] font-sans text-sm tracking-widest uppercase pb-1 hover:text-white transition-colors">Añadir a la cesta</button>
-                </div>
-              </div>
-
-              {/* Producto 2 */}
-              <div className="group border border-[#d4af37]/20 rounded-t-full overflow-hidden interactive-target cursor-none bg-[#1a1c15] md:-translate-y-16">
-                <div className="aspect-[2/3] overflow-hidden relative">
-                  <div className="absolute inset-0 bg-[#d4af37]/10 z-10 group-hover:opacity-0 transition-opacity duration-700" />
-                  <img src="https://loremflickr.com/1000/1000/olive,farm/all?lock=4" className="w-full h-full object-cover grayscale sepia-[0.3] group-hover:scale-110 group-hover:grayscale-0 transition-all duration-[1.5s] ease-out" alt="Arbequina" />
-                </div>
-                <div className="p-10 text-center">
-                  <span className="font-sans text-xs tracking-[0.2em] uppercase text-[#d4af37] mb-4 block">Cosecha Temprana</span>
-                  <h3 className="text-3xl font-black mb-4">Arbequina Suave</h3>
-                  <p className="text-[#e8eadf]/60 font-light font-sans mb-8">Perfil dulce y frutado. Recuerdos a manzana verde y plátano. Ideal en crudo.</p>
-                  <button className="border-b border-[#d4af37] text-[#d4af37] font-sans text-sm tracking-widest uppercase pb-1 hover:text-white transition-colors">Añadir a la cesta</button>
-                </div>
-              </div>
-
-              {/* Producto 3 */}
-              <div className="group border border-[#d4af37]/20 rounded-t-full overflow-hidden interactive-target cursor-none bg-[#1a1c15]">
-                <div className="aspect-[2/3] overflow-hidden relative">
-                  <div className="absolute inset-0 bg-[#d4af37]/10 z-10 group-hover:opacity-0 transition-opacity duration-700" />
-                  <img src="https://loremflickr.com/1000/1000/olive,farm/all?lock=5" className="w-full h-full object-cover grayscale sepia-[0.3] group-hover:scale-110 group-hover:grayscale-0 transition-all duration-[1.5s] ease-out" alt="Coupage" />
-                </div>
-                <div className="p-10 text-center">
-                  <span className="font-sans text-xs tracking-[0.2em] uppercase text-[#d4af37] mb-4 block">Selección del Maestro</span>
-                  <h3 className="text-3xl font-black mb-4">Coupage Reserva</h3>
-                  <p className="text-[#e8eadf]/60 font-light font-sans mb-8">El equilibrio perfecto. La estructura del picual domeñada por la finura arbequina.</p>
-                  <button className="border-b border-[#d4af37] text-[#d4af37] font-sans text-sm tracking-widest uppercase pb-1 hover:text-white transition-colors">Añadir a la cesta</button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-
-        {/* BRAND CTA FOOTER */}
-        <section className="py-48 lg:py-64 bg-[#d4af37] relative flex flex-col items-center text-center overflow-hidden interactive-target">
-          
-          <h2 className="text-5xl md:text-[9rem] font-light uppercase tracking-tighter mb-16 relative z-10 text-[#12140f] leading-[0.8]">
-            Degusta <br/> <span className="font-black italic">El Origen.</span>
-          </h2>
-          
-          <a
-            href="mailto:pedidos@fincaladorada.com"
-            className="group relative px-12 py-6 md:px-20 md:py-8 border-2 border-[#12140f] font-sans text-xl md:text-2xl tracking-widest uppercase overflow-hidden bg-[#12140f] z-10 inline-block cursor-none rounded-full"
+      <AnimatePresence>
+        {isMenuOpen && (
+          <motion.div 
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -20 }}
+            className="fixed inset-0 bg-[#3B4F2D] z-30 flex flex-col items-center justify-center text-[#F5F5E1]"
           >
-            <span className="relative z-10 text-[#d4af37] font-light group-hover:text-[#12140f] transition-colors duration-500">
-              Tienda Online
-            </span>
-            <m.div 
-              className="absolute inset-0 z-0 bg-[#d4af37]"
-              initial={{ y: '100%' }}
-              whileHover={{ y: 0 }}
-              transition={{ type: "spring", stiffness: 200, damping: 25 }}
-            />
-          </a>
-        </section>
+            <div className="flex flex-col gap-8 text-4xl font-light tracking-widest text-center">
+              <span className="hover:text-white cursor-pointer transition-colors">La Finca</span>
+              <span className="hover:text-white cursor-pointer transition-colors">Nuestros Aceites</span>
+              <span className="hover:text-white cursor-pointer transition-colors">Sostenibilidad</span>
+              <span className="hover:text-white cursor-pointer transition-colors">Contacto</span>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
-      </main>
-    </LazyMotion>
-  );
+      <section className="relative h-screen w-full flex flex-col items-center justify-center overflow-hidden">
+        <motion.div 
+          className="absolute inset-0 z-0"
+          style={{ y: useTransform(scrollYProgress, [0, 1], ["0%", "50%"]) }}
+        >
+          <img 
+            src="https://loremflickr.com/1920/1080/olive,tree,nature?lock=30" 
+            alt="Olive groves" 
+            className="w-full h-full object-cover filter brightness-75"
+          />
+          <div className="absolute inset-0 bg-black/20" />
+        </motion.div>
+        
+        <div className="relative z-10 text-center text-[#F5F5E1] flex flex-col items-center">
+          <div className="overflow-hidden mb-6">
+            <motion.h1 
+              variants={textReveal}
+              initial="hidden"
+              animate="visible"
+              className="text-7xl md:text-9xl font-light tracking-tighter"
+            >
+              Oro líquido.
+            </motion.h1>
+          </div>
+          <div className="overflow-hidden">
+            <motion.p 
+              variants={textReveal}
+              initial="hidden"
+              animate="visible"
+              transition={{ delay: 0.2 }}
+              className="text-xl md:text-2xl font-light tracking-widest uppercase"
+            >
+              Prensado en frío desde 1890
+            </motion.p>
+          </div>
+        </div>
+      </section>
+
+      <section className="relative w-full bg-[#F5F5E1] flex flex-col md:flex-row">
+        <div className="w-full md:w-1/2 p-12 md:p-24 md:sticky md:top-0 h-auto md:h-screen flex flex-col justify-center">
+          <motion.div
+            initial={{ opacity: 0, x: -50 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 1 }}
+          >
+            <h2 className="text-4xl md:text-6xl font-light mb-8 leading-tight">La Cosecha<br/>Manual.</h2>
+            <p className="text-lg md:text-xl font-sans font-light leading-relaxed max-w-md opacity-80">
+              Respetamos los tiempos de la naturaleza. Cada oliva es seleccionada a mano en su punto óptimo de maduración, garantizando la máxima expresión de sabor y pureza en cada gota de nuestro aceite.
+            </p>
+          </motion.div>
+        </div>
+        <div className="w-full md:w-1/2 flex flex-col">
+          <div className="h-[50vh] md:h-screen w-full relative">
+            <img src="https://loremflickr.com/800/1200/olive,farmer?lock=41" alt="Harvest 1" className="w-full h-full object-cover" />
+          </div>
+          <div className="h-[50vh] md:h-screen w-full relative">
+            <img src="https://loremflickr.com/800/1200/olive,nature?lock=42" alt="Harvest 2" className="w-full h-full object-cover" />
+          </div>
+          <div className="h-[50vh] md:h-screen w-full relative">
+            <img src="https://loremflickr.com/800/1200/olive,tree?lock=43" alt="Harvest 3" className="w-full h-full object-cover" />
+          </div>
+        </div>
+      </section>
+
+      <section className="py-32 px-6 bg-[#3B4F2D] text-[#F5F5E1]">
+        <div className="max-w-7xl mx-auto">
+          <motion.h2 
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1 }}
+            className="text-5xl md:text-7xl font-light text-center mb-24"
+          >
+            Nuestros Aceites
+          </motion.h2>
+          
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+            {oils.map((oil, idx) => (
+              <motion.div 
+                key={idx}
+                initial={{ opacity: 0, y: 50 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: idx * 0.2 }}
+                className="group relative flex flex-col items-center"
+              >
+                <div className="w-full aspect-[3/4] overflow-hidden bg-black/10 relative mb-8">
+                  <img src={oil.image} alt={oil.name} className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105" />
+                  <div className="absolute inset-0 bg-[#3B4F2D]/80 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center p-8 text-center">
+                    <p className="font-sans font-light text-lg">{oil.notes}</p>
+                  </div>
+                </div>
+                <h3 className="text-2xl tracking-widest mb-2">{oil.name}</h3>
+                <span className="font-sans font-light opacity-70">{oil.price}</span>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="py-32 px-6 bg-[#F5F5E1]">
+        <div className="max-w-6xl mx-auto">
+          <motion.div 
+            initial={{ opacity: 0 }}
+            whileInView={{ opacity: 1 }}
+            viewport={{ once: true }}
+            transition={{ duration: 1 }}
+            className="text-center mb-20"
+          >
+            <h2 className="text-4xl md:text-6xl font-light mb-6">Compromiso Vital</h2>
+            <p className="font-sans font-light max-w-2xl mx-auto opacity-80 text-lg">
+              La tierra nos da todo. Nuestra responsabilidad es devolverle el favor mediante prácticas que aseguran el futuro de nuestro entorno.
+            </p>
+          </motion.div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+            {stats.map((stat, idx) => (
+              <motion.div 
+                key={idx}
+                initial={{ opacity: 0, scale: 0.8 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: idx * 0.2 }}
+                className="flex flex-col items-center text-center p-8 border border-[#3B4F2D]/20 rounded-full aspect-square justify-center"
+              >
+                <stat.icon size={48} strokeWidth={1} className="mb-6 opacity-70" />
+                <span className="text-5xl font-light mb-4">{stat.value}</span>
+                <span className="font-sans font-light tracking-widest uppercase text-sm opacity-80">{stat.label}</span>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="py-40 px-6 bg-[#3B4F2D] text-[#F5F5E1] flex flex-col items-center text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 50 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1 }}
+        >
+          <h2 className="text-5xl md:text-8xl font-light mb-8">Vive la Finca</h2>
+          <p className="font-sans font-light text-xl max-w-xl mx-auto mb-16 opacity-80">
+            Pasea entre olivos centenarios, conoce la almazara desde dentro y degusta nuestra historia.
+          </p>
+          
+          <button className="group relative inline-flex items-center justify-center px-12 py-6 border border-[#F5F5E1] overflow-hidden text-lg tracking-widest uppercase">
+            <div className="absolute inset-0 w-0 bg-[#F5F5E1] transition-all duration-[600ms] ease-out group-hover:w-full" />
+            <span className="relative text-[#F5F5E1] group-hover:text-[#3B4F2D] transition-colors duration-300">
+              Reservar Visita
+            </span>
+          </button>
+        </motion.div>
+      </section>
+
+      <footer className="bg-[#1f2b18] text-[#F5F5E1] py-12 px-6 flex flex-col md:flex-row justify-between items-center font-sans font-light text-sm tracking-widest opacity-80">
+        <div>© 2024 FINCA LA ALMAZARA</div>
+        <div className="mt-4 md:mt-0 flex gap-8">
+          <span className="hover:opacity-100 cursor-pointer transition-opacity">INSTAGRAM</span>
+          <span className="hover:opacity-100 cursor-pointer transition-opacity">TIENDA</span>
+          <span className="hover:opacity-100 cursor-pointer transition-opacity">LEGAL</span>
+        </div>
+      </footer>
+    </div>
+  )
 }
