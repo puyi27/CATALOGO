@@ -654,14 +654,14 @@ function Footer() {
 export default function ValmontPage() {
   return (
     <>
-      <style>{\`
+      <style>{`
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         html { scroll-behavior: smooth; }
         body { background: #FBF9F6; }
         @media (pointer: fine) {
           body, a, button { cursor: none !important; }
         }
-      \`}</style>
+      `}</style>
 
       <CustomCursor />
       <Nav />
