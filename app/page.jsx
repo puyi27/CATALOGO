@@ -1,6 +1,5 @@
 import HeroKinetic from "@/components/HeroKinetic";
 import StyleShowcase from "@/components/StyleShowcase";
-import BackendEngine from "@/components/BackendEngine";
 import CursorMagnetico from "@/components/CursorMagnetico";
 
 export default function Home() {
@@ -9,7 +8,6 @@ export default function Home() {
       <CursorMagnetico />
       <HeroKinetic />
       <StyleShowcase />
-      <BackendEngine context="default" />
     </main>
   );
 }
