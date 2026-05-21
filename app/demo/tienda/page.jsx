@@ -1,303 +1,249 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
-import { LazyMotion, domAnimation, m, AnimatePresence, useSpring, useMotionValue, useTransform } from 'framer-motion';
-import Image from 'next/image';
-import Link from 'next/link';
-import { ShoppingBag, Menu, X, ArrowRight, ChevronLeft, Plus } from 'lucide-react';
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence, useMotionValue, useSpring } from "framer-motion";
+import Link from "next/link";
+import { ShoppingCart, X, ArrowLeft, ArrowRight, Zap, Target, Shield, Globe } from "lucide-react";
 
-// Custom Cursor
-function CustomCursor() {
+export default function ObsidianApparel() {
+  const [isCartOpen, setIsCartOpen] = useState(false);
+
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
-  const scale = useMotionValue(1);
-  const isHovering = useMotionValue(0);
 
-  const springConfig = { damping: 25, stiffness: 300, mass: 0.5 };
+  const springConfig = { damping: 25, stiffness: 400 };
   const cursorXSpring = useSpring(cursorX, springConfig);
   const cursorYSpring = useSpring(cursorY, springConfig);
-  const scaleSpring = useSpring(scale, springConfig);
-  const hoverSpring = useSpring(isHovering, springConfig);
 
   useEffect(() => {
     const moveCursor = (e) => {
-      cursorX.set(e.clientX - 10);
-      cursorY.set(e.clientY - 10);
+      cursorX.set(e.clientX - 12);
+      cursorY.set(e.clientY - 12);
     };
-
-    const handleMouseOver = (e) => {
-      const target = e.target;
-      if (target.tagName.toLowerCase() === 'button' || target.tagName.toLowerCase() === 'a' || target.closest('.interactive-target')) {
-        scale.set(2.5);
-        isHovering.set(1);
-      } else {
-        scale.set(1);
-        isHovering.set(0);
-      }
-    };
-
-    window.addEventListener('mousemove', moveCursor);
-    window.addEventListener('mouseover', handleMouseOver);
-
+    window.addEventListener("mousemove", moveCursor);
     return () => {
-      window.removeEventListener('mousemove', moveCursor);
-      window.removeEventListener('mouseover', handleMouseOver);
+      window.removeEventListener("mousemove", moveCursor);
     };
-  }, [cursorX, cursorY, scale, isHovering]);
+  }, [cursorX, cursorY]);
 
   return (
-    <m.div
-      className="fixed top-0 left-0 w-5 h-5 rounded-full border border-black mix-blend-difference pointer-events-none z-[9999]"
-      style={{
-        x: cursorXSpring,
-        y: cursorYSpring,
-        scale: scaleSpring,
-        backgroundColor: useTransform(hoverSpring, [0, 1], ['rgba(255, 255, 255, 0)', 'rgba(255, 255, 255, 1)'])
-      }}
-    />
-  );
-}
+    <div className="min-h-screen bg-[#000000] text-white font-sans uppercase selection:bg-[#00FF00] selection:text-black cursor-none">
+      <motion.div
+        className="fixed top-0 left-0 w-6 h-6 border-2 border-[#00FF00] rounded-full pointer-events-none z-[100] mix-blend-difference flex items-center justify-center"
+        style={{ x: cursorXSpring, y: cursorYSpring }}
+      >
+        <div className="w-1 h-1 bg-[#00FF00] rounded-full" />
+      </motion.div>
 
-const products = [
-  { id: 1, name: 'Anillo Ónice V', price: '450€', category: 'Anillos', img: 'https://loremflickr.com/1000/1000/jewelry,luxury/all?lock=1' },
-  { id: 2, name: 'Collar Cadena Plata', price: '680€', category: 'Collares', img: 'https://loremflickr.com/1000/1000/jewelry,luxury/all?lock=2' },
-  { id: 3, name: 'Brazalete Minimal', price: '320€', category: 'Pulseras', img: 'https://loremflickr.com/1000/1000/jewelry,luxury/all?lock=3' },
-  { id: 4, name: 'Pendientes Gota', price: '290€', category: 'Pendientes', img: 'https://loremflickr.com/1000/1000/jewelry,luxury/all?lock=4' }
-];
+      <nav className="fixed top-0 left-0 w-full p-6 md:p-8 flex justify-between items-center z-50 mix-blend-difference pointer-events-none">
+        <Link href="/" className="pointer-events-auto flex items-center gap-2 hover:text-[#00FF00] transition-colors uppercase font-bold tracking-widest text-sm bg-black/20 p-2 rounded-lg backdrop-blur-sm">
+          <ArrowLeft size={16} /> CATÁLOGO
+        </Link>
+        <div className="text-3xl font-black tracking-tighter pointer-events-auto">OBSIDIAN</div>
+        <button onClick={() => setIsCartOpen(true)} className="pointer-events-auto hover:text-[#00FF00] transition-colors flex items-center gap-3 font-bold tracking-widest text-sm group bg-black/20 p-2 rounded-lg backdrop-blur-sm">
+          CART <ShoppingCart size={18} className="group-hover:scale-110 transition-transform" />
+        </button>
+      </nav>
 
-export default function TiendaDemo() {
-  const [cartOpen, setCartOpen] = useState(false);
-  const [cartItems, setCartItems] = useState([]);
-
-  const handleAddToCart = (product) => {
-    setCartItems(prev => [...prev, product]);
-    setCartOpen(true);
-  };
-
-  const removeFromCart = (index) => {
-    setCartItems(prev => prev.filter((_, i) => i !== index));
-  };
-
-  const cartTotal = cartItems.reduce((acc, item) => acc + parseInt(item.price), 0);
-
-  return (
-    <LazyMotion features={domAnimation}>
-      <style dangerouslySetInnerHTML={{__html: `body { cursor: none !important; }`}} />
-      <main className="min-h-screen bg-[#F5F5F3] text-[#111] font-sans selection:bg-[#111] selection:text-white relative">
-        <CustomCursor />
-
-        {/* FLOATING BACK BUTTON */}
-        <div className="fixed bottom-8 right-8 z-[100] interactive-target">
-          <Link href="/">
-            <m.div 
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              className="flex items-center justify-center w-14 h-14 rounded-full bg-white border border-black/10 backdrop-blur-md text-black hover:bg-black hover:text-white transition-colors shadow-2xl group cursor-none"
-            >
-              <ChevronLeft className="w-6 h-6 group-hover:-translate-x-1 transition-transform" />
-            </m.div>
-          </Link>
+      <header className="relative h-screen w-full flex flex-col justify-end overflow-hidden pt-24">
+        <div className="absolute inset-0 z-0">
+           <img src="https://loremflickr.com/1920/1080/streetwear,fashion?lock=101" alt="Hero" className="w-full h-full object-cover opacity-60 grayscale hover:grayscale-0 transition-all duration-1000 scale-105 hover:scale-100" />
+           <div className="absolute inset-0 bg-black/40"></div>
         </div>
         
-        {/* Navbar */}
-        <nav className="fixed w-full p-8 flex justify-between items-center z-50 mix-blend-difference text-white pointer-events-none">
-          <button className="text-sm uppercase tracking-widest font-medium hover:opacity-50 transition-opacity pointer-events-auto cursor-none interactive-target">
-            <Menu className="w-6 h-6"/>
-          </button>
-          
-          <h1 className="text-2xl font-serif font-light tracking-[0.3em] uppercase ml-6 pointer-events-auto">MAISON</h1>
-          
-          <button onClick={() => setCartOpen(true)} className="relative hover:opacity-50 transition-opacity pointer-events-auto cursor-none interactive-target">
-            <ShoppingBag className="w-6 h-6" />
-            {cartItems.length > 0 && (
-              <m.span 
-                initial={{ scale: 0 }} animate={{ scale: 1 }}
-                className="absolute -top-2 -right-2 bg-white text-black text-[10px] w-5 h-5 flex items-center justify-center rounded-full font-bold"
-              >
-                {cartItems.length}
-              </m.span>
-            )}
-          </button>
-        </nav>
+        <div className="relative z-10 w-full overflow-hidden border-y border-[#00FF00]/30 py-6 bg-black/80 backdrop-blur-md">
+          <motion.div
+            animate={{ x: ["0%", "-50%"] }}
+            transition={{ repeat: Infinity, ease: "linear", duration: 15 }}
+            className="flex whitespace-nowrap text-[#00FF00] font-black text-5xl md:text-8xl tracking-tighter"
+          >
+            <span className="pr-12">NEW COLLECTION DROP // OBSIDIAN SS26 //</span>
+            <span className="pr-12">NEW COLLECTION DROP // OBSIDIAN SS26 //</span>
+            <span className="pr-12">NEW COLLECTION DROP // OBSIDIAN SS26 //</span>
+            <span className="pr-12">NEW COLLECTION DROP // OBSIDIAN SS26 //</span>
+          </motion.div>
+        </div>
+      </header>
 
-        {/* Hero Banner */}
-        <section className="relative h-screen w-full bg-[#111] flex items-center justify-center overflow-hidden">
-          <div className="absolute inset-0 opacity-80">
-            <Image 
-              src="https://loremflickr.com/1000/1000/jewelry,luxury/all?lock=5" 
-              alt="Maison Jewelry Banner" 
-              fill 
-              priority
-              className="object-cover"
-            />
+      <main>
+        <section className="py-32 px-6 max-w-[1400px] mx-auto">
+          <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+            <h2 className="text-5xl md:text-8xl font-black tracking-tighter">INVENTORY</h2>
+            <p className="text-zinc-500 font-bold tracking-widest text-sm pb-3">SEASON 26 // CLASSIFIED GEAR</p>
           </div>
-          <div className="absolute inset-0 bg-black/30" />
           
-          <div className="relative z-10 text-center text-white flex flex-col items-center">
-            <m.span 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-              className="font-mono text-xs tracking-[0.3em] uppercase mb-6 block"
-            >
-              Colección Otoño / Invierno
-            </m.span>
-            <m.h2 
-              initial={{ opacity: 0, y: 40 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.4, duration: 0.8 }}
-              className="text-6xl md:text-[9rem] font-serif font-light tracking-tighter leading-[0.85] mb-8"
-            >
-              Artesanía <br/><span className="italic">Pura.</span>
-            </m.h2>
-            <m.button
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.8 }}
-              className="mt-8 border border-white/30 hover:border-white px-8 py-4 uppercase text-xs tracking-widest font-mono transition-colors interactive-target cursor-none bg-black/20 backdrop-blur-sm"
-              onClick={() => {
-                document.getElementById('catalog')?.scrollIntoView({ behavior: 'smooth' });
-              }}
-            >
-              Explorar Colección
-            </m.button>
-          </div>
-        </section>
-
-        {/* Catalog */}
-        <section id="catalog" className="py-32 px-6 max-w-[100rem] mx-auto">
-          <div className="flex justify-between items-end mb-16 border-b border-black/10 pb-8">
-            <h3 className="text-4xl md:text-6xl font-serif font-light tracking-tight">Selección</h3>
-            <span className="font-mono text-xs uppercase tracking-widest text-zinc-500">4 Piezas</span>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-24">
-            {products.map((product, idx) => (
-              <m.div 
-                key={product.id}
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.6, delay: idx * 0.1 }}
-                className="group flex flex-col"
-              >
-                <div className="relative aspect-[3/4] w-full bg-[#EAEAEA] mb-6 overflow-hidden cursor-none interactive-target" onClick={() => handleAddToCart(product)}>
-                  <Image 
-                    src={product.img} 
-                    alt={product.name} 
-                    fill
-                    loading="lazy"
-                    sizes="(max-width: 768px) 100vw, 50vw"
-                    className="object-cover object-center grayscale group-hover:grayscale-0 transition-all duration-700 group-hover:scale-105"
-                  />
-                  {/* Quick Add Overlay */}
-                  <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-500 flex items-center justify-center">
-                    <span className="bg-white text-black px-6 py-3 rounded-full text-xs font-mono uppercase tracking-widest flex items-center gap-2 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500">
-                      <Plus className="w-4 h-4"/> Añadir a Bolsa
-                    </span>
-                  </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div className="group cursor-pointer">
+              <div className="relative aspect-[3/4] overflow-hidden bg-zinc-900 border border-white/10 group-hover:border-[#00FF00] transition-colors">
+                <img src="https://loremflickr.com/800/1000/streetwear,fashion?lock=102" className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 opacity-100 group-hover:opacity-0 grayscale" alt="Heavyweight Tee 1" />
+                <img src="https://loremflickr.com/800/1000/streetwear,fashion?lock=103" className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 opacity-0 group-hover:opacity-100 grayscale group-hover:grayscale-0 scale-110 group-hover:scale-100" alt="Heavyweight Tee 2" />
+                <div className="absolute top-4 left-4 bg-[#00FF00] text-black text-xs font-black px-2 py-1 tracking-widest">NEW</div>
+              </div>
+              <div className="mt-6 flex justify-between items-start font-bold uppercase tracking-widest text-sm">
+                <div>
+                  <h3 className="group-hover:text-[#00FF00] transition-colors text-lg">HEAVYWEIGHT TEE</h3>
+                  <p className="text-zinc-500 mt-1 text-xs">BLACK / ONYX</p>
                 </div>
-                
-                <div className="flex justify-between items-start">
-                  <div>
-                    <span className="text-[10px] uppercase font-mono tracking-widest text-zinc-500 mb-2 block">{product.category}</span>
-                    <h4 className="text-2xl font-serif font-light">{product.name}</h4>
-                  </div>
-                  <span className="text-xl font-light">{product.price}</span>
-                </div>
-              </m.div>
-            ))}
-          </div>
-        </section>
+                <div className="text-right text-lg">€55</div>
+              </div>
+            </div>
 
-        {/* E-commerce Quality Trust Banner */}
-        <section className="py-24 border-t border-black/10 bg-white">
-          <div className="max-w-[100rem] mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-12 text-center md:text-left">
-            <div>
-              <h5 className="font-mono text-xs uppercase tracking-widest mb-4">Envío Global Asegurado</h5>
-              <p className="text-zinc-500 font-light text-sm">Entregas en 48-72h mediante servicio de mensajería acorazada para todas las piezas de alta joyería.</p>
+            <div className="group cursor-pointer">
+              <div className="relative aspect-[3/4] overflow-hidden bg-zinc-900 border border-white/10 group-hover:border-[#00FF00] transition-colors">
+                <img src="https://loremflickr.com/800/1000/streetwear,fashion?lock=104" className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 opacity-100 group-hover:opacity-0 grayscale" alt="Cargo Pants 1" />
+                <img src="https://loremflickr.com/800/1000/streetwear,fashion?lock=105" className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 opacity-0 group-hover:opacity-100 grayscale group-hover:grayscale-0 scale-110 group-hover:scale-100" alt="Cargo Pants 2" />
+              </div>
+              <div className="mt-6 flex justify-between items-start font-bold uppercase tracking-widest text-sm">
+                <div>
+                  <h3 className="group-hover:text-[#00FF00] transition-colors text-lg">CARGO PANTS</h3>
+                  <p className="text-zinc-500 mt-1 text-xs">NIGHT SHADOW</p>
+                </div>
+                <div className="text-right text-lg">€120</div>
+              </div>
             </div>
-            <div>
-              <h5 className="font-mono text-xs uppercase tracking-widest mb-4">Plata Reciclada 925</h5>
-              <p className="text-zinc-500 font-light text-sm">Nuestros talleres utilizan metales nobles procedentes de fuentes éticas y 100% circulares.</p>
-            </div>
-            <div>
-              <h5 className="font-mono text-xs uppercase tracking-widest mb-4">Atención Personalizada</h5>
-              <p className="text-zinc-500 font-light text-sm">Un conserje digital disponible 24/7 para asistirle en tallas, grabados y pedidos especiales.</p>
+
+            <div className="group opacity-50 cursor-not-allowed">
+              <div className="relative aspect-[3/4] overflow-hidden bg-zinc-900 border border-white/5">
+                <img src="https://loremflickr.com/800/1000/streetwear,fashion?lock=106" className="w-full h-full object-cover grayscale" alt="Tactical Vest" />
+                <div className="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+                  <span className="border-2 border-white/50 text-white/80 px-6 py-2 text-2xl font-black tracking-widest rotate-[-15deg]">SOLD OUT</span>
+                </div>
+              </div>
+              <div className="mt-6 flex justify-between items-start font-bold uppercase tracking-widest text-sm">
+                <div>
+                  <h3 className="text-lg">TACTICAL VEST</h3>
+                  <p className="text-zinc-500 mt-1 text-xs">GRAPHITE</p>
+                </div>
+                <div className="text-right text-lg">€85</div>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* Off-canvas Cart */}
-        <AnimatePresence>
-          {cartOpen && (
-            <>
-              <m.div 
-                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                onClick={() => setCartOpen(false)}
-                className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[90] cursor-none"
-              />
-              <m.div 
-                initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }}
-                transition={{ type: "spring", damping: 25, stiffness: 200 }}
-                className="fixed top-0 right-0 w-full md:w-[500px] h-full bg-[#FAFAFA] z-[100] p-8 md:p-12 shadow-2xl flex flex-col"
-              >
-                <div className="flex justify-between items-center mb-12 border-b border-black/10 pb-6">
-                  <h3 className="text-2xl font-serif font-light uppercase tracking-widest">Bolsa <span className="text-zinc-400">({cartItems.length})</span></h3>
-                  <button onClick={() => setCartOpen(false)} className="hover:rotate-90 transition-transform interactive-target cursor-none">
-                    <X className="w-8 h-8 font-light"/>
-                  </button>
-                </div>
-                
-                <div className="flex-1 overflow-y-auto pr-2">
-                  {cartItems.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center h-full text-zinc-400">
-                      <ShoppingBag className="w-12 h-12 mb-4 opacity-20" />
-                      <p className="font-light text-lg uppercase tracking-widest text-center">Tu bolsa está <br/>vacía.</p>
-                    </div>
-                  ) : (
-                    cartItems.map((item, i) => (
-                      <div key={i} className="flex gap-6 items-center border-b border-black/5 pb-6 mb-6 group">
-                        <div className="relative w-24 h-32 bg-[#F0F0F0] flex-shrink-0">
-                          <Image src={item.img} alt={item.name} fill sizes="96px" className="object-cover" />
-                        </div>
-                        <div className="flex-1">
-                          <h4 className="font-serif text-lg">{item.name}</h4>
-                          <p className="text-[10px] text-zinc-500 uppercase tracking-widest mt-1 mb-3">Talla Única</p>
-                          <p className="font-medium text-lg">{item.price}</p>
-                        </div>
-                        <button 
-                          onClick={() => removeFromCart(i)}
-                          className="text-xs uppercase font-mono tracking-widest text-zinc-400 hover:text-red-500 transition-colors underline interactive-target cursor-none"
-                        >
-                          Eliminar
-                        </button>
-                      </div>
-                    ))
-                  )}
-                </div>
+        <section className="py-32 border-y border-white/10 relative overflow-hidden bg-[#050505]">
+          <div className="max-w-[1400px] mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-16 md:gap-8 text-center relative z-10">
+            <div className="flex flex-col items-center">
+              <Target className="text-[#00FF00] mb-8" size={48} />
+              <div className="text-5xl md:text-7xl font-black text-white/10 tracking-tighter mb-6 absolute top-0 -z-10">01</div>
+              <h3 className="text-2xl font-black tracking-widest mb-4">LIMITED PRODUCTION</h3>
+              <p className="text-zinc-500 text-xs font-bold tracking-widest leading-loose max-w-xs">EACH GARMENT IS PRODUCED IN STRICTLY LIMITED QUANTITIES TO ENSURE EXCLUSIVITY.</p>
+            </div>
+            <div className="flex flex-col items-center">
+              <Shield className="text-[#00FF00] mb-8" size={48} />
+              <div className="text-5xl md:text-7xl font-black text-white/10 tracking-tighter mb-6 absolute top-0 -z-10">02</div>
+              <h3 className="text-2xl font-black tracking-widest mb-4">TACTICAL UTILITY</h3>
+              <p className="text-zinc-500 text-xs font-bold tracking-widest leading-loose max-w-xs">ENGINEERED FOR THE URBAN BATTLEFIELD WITH MILITARY-GRADE MATERIALS.</p>
+            </div>
+            <div className="flex flex-col items-center">
+              <Globe className="text-[#00FF00] mb-8" size={48} />
+              <div className="text-5xl md:text-7xl font-black text-white/10 tracking-tighter mb-6 absolute top-0 -z-10">03</div>
+              <h3 className="text-2xl font-black tracking-widest mb-4">GLOBAL SYNDICATE</h3>
+              <p className="text-zinc-500 text-xs font-bold tracking-widest leading-loose max-w-xs">A WORLDWIDE NETWORK OF INDIVIDUALS WHO REFUSE TO CONFORM TO THE MASSES.</p>
+            </div>
+          </div>
+        </section>
 
-                <div className="border-t border-black/10 pt-8 mt-auto">
-                  <div className="flex justify-between items-end mb-8">
-                    <span className="font-mono text-xs uppercase tracking-widest text-zinc-500">Subtotal</span>
-                    <span className="text-3xl font-serif">{cartTotal}€</span>
-                  </div>
-                  <button 
-                    disabled={cartItems.length === 0}
-                    className="w-full bg-[#111] text-white py-6 text-sm uppercase tracking-widest hover:bg-black transition-colors disabled:opacity-50 disabled:cursor-not-allowed interactive-target cursor-none flex justify-center items-center gap-4"
-                  >
-                    Checkout Seguro <ArrowRight className="w-4 h-4" />
-                  </button>
-                  <p className="text-[9px] text-center text-zinc-400 mt-6 uppercase tracking-widest font-mono">
-                    Impuestos incluidos. Pago encriptado.
-                  </p>
-                </div>
-              </m.div>
-            </>
-          )}
-        </AnimatePresence>
+        <section className="py-32 bg-black border-b border-white/10">
+          <div className="max-w-[1400px] mx-auto px-6">
+            <h2 className="text-4xl md:text-6xl font-black mb-20 tracking-tighter text-center">SURVEILLANCE LOGS</h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+              <div className="p-10 border border-white/10 hover:border-[#00FF00]/50 transition-colors bg-[#050505]">
+                <Zap className="text-[#00FF00] mb-8" size={32} />
+                <p className="text-xl md:text-2xl font-bold tracking-wide leading-relaxed mb-10 text-zinc-300">"OBSIDIAN APPAREL REDEFINES WHAT IT MEANS TO WEAR STREETWEAR IN A DYSTOPIAN PRESENT. BRUTAL, UNCOMPROMISING, ESSENTIAL."</p>
+                <div className="text-[#00FF00] font-black tracking-widest text-sm">HYPEBEAST // HIGHSNOBIETY</div>
+              </div>
+              <div className="p-10 border border-white/10 hover:border-[#00FF00]/50 transition-colors bg-[#050505]">
+                <Zap className="text-[#00FF00] mb-8" size={32} />
+                <p className="text-xl md:text-2xl font-bold tracking-wide leading-relaxed mb-10 text-zinc-300">"THE AESTHETIC IS PURE AGGRESSION CONCEALED IN MINIMALIST TAILORING. A TRIUMPH OF URBAN SURVIVAL GEAR."</p>
+                <div className="text-[#00FF00] font-black tracking-widest text-sm">VOGUE HOMMES // DAZED</div>
+              </div>
+            </div>
+          </div>
+        </section>
 
+        <section className="py-40 relative flex items-center justify-center overflow-hidden">
+          <div className="absolute inset-0 z-0">
+            <img src="https://loremflickr.com/1920/1080/streetwear,fashion?lock=107" className="w-full h-full object-cover opacity-20 grayscale" alt="Background" />
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+          </div>
+          <div className="relative z-10 text-center px-6 max-w-4xl mx-auto">
+            <h2 className="text-6xl md:text-8xl font-black tracking-tighter mb-8 text-[#00FF00]">JOIN THE SYNDICATE</h2>
+            <p className="text-lg md:text-xl font-bold tracking-widest mb-12 text-zinc-400">ENTER THE MAINFRAME FOR EARLY ACCESS TO CLASSIFIED DROPS.</p>
+            <div className="flex flex-col md:flex-row gap-4 justify-center max-w-2xl mx-auto">
+              <input type="email" placeholder="ENTER ENCRYPTED EMAIL" className="bg-black/50 border border-white/30 px-6 py-5 outline-none focus:border-[#00FF00] transition-colors w-full font-bold tracking-widest text-center md:text-left text-sm" />
+              <button className="bg-[#00FF00] text-black px-12 py-5 font-black tracking-tighter text-xl hover:bg-white transition-colors shrink-0">INITIALIZE</button>
+            </div>
+          </div>
+        </section>
       </main>
-    </LazyMotion>
+
+      <footer className="border-t border-[#00FF00]/30 bg-[#050505] pt-24 pb-12 px-6 uppercase tracking-widest text-xs font-bold">
+        <div className="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 mb-24">
+          <div className="md:col-span-2">
+            <h2 className="text-5xl md:text-7xl font-black tracking-tighter mb-6 text-white">OBSIDIAN</h2>
+            <p className="text-zinc-500 max-w-sm leading-loose">FORGED IN THE STREETS. ENGINEERED FOR THE FUTURE. NO COMPROMISE. NO SURRENDER.</p>
+          </div>
+          <div className="flex flex-col space-y-6 text-zinc-400">
+            <a href="#" className="hover:text-[#00FF00] transition-colors">SHOP ALL</a>
+            <a href="#" className="hover:text-[#00FF00] transition-colors">ARCHIVE CLASSIFIED</a>
+            <a href="#" className="hover:text-[#00FF00] transition-colors">SYNDICATE MANIFESTO</a>
+            <a href="#" className="hover:text-[#00FF00] transition-colors">COMMS DIRECT</a>
+          </div>
+          <div className="flex flex-col space-y-6 text-zinc-400">
+            <a href="#" className="hover:text-[#00FF00] transition-colors">INSTAGRAM NETWORK</a>
+            <a href="#" className="hover:text-[#00FF00] transition-colors">TWITTER FEED</a>
+            <a href="#" className="hover:text-[#00FF00] transition-colors">DISCORD MAINFRAME</a>
+          </div>
+        </div>
+        <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row justify-between items-center text-zinc-600 border-t border-white/10 pt-8 gap-4">
+          <p>© 2026 OBSIDIAN APPAREL</p>
+          <p>ALL RIGHTS RESERVED // SECURE CONNECTION</p>
+        </div>
+      </footer>
+
+      <AnimatePresence>
+        {isCartOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[110] bg-black/80 backdrop-blur-md flex justify-end"
+          >
+            <motion.div
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="w-full max-w-lg h-full bg-[#050505] border-l border-[#00FF00]/30 p-8 flex flex-col uppercase font-bold tracking-widest relative overflow-hidden"
+            >
+              <div className="absolute top-0 right-0 w-96 h-96 bg-[#00FF00] opacity-5 blur-[120px] rounded-full pointer-events-none"></div>
+
+              <div className="flex justify-between items-center border-b border-white/10 pb-6 mb-8 relative z-10">
+                <h2 className="text-3xl font-black tracking-tighter">SECURE CART (0)</h2>
+                <button onClick={() => setIsCartOpen(false)} className="hover:text-[#00FF00] transition-colors hover:rotate-90 duration-300">
+                  <X size={32} />
+                </button>
+              </div>
+
+              <div className="flex-1 flex flex-col items-center justify-center text-zinc-600 space-y-6 relative z-10">
+                <ShoppingCart size={80} className="opacity-10" />
+                <p className="text-xl font-black tracking-tighter">CART IS EMPTY</p>
+                <p className="text-xs tracking-widest">LOAD UP BEFORE THE DROP ENDS</p>
+              </div>
+
+              <div className="mt-auto border-t border-white/10 pt-8 space-y-6 relative z-10">
+                <div className="flex justify-between text-xl font-black">
+                  <span>SUBTOTAL</span>
+                  <span className="text-[#00FF00]">€0.00</span>
+                </div>
+                <button className="w-full bg-[#00FF00] text-black py-5 hover:bg-white transition-all font-black text-2xl tracking-tighter group flex items-center justify-center gap-4" onClick={() => setIsCartOpen(false)}>
+                  CHECKOUT <ArrowRight className="group-hover:translate-x-2 transition-transform" />
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
   );
 }
