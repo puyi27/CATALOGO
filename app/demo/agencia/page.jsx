@@ -1,234 +1,194 @@
-"use client";
+'use client'
 
-import React, { useState, useEffect, useRef } from 'react';
-import { LazyMotion, domAnimation, m, AnimatePresence, useScroll, useTransform, useMotionValue, useSpring } from 'framer-motion';
-import { ArrowUpRight, Sparkle, ChevronDown, Mail, Instagram, Linkedin } from 'lucide-react';
+import React, { useEffect, useRef } from 'react';
+import gsap from 'gsap';
+import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Link from 'next/link';
-
-const projects = [
-  { id: 1, title: 'Rebrand Completo', client: 'Grupo Terranova', year: '2024', category: 'Branding', color: '#1a1a2e', img: 'https://loremflickr.com/1000/1000/branding,design/all?lock=1' },
-  { id: 2, title: 'E-Commerce Headless', client: 'Moda Nuo', year: '2024', category: 'Digital', color: '#16213e', img: 'https://loremflickr.com/1000/1000/branding,design/all?lock=2' },
-  { id: 3, title: 'Campaña Viral', client: 'Cerveza Nórdica', year: '2023', category: 'Campaña', color: '#0f3460', img: 'https://loremflickr.com/1000/1000/branding,design/all?lock=3' },
-  { id: 4, title: 'App UX/UI', client: 'FinTech Iberia', year: '2023', category: 'Product Design', color: '#533483', img: 'https://loremflickr.com/1000/1000/branding,design/all?lock=4' },
-];
-
-const services = [
-  { num: '01', title: 'Estrategia de Marca', desc: 'Posicionamiento, naming, identidad visual y arquitectura de comunicación para marcas con ambición.' },
-  { num: '02', title: 'Diseño Digital', desc: 'Webs, apps y experiencias interactivas que convierten visitantes en clientes fieles.' },
-  { num: '03', title: 'Producción Audiovisual', desc: 'Spots, reels y contenido para redes con un enfoque narrativo que impacta de los primeros 3 segundos.' },
-  { num: '04', title: 'Performance & SEO', desc: 'Campañas de Google y Meta con ROI demostrado. Medimos cada euro para que rinda al máximo.' },
-];
-
-const stats = [
-  { value: '12+', label: 'Años de experiencia' },
-  { value: '230+', label: 'Proyectos entregados' },
-  { value: '94%', label: 'Clientes repiten' },
-  { value: '€4.2M', label: 'Revenue generado' },
-];
+import { ArrowLeft, ArrowUpRight } from 'lucide-react';
 
 export default function AgenciaDemo() {
-  const [activeProject, setActiveProject] = useState(null);
-  const cursorX = useMotionValue(-200);
-  const cursorY = useMotionValue(-200);
-  const springX = useSpring(cursorX, { stiffness: 500, damping: 40, mass: 0.3 });
-  const springY = useSpring(cursorY, { stiffness: 500, damping: 40, mass: 0.3 });
-  const { scrollYProgress } = useScroll();
-  const heroOpacity = useTransform(scrollYProgress, [0, 0.15], [1, 0]);
-  const heroY = useTransform(scrollYProgress, [0, 0.15], [0, -80]);
+  const containerRef = useRef(null);
+  const cursorRef = useRef(null);
 
   useEffect(() => {
-    const handler = (e) => { cursorX.set(e.clientX - 6); cursorY.set(e.clientY - 6); };
-    window.addEventListener('mousemove', handler, { passive: true });
-    return () => window.removeEventListener('mousemove', handler);
+    gsap.registerPlugin(ScrollTrigger);
+
+    const cursor = cursorRef.current;
+    
+    gsap.set(cursor, { xPercent: -50, yPercent: -50 });
+    
+    const xTo = gsap.quickTo(cursor, "x", {duration: 0.3, ease: "power3"});
+    const yTo = gsap.quickTo(cursor, "y", {duration: 0.3, ease: "power3"});
+
+    const handleMouseMove = (e) => {
+      xTo(e.clientX);
+      yTo(e.clientY);
+    };
+    
+    window.addEventListener('mousemove', handleMouseMove);
+
+    const images = document.querySelectorAll('.hover-image');
+    const onImgEnter = () => gsap.to(cursor, { scale: 5, duration: 0.4, ease: 'power2.out' });
+    const onImgLeave = () => gsap.to(cursor, { scale: 1, duration: 0.4, ease: 'power2.out' });
+    
+    images.forEach(img => {
+      img.addEventListener('mouseenter', onImgEnter);
+      img.addEventListener('mouseleave', onImgLeave);
+    });
+
+    const links = document.querySelectorAll('a, button');
+    const onLinkEnter = () => gsap.to(cursor, { scale: 2, duration: 0.3, ease: 'power2.out' });
+    const onLinkLeave = () => gsap.to(cursor, { scale: 1, duration: 0.3, ease: 'power2.out' });
+
+    links.forEach(link => {
+      link.addEventListener('mouseenter', onLinkEnter);
+      link.addEventListener('mouseleave', onLinkLeave);
+    });
+
+    const ctx = gsap.context(() => {
+      const projectsArray = gsap.utils.toArray('.project-card');
+      
+      projectsArray.forEach((project, i) => {
+        if (i !== projectsArray.length - 1) {
+          const nextProject = projectsArray[i + 1];
+          gsap.to(project.querySelector('.project-inner'), {
+            scale: 0.95,
+            opacity: 0.5,
+            scrollTrigger: {
+              trigger: nextProject,
+              start: "top bottom",
+              end: "top top",
+              scrub: true,
+            }
+          });
+
+          ScrollTrigger.create({
+            trigger: project,
+            start: "top top",
+            pin: true,
+            pinSpacing: false,
+            endTrigger: '.projects-container',
+            end: "bottom bottom",
+          });
+        }
+      });
+    }, containerRef);
+    
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      images.forEach(img => {
+        img.removeEventListener('mouseenter', onImgEnter);
+        img.removeEventListener('mouseleave', onImgLeave);
+      });
+      links.forEach(link => {
+        link.removeEventListener('mouseenter', onLinkEnter);
+        link.removeEventListener('mouseleave', onLinkLeave);
+      });
+      ctx.revert();
+    };
   }, []);
 
+  const projects = [
+    { id: 1, title: 'LUMINA', category: 'FASHION E-COMMERCE', img: 'https://loremflickr.com/1200/800/fashion?lock=10' },
+    { id: 2, title: 'AETHER', category: 'BRAND IDENTITY', img: 'https://loremflickr.com/1200/800/architecture?lock=20' },
+    { id: 3, title: 'SYNTHESIS', category: 'WEB3 PLATFORM', img: 'https://loremflickr.com/1200/800/abstract?lock=30' },
+    { id: 4, title: 'NOVA', category: 'EDITORIAL DESIGN', img: 'https://loremflickr.com/1200/800/typography?lock=40' }
+  ];
+
   return (
-    <LazyMotion features={domAnimation}>
-      <div className="min-h-screen bg-[#F0EDEA] text-[#111] font-sans selection:bg-[#111] selection:text-[#F0EDEA] overflow-x-hidden">
+    <main className="bg-[#f2f2ef] text-[#1a1a1a] min-h-screen selection:bg-black selection:text-[#f2f2ef] cursor-none overflow-x-hidden" ref={containerRef}>
+      
+      <div 
+        ref={cursorRef} 
+        className="fixed top-0 left-0 w-4 h-4 bg-white rounded-full pointer-events-none z-50 flex items-center justify-center mix-blend-difference"
+      />
 
-        {/* Custom Cursor */}
-        <m.div
-          className="fixed top-0 left-0 w-3 h-3 bg-[#111] rounded-full pointer-events-none z-[9999] mix-blend-difference"
-          style={{ x: springX, y: springY }}
-        />
-
-        {/* Nav */}
-        <nav className="fixed top-0 left-0 w-full p-6 md:p-8 flex justify-between items-center z-50 mix-blend-difference text-white">
-          <Link href="/" className="font-bold tracking-[0.3em] uppercase text-sm hover:opacity-60 transition-opacity">
-            ← Catálogo
+      <nav className="fixed top-0 w-full p-6 md:p-8 flex justify-between items-center z-40 mix-blend-difference text-white pointer-events-none">
+        <div className="pointer-events-auto">
+          <Link href="/" className="flex items-center gap-2 font-mono text-xs md:text-sm uppercase tracking-widest hover:opacity-70 transition-opacity">
+            <ArrowLeft size={16} />
+            Catálogo
           </Link>
-          <span className="font-bold tracking-[0.4em] uppercase text-lg">The Agency.</span>
-          <button className="flex items-center gap-2 text-sm tracking-widest uppercase hover:opacity-60 transition-opacity font-medium">
-            <Sparkle className="w-4 h-4" /> Work
-          </button>
-        </nav>
+        </div>
+        <div className="font-mono text-xs md:text-sm uppercase tracking-widest pointer-events-auto">
+          Agencia Studio
+        </div>
+      </nav>
 
-        {/* HERO */}
-        <m.section style={{ opacity: heroOpacity, y: heroY }} className="relative h-screen flex flex-col justify-end p-8 md:p-16 pb-24 overflow-hidden">
-          <div className="absolute inset-0 z-0">
-            <m.div
-              initial={{ clipPath: "circle(0% at 50% 50%)" }}
-              animate={{ clipPath: "circle(45% at 50% 50%)" }}
-              transition={{ duration: 2.5, ease: [0.76, 0, 0.24, 1] }}
-              className="w-full h-full bg-[url('https://loremflickr.com/1000/1000/branding,design/all?lock=5')] bg-cover bg-center"
-            />
-            <div className="absolute inset-0 bg-[#F0EDEA]/60 mix-blend-multiply" />
-          </div>
+      <section className="h-screen flex flex-col justify-center p-6 md:p-12">
+        <div className="max-w-7xl mx-auto w-full mt-24">
+          <p className="font-mono text-xs md:text-sm max-w-sm mb-12 uppercase tracking-widest leading-relaxed">
+            We craft digital experiences that transcend the ordinary. Independent design boutique based in Nowhere.
+          </p>
+          <h1 className="font-serif text-[15vw] md:text-[12vw] leading-[0.85] tracking-tighter w-full uppercase">
+            DIGITAL<br />
+            <span className="italic font-light ml-[10vw]">ARTISANS</span>
+          </h1>
+        </div>
+      </section>
 
-          <div className="relative z-10 max-w-[90rem] mx-auto w-full">
-            <m.p
-              initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1.5 }}
-              className="font-mono text-xs tracking-[0.4em] uppercase text-zinc-500 mb-6"
-            >
-              Agencia Creativa & Digital — Madrid, España
-            </m.p>
-            <m.h1
-              initial={{ y: 100, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              transition={{ duration: 1.5, delay: 0.3, ease: [0.76, 0, 0.24, 1] }}
-              className="text-[3.5rem] md:text-[8rem] lg:text-[11rem] leading-[0.82] font-medium tracking-tighter mb-12"
-            >
-              We build<br />digital <span className="italic font-serif">emotions.</span>
-            </m.h1>
-
-            <m.div
-              initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1.2 }}
-              className="flex flex-col md:flex-row justify-between items-end gap-6"
-            >
-              <p className="text-lg md:text-xl font-light max-w-lg text-zinc-600 leading-relaxed">
-                Creamos marcas, experiencias digitales y campañas que generan impacto real. No hacemos webs; construimos motores de crecimiento.
-              </p>
-              <button className="group flex items-center gap-3 bg-[#111] text-white px-8 py-4 rounded-full font-medium hover:bg-zinc-800 transition-colors">
-                Ver Proyectos
-                <ChevronDown className="w-4 h-4 group-hover:translate-y-1 transition-transform" />
-              </button>
-            </m.div>
-          </div>
-        </m.section>
-
-        {/* STATS */}
-        <section className="py-20 px-6 border-y border-zinc-200 bg-white">
-          <div className="max-w-[90rem] mx-auto grid grid-cols-2 md:grid-cols-4 gap-12">
-            {stats.map((s, i) => (
-              <m.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                className="text-center"
-              >
-                <div className="text-5xl md:text-6xl font-bold tracking-tighter mb-2">{s.value}</div>
-                <div className="text-sm text-zinc-500 font-mono uppercase tracking-widest">{s.label}</div>
-              </m.div>
-            ))}
-          </div>
-        </section>
-
-        {/* PORTFOLIO */}
-        <section className="py-32 px-6 max-w-[90rem] mx-auto">
-          <div className="flex justify-between items-end mb-16">
-            <div>
-              <span className="font-mono text-xs tracking-widest uppercase text-zinc-400 block mb-3">Trabajo Seleccionado</span>
-              <h2 className="text-4xl md:text-6xl font-light tracking-tighter">Casos de Éxito</h2>
-            </div>
-            <span className="text-zinc-400 font-mono text-sm hidden md:block">2023–2024</span>
-          </div>
-
-          <div className="space-y-2">
-            {projects.map((project, i) => (
-              <m.div
-                key={project.id}
-                onHoverStart={() => setActiveProject(project.id)}
-                onHoverEnd={() => setActiveProject(null)}
-                className="group border-b border-zinc-200 py-8 md:py-10 flex flex-col md:flex-row md:items-center justify-between gap-6 cursor-pointer relative overflow-hidden"
-              >
-                <m.div
-                  className="absolute inset-0 bg-[#111] origin-left z-0"
-                  initial={{ scaleX: 0 }}
-                  animate={{ scaleX: activeProject === project.id ? 1 : 0 }}
-                  transition={{ type: 'spring', stiffness: 300, damping: 30 }}
+      <section className="projects-container relative z-10 w-full">
+        {projects.map((project, i) => (
+          <div key={project.id} className="project-card h-screen w-full relative will-change-transform">
+            <div className="project-inner w-full h-full p-4 md:p-8 bg-[#f2f2ef] flex items-center justify-center will-change-transform">
+              <div className="w-full h-full relative overflow-hidden rounded-[2rem] group hover-image">
+                <img 
+                  src={project.img} 
+                  alt={project.title} 
+                  className="w-full h-full object-cover transition-transform duration-[1.5s] ease-[cubic-bezier(0.25,1,0.5,1)] group-hover:scale-110" 
                 />
-                <div className="relative z-10 flex items-center gap-8">
-                  <span className={`font-mono text-xs tracking-widest ${activeProject === project.id ? 'text-zinc-500' : 'text-zinc-300'}`}>{String(i + 1).padStart(2, '0')}</span>
-                  <h3 className={`text-2xl md:text-4xl font-light tracking-tight transition-colors ${activeProject === project.id ? 'text-white' : 'text-[#111]'}`}>{project.title}</h3>
-                </div>
-                <div className="relative z-10 flex items-center gap-8 md:gap-16">
-                  <span className={`text-sm font-mono uppercase tracking-widest transition-colors ${activeProject === project.id ? 'text-zinc-400' : 'text-zinc-400'}`}>{project.client}</span>
-                  <span className={`text-sm font-mono hidden md:block transition-colors ${activeProject === project.id ? 'text-zinc-400' : 'text-zinc-300'}`}>{project.category}</span>
-                  <span className={`text-sm font-mono hidden md:block transition-colors ${activeProject === project.id ? 'text-zinc-500' : 'text-zinc-300'}`}>{project.year}</span>
-                  <ArrowUpRight className={`w-5 h-5 transition-all duration-300 ${activeProject === project.id ? 'text-white rotate-0' : 'text-zinc-300 -rotate-45'}`} />
-                </div>
-              </m.div>
-            ))}
-          </div>
-        </section>
-
-        {/* SERVICIOS */}
-        <section className="py-32 px-6 bg-[#111] text-white">
-          <div className="max-w-[90rem] mx-auto">
-            <div className="mb-20">
-              <span className="font-mono text-xs tracking-widest uppercase text-zinc-500 block mb-3">Lo que hacemos</span>
-              <h2 className="text-4xl md:text-7xl font-light tracking-tighter">Servicios</h2>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-1">
-              {services.map((s, i) => (
-                <m.div
-                  key={i}
-                  whileHover={{ backgroundColor: '#1c1c1c' }}
-                  className="p-10 md:p-14 border border-white/5 flex flex-col gap-8 group cursor-pointer transition-colors"
-                >
-                  <span className="font-mono text-zinc-600 text-xs tracking-widest">{s.num}</span>
-                  <div>
-                    <h3 className="text-2xl md:text-3xl font-light mb-4 group-hover:text-white transition-colors">{s.title}</h3>
-                    <p className="text-zinc-500 font-sans font-light leading-relaxed text-base">{s.desc}</p>
+                <div className="absolute inset-0 bg-black/30 flex flex-col justify-between p-8 md:p-12 text-white">
+                  <div className="flex justify-between items-start">
+                    <span className="font-mono text-sm md:text-base tracking-widest">
+                      {String(i + 1).padStart(2, '0')}
+                    </span>
+                    <span className="font-mono text-sm md:text-base tracking-widest">
+                      {project.category}
+                    </span>
                   </div>
-                  <ArrowUpRight className="w-5 h-5 text-zinc-600 group-hover:text-white transition-colors self-end" />
-                </m.div>
-              ))}
+                  <div className="flex justify-between items-end overflow-hidden">
+                    <h2 className="font-serif text-5xl md:text-[8vw] uppercase leading-none tracking-tighter translate-y-8 group-hover:translate-y-0 transition-transform duration-700 ease-out">
+                      {project.title}
+                    </h2>
+                    <div className="bg-white text-black p-4 md:p-6 rounded-full translate-y-24 group-hover:translate-y-0 transition-transform duration-700 ease-out delay-100">
+                      <ArrowUpRight size={32} className="md:w-12 md:h-12" />
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-        </section>
+        ))}
+      </section>
 
-        {/* CTA FINAL */}
-        <section className="py-40 px-6 bg-[#F0EDEA] flex flex-col items-center text-center">
-          <m.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-          >
-            <span className="font-mono text-xs tracking-[0.4em] uppercase text-zinc-400 block mb-8">¿Listo para crecer?</span>
-            <h2 className="text-5xl md:text-9xl font-light tracking-tighter leading-none mb-16">
-              Hablemos.
-            </h2>
-            <a
-              href="mailto:hola@theagency.es"
-              className="group inline-flex items-center gap-4 bg-[#111] text-white px-12 py-6 rounded-full text-lg font-medium hover:bg-zinc-800 transition-colors"
-            >
-              <Mail className="w-5 h-5" />
-              hola@theagency.es
-              <ArrowUpRight className="w-5 h-5 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
-            </a>
-            <div className="flex items-center justify-center gap-8 mt-12">
-              <a href="#" className="text-zinc-400 hover:text-[#111] transition-colors"><Instagram className="w-5 h-5" /></a>
-              <a href="#" className="text-zinc-400 hover:text-[#111] transition-colors"><Linkedin className="w-5 h-5" /></a>
-            </div>
-          </m.div>
-        </section>
-
-        {/* Footer */}
-        <footer className="py-8 px-6 border-t border-zinc-200 bg-[#F0EDEA]">
-          <div className="max-w-[90rem] mx-auto flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-zinc-400 font-mono uppercase tracking-widest">
-            <span>© {new Date().getFullYear()} The Agency S.L. — Madrid</span>
-            <div className="flex gap-8">
-              <a href="#" className="hover:text-[#111] transition-colors">Aviso Legal</a>
-              <a href="#" className="hover:text-[#111] transition-colors">Política de Privacidad</a>
-            </div>
+      <footer className="h-screen bg-[#111] text-[#f2f2ef] flex flex-col justify-between p-6 md:p-12 z-20 relative">
+        <div className="flex flex-col md:flex-row justify-between items-start font-mono text-sm tracking-widest uppercase gap-8 pt-24">
+          <div className="space-y-2">
+            <p className="text-white/50">Location</p>
+            <p>Based in Nowhere</p>
+            <p>Available Worldwide</p>
           </div>
-        </footer>
-      </div>
-    </LazyMotion>
+          <div className="space-y-2">
+            <p className="text-white/50">Socials</p>
+            <a href="#" className="block hover:opacity-70 transition-opacity">Instagram</a>
+            <a href="#" className="block hover:opacity-70 transition-opacity">Twitter</a>
+            <a href="#" className="block hover:opacity-70 transition-opacity">LinkedIn</a>
+          </div>
+        </div>
+        
+        <div className="w-full text-center py-24">
+          <h1 className="font-serif text-[18vw] leading-none tracking-tighter uppercase whitespace-nowrap">
+            Let's Talk
+          </h1>
+        </div>
+        
+        <div className="flex flex-col md:flex-row justify-between items-end md:items-center font-mono text-xs md:text-sm tracking-widest uppercase gap-4">
+          <p className="text-white/50">© {new Date().getFullYear()} Agencia</p>
+          <Link href="/" className="hover:text-white/70 transition-colors underline underline-offset-4 decoration-white/30">
+            Back to Catalog
+          </Link>
+        </div>
+      </footer>
+    </main>
   );
 }

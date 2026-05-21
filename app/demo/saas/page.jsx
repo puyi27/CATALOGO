@@ -3,9 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { LazyMotion, domAnimation, m, AnimatePresence, useSpring, useMotionValue, useTransform } from 'framer-motion';
 import Link from 'next/link';
-import { ChevronLeft, Zap, Box, Terminal, Activity, Lock, Database, ArrowRight } from 'lucide-react';
+import { ChevronLeft, Zap, Box, Terminal, Activity, Lock, Database, ArrowRight, Cpu, Server, Users, Globe, ArrowUpRight, ArrowLeft } from 'lucide-react';
 
-// Custom Cursor
 function CustomCursor() {
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
@@ -57,203 +56,307 @@ function CustomCursor() {
   );
 }
 
-// Glowing Card Component
-const FeatureCard = ({ icon: Icon, title, desc, delay, colSpan = 1 }) => (
-  <m.div 
-    initial={{ opacity: 0, y: 30 }}
-    whileInView={{ opacity: 1, y: 0 }}
-    viewport={{ once: true, margin: "-50px" }}
-    transition={{ duration: 0.5, delay }}
-    className={`group relative rounded-2xl border border-white/10 bg-gradient-to-b from-white/[0.03] to-transparent p-8 overflow-hidden interactive-el cursor-none ${colSpan === 2 ? 'md:col-span-2' : ''}`}
+const generateSmoothPath = (data, width = 500, height = 200) => {
+  if (data.length === 0) return "";
+  const max = 120;
+  const min = 0;
+  const range = max - min || 1;
+  const stepX = width / (data.length - 1);
+  const points = data.map((val, i) => {
+    const x = i * stepX;
+    const y = height - ((val - min) / range) * height * 0.8 - height * 0.1;
+    return { x, y };
+  });
+  return points.reduce((acc, point, i, a) => {
+    if (i === 0) return `M ${point.x} ${point.y}`;
+    const prev = a[i - 1];
+    const cp1x = prev.x + (point.x - prev.x) / 3;
+    const cp1y = prev.y;
+    const cp2x = point.x - (point.x - prev.x) / 3;
+    const cp2y = point.y;
+    return `${acc} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${point.x} ${point.y}`;
+  }, "");
+};
+
+const BentoBox = ({ children, className, delay = 0 }) => (
+  <m.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.5, delay, ease: "easeOut" }}
+    className={`bg-[#0a0a0a] border border-white/5 rounded-3xl p-6 flex flex-col relative overflow-hidden ${className}`}
   >
-    <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-br from-purple-500/0 via-transparent to-transparent group-hover:from-purple-500/10 transition-colors duration-500" />
+    <div className="absolute inset-0 bg-gradient-to-b from-white/[0.02] to-transparent pointer-events-none" />
     <div className="relative z-10 flex flex-col h-full">
-      <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center mb-6 group-hover:border-purple-500/50 group-hover:shadow-[0_0_15px_rgba(168,85,247,0.3)] transition-all duration-300">
-        <Icon className="w-5 h-5 text-zinc-400 group-hover:text-purple-400 transition-colors" />
-      </div>
-      <h3 className="text-xl font-medium text-white mb-3 tracking-tight">{title}</h3>
-      <p className="text-sm text-zinc-400 leading-relaxed mt-auto font-light">{desc}</p>
+      {children}
     </div>
   </m.div>
 );
 
 export default function SaasDemo() {
+  const [latencyData, setLatencyData] = useState(Array.from({ length: 20 }, () => Math.floor(Math.random() * 60) + 40));
+  const [activeUsers, setActiveUsers] = useState(14520);
+  const [cpuUsage, setCpuUsage] = useState(42);
+  const [reqs, setReqs] = useState(842);
+  const [reqHistory, setReqHistory] = useState(Array.from({ length: 12 }, () => Math.floor(Math.random() * 500) + 500));
+  const [nodes, setNodes] = useState([
+    { name: 'eu-west-1a', ip: '10.0.1.24', status: 'ok', load: 45 },
+    { name: 'eu-west-1b', ip: '10.0.1.25', status: 'ok', load: 62 },
+    { name: 'us-east-1a', ip: '10.0.2.11', status: 'warn', load: 88 },
+    { name: 'ap-south-1a', ip: '10.0.3.5', status: 'ok', load: 31 },
+  ]);
+
+  useEffect(() => {
+    const intLatency = setInterval(() => {
+      setLatencyData(p => [...p.slice(1), Math.floor(Math.random() * 60) + 40]);
+    }, 1500);
+    const intUsers = setInterval(() => {
+      setActiveUsers(p => p + Math.floor(Math.random() * 100) - 40);
+    }, 2000);
+    const intCpu = setInterval(() => {
+      setCpuUsage(Math.floor(Math.random() * 30) + 40);
+    }, 3000);
+    const intReqs = setInterval(() => {
+      const n = Math.floor(Math.random() * 500) + 500;
+      setReqs(n);
+      setReqHistory(p => [...p.slice(1), n]);
+    }, 1000);
+    const intNodes = setInterval(() => {
+      setNodes(p => p.map(n => {
+        const load = Math.max(10, Math.min(99, n.load + Math.floor(Math.random() * 15) - 7));
+        return { ...n, load, status: load > 85 ? 'warn' : 'ok' };
+      }));
+    }, 2500);
+
+    return () => {
+      clearInterval(intLatency);
+      clearInterval(intUsers);
+      clearInterval(intCpu);
+      clearInterval(intReqs);
+      clearInterval(intNodes);
+    };
+  }, []);
+
   return (
     <LazyMotion features={domAnimation}>
       <style dangerouslySetInnerHTML={{__html: `body { cursor: none !important; }`}} />
-      <main className="bg-black text-white font-sans selection:bg-purple-500 selection:text-white min-h-screen relative overflow-hidden">
+      <div className="min-h-screen bg-black text-neutral-100 p-4 md:p-8 font-sans selection:bg-amber-500/30 overflow-x-hidden">
         
         <CustomCursor />
 
-        {/* Ambient Background Glow */}
-        <div className="absolute top-[-20%] left-[20%] w-[60%] h-[40%] bg-purple-900/20 rounded-full blur-[150px] pointer-events-none mix-blend-screen" />
-        <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-900/20 rounded-full blur-[150px] pointer-events-none mix-blend-screen" />
-        
-        {/* Abstract Grid Line Pattern */}
-        <div className="absolute inset-0 z-0 opacity-[0.15] pointer-events-none" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.1) 1px, transparent 1px)', backgroundSize: '60px 60px' }} />
+        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-purple-900/10 rounded-full blur-[120px] pointer-events-none mix-blend-screen translate-x-1/3 -translate-y-1/3" />
+        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-blue-900/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen -translate-x-1/3 translate-y-1/3" />
+        <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
 
-        {/* FLOATING BACK BUTTON */}
-        <div className="fixed bottom-8 right-8 z-[100] interactive-el">
-          <Link href="/">
-            <m.div 
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              className="flex items-center justify-center w-14 h-14 rounded-full bg-zinc-900 border border-white/10 backdrop-blur-md text-white hover:bg-white hover:text-black transition-colors shadow-2xl group cursor-none"
-            >
-              <ChevronLeft className="w-6 h-6 group-hover:-translate-x-1 transition-transform" />
-            </m.div>
+        <nav className="mb-12 flex items-center justify-between max-w-7xl mx-auto relative z-10">
+          <Link href="/" className="inline-flex items-center gap-2 text-neutral-400 hover:text-white transition-colors interactive-el">
+            <ArrowLeft size={16} />
+            <span>Catálogo</span>
           </Link>
-        </div>
-
-        {/* TOP BAR */}
-        <header className="fixed top-0 left-0 w-full p-6 z-50 flex justify-between items-center backdrop-blur-md border-b border-white/10">
-          <div className="flex items-center gap-3 interactive-el cursor-none">
-            <div className="w-8 h-8 rounded bg-gradient-to-br from-purple-600 to-blue-600 flex items-center justify-center shadow-[0_0_15px_rgba(168,85,247,0.4)]">
-              <Zap className="w-4 h-4 text-white" />
-            </div>
-            <span className="font-bold tracking-tight text-lg">NEXUS</span>
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+            <span className="text-xs text-emerald-500 font-mono font-medium">System Operational</span>
           </div>
-          <div className="hidden md:flex gap-8 text-sm font-medium text-zinc-400">
-            <span className="hover:text-white transition-colors cursor-none interactive-el">Plataforma</span>
-            <span className="hover:text-white transition-colors cursor-none interactive-el">Soluciones</span>
-            <span className="hover:text-white transition-colors cursor-none interactive-el">Precios</span>
-          </div>
-          <button className="bg-white text-black px-5 py-2 rounded-full text-sm font-bold hover:scale-105 transition-transform cursor-none interactive-el">
-            Dashboard
-          </button>
-        </header>
+        </nav>
 
-        {/* HERO SECTION */}
-        <section className="relative pt-48 pb-32 px-6 max-w-7xl mx-auto flex flex-col items-center text-center z-10">
-          <m.div 
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-8 backdrop-blur-sm cursor-none interactive-el group"
-          >
-            <span className="w-2 h-2 rounded-full bg-purple-500 group-hover:shadow-[0_0_8px_rgba(168,85,247,0.8)] transition-shadow" />
-            <span className="text-xs font-mono text-zinc-300 tracking-tight">Nexus v4.0 is now available</span>
-            <ArrowRight className="w-3 h-3 text-zinc-400 group-hover:translate-x-1 transition-transform" />
-          </m.div>
+        <main className="max-w-7xl mx-auto relative z-10">
+          <header className="mb-10">
+            <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-3 text-white">Telemetry</h1>
+            <p className="text-neutral-500">Real-time infrastructure monitoring and global edge performance.</p>
+          </header>
 
-          <m.h1 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1, duration: 0.8 }}
-            className="text-6xl md:text-[7rem] font-bold tracking-tighter leading-[0.9] mb-8 bg-clip-text text-transparent bg-gradient-to-b from-white via-white/90 to-zinc-500"
-          >
-            Infraestructura <br/> sin límites.
-          </m.h1>
-
-          <m.p 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.3 }}
-            className="text-xl md:text-2xl text-zinc-400 max-w-2xl font-light leading-relaxed mb-12"
-          >
-            Despliega aplicaciones globales en milisegundos. Escalabilidad automática, latencia ultra-baja y control total desde la línea de comandos.
-          </m.p>
-
-          <m.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="flex flex-col sm:flex-row gap-4 w-full justify-center"
-          >
-            <button className="bg-white text-black px-8 py-4 rounded-full font-bold text-sm md:text-base hover:bg-zinc-200 transition-colors flex items-center justify-center gap-2 cursor-none interactive-el">
-              Empezar gratis
-            </button>
-            <button className="bg-zinc-900 border border-white/10 text-white px-8 py-4 rounded-full font-bold text-sm md:text-base hover:bg-zinc-800 transition-colors cursor-none interactive-el flex items-center justify-center gap-2">
-              <Terminal className="w-4 h-4 text-zinc-400"/> Ver Documentación
-            </button>
-          </m.div>
-
-          {/* Fake CLI Mockup */}
-          <m.div 
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.6, duration: 1, type: "spring" }}
-            className="mt-24 w-full max-w-4xl bg-[#0a0a0a] rounded-2xl border border-white/10 shadow-[0_0_50px_rgba(168,85,247,0.1)] overflow-hidden text-left"
-          >
-            <div className="bg-[#111] border-b border-white/5 p-4 flex gap-2">
-              <div className="w-3 h-3 rounded-full bg-red-500/20 border border-red-500/50" />
-              <div className="w-3 h-3 rounded-full bg-yellow-500/20 border border-yellow-500/50" />
-              <div className="w-3 h-3 rounded-full bg-green-500/20 border border-green-500/50" />
-            </div>
-            <div className="p-6 font-mono text-sm md:text-base leading-loose">
-              <div className="flex gap-4 text-zinc-500">
-                <span>~</span>
-                <span className="text-zinc-300">nexus deploy --prod</span>
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 auto-rows-[180px]">
+            <BentoBox className="col-span-1 md:col-span-2 lg:col-span-2 row-span-2" delay={0.1}>
+              <div className="flex justify-between items-start mb-2">
+                <div>
+                  <h2 className="text-neutral-400 font-medium flex items-center gap-2">
+                    <Zap size={16} className="text-amber-500" />
+                    Global Latency
+                  </h2>
+                  <div className="text-5xl font-bold mt-4 font-mono text-white">
+                    {latencyData[latencyData.length - 1]}
+                    <span className="text-2xl text-neutral-500 ml-1">ms</span>
+                  </div>
+                </div>
+                <div className="px-3 py-1 bg-amber-500/10 text-amber-500 rounded-full text-xs font-medium border border-amber-500/20">
+                  p99
+                </div>
               </div>
-              <div className="text-purple-400 mt-2">→ Analyzing project dependencies...</div>
-              <div className="text-zinc-400">→ Building Edge Functions [4/4]</div>
-              <div className="text-zinc-400">→ Optimizing Static Assets (982kb)</div>
-              <div className="text-emerald-400 mt-4 flex items-center gap-2">
-                <CheckIcon /> Deployment successful! (1.2s)
+              <div className="flex-1 w-full relative mt-4">
+                <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none" viewBox="0 0 500 200">
+                  <defs>
+                    <linearGradient id="latencyGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="rgb(245, 158, 11)" stopOpacity="0.3" />
+                      <stop offset="100%" stopColor="rgb(245, 158, 11)" stopOpacity="0" />
+                    </linearGradient>
+                  </defs>
+                  <m.path
+                    d={generateSmoothPath(latencyData) + " L 500 200 L 0 200 Z"}
+                    fill="url(#latencyGradient)"
+                    transition={{ type: "tween", ease: "linear", duration: 1.5 }}
+                  />
+                  <m.path
+                    d={generateSmoothPath(latencyData)}
+                    fill="none"
+                    stroke="rgb(245, 158, 11)"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    transition={{ type: "tween", ease: "linear", duration: 1.5 }}
+                  />
+                </svg>
+                <div className="absolute inset-0 pointer-events-none border-t border-b border-white/5 flex flex-col justify-between py-2">
+                  <span className="text-[10px] text-neutral-600 font-mono">120ms</span>
+                  <span className="text-[10px] text-neutral-600 font-mono">60ms</span>
+                  <span className="text-[10px] text-neutral-600 font-mono">0ms</span>
+                </div>
               </div>
-              <div className="text-blue-400 mt-2 underline decoration-blue-400/30">https://nexus-app-prod.edge.net</div>
-            </div>
-          </m.div>
-        </section>
+            </BentoBox>
 
-        {/* FEATURES BENTO GRID */}
-        <section className="py-32 px-6 max-w-7xl mx-auto relative z-10">
-          <div className="mb-16">
-            <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-4">Arquitectura <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-blue-400">Next-Gen</span></h2>
-            <p className="text-zinc-400 font-light max-w-lg">Hemos reconstruido la capa de red desde cero para ofrecer rendimiento sin compromisos a escala global.</p>
+            <BentoBox className="col-span-1 row-span-1" delay={0.2}>
+              <div className="flex justify-between items-start">
+                <Cpu size={20} className="text-blue-500" />
+                <span className="text-[10px] text-blue-500 bg-blue-500/10 px-2 py-1 rounded-full font-mono border border-blue-500/20">us-east-1</span>
+              </div>
+              <div className="mt-auto">
+                <div className="text-4xl font-bold font-mono text-white">{cpuUsage}%</div>
+                <div className="text-sm text-neutral-500 mt-1">CPU Utilization</div>
+              </div>
+              <div className="w-full bg-white/5 h-1.5 rounded-full mt-4 overflow-hidden">
+                <m.div 
+                  className="h-full bg-blue-500"
+                  animate={{ width: `${cpuUsage}%` }}
+                  transition={{ type: "spring", stiffness: 100, damping: 20 }}
+                />
+              </div>
+            </BentoBox>
+
+            <BentoBox className="col-span-1 row-span-2 flex flex-col" delay={0.3}>
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-2">
+                  <Server size={20} className="text-purple-500" />
+                  <h2 className="text-neutral-400 font-medium">Nodes</h2>
+                </div>
+                <span className="flex h-2 w-2 relative">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-purple-500"></span>
+                </span>
+              </div>
+              <div className="flex-1 flex flex-col gap-3 justify-center">
+                {nodes.map((node, i) => (
+                  <div key={i} className="flex items-center justify-between p-3 rounded-xl bg-white/[0.03] border border-white/5">
+                    <div className="flex items-center gap-3">
+                      <div className={`w-2 h-2 rounded-full ${node.status === 'ok' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)]'}`} />
+                      <div>
+                        <div className="text-sm font-medium text-neutral-200">{node.name}</div>
+                        <div className="text-[10px] text-neutral-500 font-mono">{node.ip}</div>
+                      </div>
+                    </div>
+                    <div className={`text-xs font-mono ${node.status === 'ok' ? 'text-emerald-500' : 'text-rose-500'}`}>
+                      {node.load}%
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </BentoBox>
+
+            <BentoBox className="col-span-1 row-span-1" delay={0.4}>
+              <div className="flex justify-between items-start">
+                <Users size={20} className="text-emerald-500" />
+                <div className="flex items-center text-[10px] text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded-full font-mono border border-emerald-500/20 gap-1">
+                  <ArrowUpRight size={12} />
+                  12%
+                </div>
+              </div>
+              <div className="mt-auto">
+                <m.div className="text-4xl font-bold font-mono text-white" key={activeUsers}>
+                  {activeUsers.toLocaleString()}
+                </m.div>
+                <div className="text-sm text-neutral-500 mt-1">Active Connections</div>
+              </div>
+            </BentoBox>
+
+            <BentoBox className="col-span-1 row-span-1 flex flex-col" delay={0.5}>
+              <div className="flex justify-between items-start mb-2">
+                <Activity size={20} className="text-rose-500" />
+              </div>
+              <div className="flex items-end gap-2 mt-auto mb-4">
+                <div className="text-3xl font-bold font-mono text-white">{reqs}</div>
+                <div className="text-sm text-neutral-500 mb-1">req/s</div>
+              </div>
+              <div className="flex items-end h-10 gap-1 w-full relative">
+                {reqHistory.map((val, i) => (
+                  <div key={i} className="flex-1 bg-white/5 rounded-t-sm h-full relative overflow-hidden">
+                    <m.div 
+                      className="absolute bottom-0 w-full bg-rose-500 rounded-t-sm"
+                      animate={{ height: `${(val / 1000) * 100}%` }}
+                      transition={{ type: "spring", stiffness: 300, damping: 20 }}
+                    />
+                  </div>
+                ))}
+              </div>
+            </BentoBox>
+
+            <BentoBox className="col-span-1 row-span-1 flex flex-col justify-between" delay={0.6}>
+              <div className="flex justify-between items-start">
+                <div className="flex items-center gap-2">
+                  <Database size={20} className="text-indigo-500" />
+                </div>
+                <span className="text-[10px] text-neutral-500 bg-white/5 px-2 py-1 rounded-md border border-white/5">Primary DB</span>
+              </div>
+              <div className="grid grid-cols-2 gap-3 mt-auto">
+                <div className="bg-white/[0.03] p-3 rounded-xl border border-white/5">
+                  <div className="text-[10px] text-neutral-500 mb-1">Reads/s</div>
+                  <m.div 
+                    className="text-lg font-bold font-mono text-indigo-400"
+                    key={reqs}
+                    initial={{ opacity: 0.5 }}
+                    animate={{ opacity: 1 }}
+                  >
+                    {(Math.floor(reqs * 4.2)).toLocaleString()}
+                  </m.div>
+                </div>
+                <div className="bg-white/[0.03] p-3 rounded-xl border border-white/5">
+                  <div className="text-[10px] text-neutral-500 mb-1">Writes/s</div>
+                  <m.div 
+                    className="text-lg font-bold font-mono text-indigo-400"
+                    key={activeUsers}
+                    initial={{ opacity: 0.5 }}
+                    animate={{ opacity: 1 }}
+                  >
+                    {(Math.floor(reqs * 0.8)).toLocaleString()}
+                  </m.div>
+                </div>
+              </div>
+            </BentoBox>
+
+            <BentoBox className="col-span-1 md:col-span-2 lg:col-span-2 row-span-1 flex flex-col justify-center" delay={0.7}>
+              <div className="flex items-center justify-between w-full">
+                <div className="flex items-center gap-5">
+                  <div className="w-16 h-16 rounded-full bg-cyan-500/10 flex items-center justify-center border border-cyan-500/20 relative">
+                    <m.div 
+                      className="absolute inset-0 border-2 border-cyan-500/30 rounded-full"
+                      animate={{ scale: [1, 1.5], opacity: [1, 0] }}
+                      transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                    />
+                    <Globe size={28} className="text-cyan-500 relative z-10" />
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-medium text-white">Edge Network</h3>
+                    <div className="text-sm text-neutral-500 mt-1">Global routing active</div>
+                  </div>
+                </div>
+                <div className="text-right">
+                  <div className="text-3xl font-bold font-mono text-cyan-400">
+                    12.4
+                    <span className="text-sm text-cyan-500/50 ml-1">TB/s</span>
+                  </div>
+                  <div className="text-xs text-neutral-500 mt-2">Total Bandwidth</div>
+                </div>
+              </div>
+            </BentoBox>
           </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <FeatureCard 
-              icon={Activity} 
-              title="Edge Computing" 
-              desc="Ejecuta código en milisegundos, más cerca de tus usuarios finales. Red global con 300+ nodos de presencia." 
-              delay={0}
-            />
-            <FeatureCard 
-              icon={Database} 
-              title="Base de Datos Distribuida" 
-              desc="Replicación global automática. Consistencia fuerte sin comprometer la latencia de lectura." 
-              delay={0.1}
-            />
-            <FeatureCard 
-              icon={Lock} 
-              title="Seguridad Zero Trust" 
-              desc="Aislamiento a nivel de microVM. Protección DDoS L7 y encriptación end-to-end por defecto." 
-              delay={0.2}
-            />
-            
-            <FeatureCard 
-              icon={Box} 
-              title="Integración Continua Inmersiva" 
-              desc="Entornos de previsualización para cada rama. Colabora en tiempo real con tu equipo directamente sobre el código desplegado, con métricas de rendimiento inyectadas en cada PR." 
-              delay={0.3}
-              colSpan={2}
-            />
-            <FeatureCard 
-              icon={Zap} 
-              title="WebSockets Nativos" 
-              desc="Conexiones persistentes gestionadas en el edge. Ideal para aplicaciones colaborativas y tiempo real." 
-              delay={0.4}
-            />
-          </div>
-        </section>
-
-        {/* CTA */}
-        <section className="py-32 px-6 border-t border-white/10 bg-gradient-to-b from-transparent to-purple-900/10 relative z-10 flex flex-col items-center text-center">
-          <h2 className="text-4xl md:text-7xl font-bold tracking-tighter mb-8">Construye el futuro.</h2>
-          <p className="text-xl text-zinc-400 font-light mb-12 max-w-xl">Únete a los equipos de ingeniería más innovadores y acelera tu ciclo de desarrollo hoy mismo.</p>
-          <button className="bg-white text-black px-10 py-5 rounded-full font-bold text-lg hover:scale-105 transition-transform shadow-[0_0_30px_rgba(255,255,255,0.2)] cursor-none interactive-el">
-            Crear Cuenta Gratuita
-          </button>
-        </section>
-
-      </main>
+        </main>
+      </div>
     </LazyMotion>
   );
 }
-
-const CheckIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <polyline points="20 6 9 17 4 12"></polyline>
-  </svg>
-);
