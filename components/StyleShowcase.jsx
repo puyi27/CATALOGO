@@ -15,6 +15,7 @@ const lineas = [
       { id: 'gaming', nombre: 'E-SPORTS ARENA', desc: 'Rendimiento extremo y neon brutalism.', path: '/demo/gaming' },
       { id: 'tech', nombre: 'SOFTWARE HOUSE', desc: 'Cyberpunk estético y APIs.', path: '/demo/tech' },
       { id: 'saas', nombre: 'SAAS B2B', desc: 'Métricas en vivo y dark mode.', path: '/demo/saas' },
+      { id: 'transporte', nombre: 'LOGÍSTICA & FLOTA', desc: 'Telemetría de flota en vivo.', path: '/demo/transporte' },
     ],
   },
   {
@@ -75,7 +76,7 @@ export default function StyleShowcase() {
                 <h2 className="text-4xl md:text-7xl font-black uppercase tracking-tighter">Catálogo <br/> en Directo.</h2>
               </div>
               <p className="text-zinc-500 font-mono text-xs md:text-sm max-w-xs text-right uppercase tracking-widest hidden md:block">
-                3 líneas. 21 universos. Pulsa para entrar.
+                3 líneas. 22 universos. Pulsa para entrar.
               </p>
             </div>
           </m.div>

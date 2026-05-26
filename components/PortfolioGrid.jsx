@@ -18,6 +18,16 @@ const demos = [
   { id: 'inmobiliaria', color: '#3b82f6', nombre: 'REAL ESTATE', path: '/demo/inmobiliaria', tags: ['inmobiliaria', 'vr'], img: 'https://loremflickr.com/600/800/mansion,villa/all?lock=1' },
   { id: 'saas', color: '#0ea5e9', nombre: 'SAAS B2B', path: '/demo/saas', tags: ['tecnología', 'backend'], img: 'https://loremflickr.com/600/800/code,server/all?lock=1' },
   { id: 'tienda', color: '#ec4899', nombre: 'ALTA JOYERÍA', path: '/demo/tienda', tags: ['ecommerce', 'lujo'], img: 'https://loremflickr.com/600/800/jewelry,luxury/all?lock=1' },
+  { id: 'tech', color: '#06b6d4', nombre: 'SOFTWARE HOUSE', path: '/demo/tech', tags: ['tecnología', 'backend'], img: 'https://loremflickr.com/600/800/cyberpunk,tech/all?lock=1' },
+  { id: 'creativo', color: '#f97316', nombre: 'ESTUDIO CREATIVO', path: '/demo/creativo', tags: ['portfolio', 'branding'], img: 'https://loremflickr.com/600/800/art,studio/all?lock=1' },
+  { id: 'editorial', color: '#a855f7', nombre: 'REVISTA DIGITAL', path: '/demo/editorial', tags: ['portfolio', 'branding'], img: 'https://loremflickr.com/600/800/magazine,editorial/all?lock=1' },
+  { id: 'gastronomia', color: '#ef4444', nombre: 'CHEF ESTRELLA', path: '/demo/gastronomia', tags: ['alimentación', 'portfolio'], img: 'https://loremflickr.com/600/800/chef,gourmet/all?lock=1' },
+  { id: 'premium', color: '#fbbf24', nombre: 'RELOJERÍA SUIZA', path: '/demo/premium', tags: ['lujo', 'ecommerce'], img: 'https://loremflickr.com/600/800/watch,luxury/all?lock=1' },
+  { id: 'sostenibilidad', color: '#22c55e', nombre: 'ENERGÍA VERDE', path: '/demo/sostenibilidad', tags: ['agro', 'backend'], img: 'https://loremflickr.com/600/800/solar,energy/all?lock=1' },
+  { id: 'urbano', color: '#f43f5e', nombre: 'STREETWEAR', path: '/demo/urbano', tags: ['ecommerce', 'lujo'], img: 'https://loremflickr.com/600/800/streetwear,urban/all?lock=1' },
+  { id: 'zen', color: '#a3e635', nombre: 'RETIRO WELLNESS', path: '/demo/zen', tags: ['servicios', 'crm'], img: 'https://loremflickr.com/600/800/yoga,zen/all?lock=1' },
+  { id: 'nightlife', color: '#e879f9', nombre: 'CLUB & NIGHTLIFE', path: '/demo/nightlife', tags: ['entretenimiento', 'backend'], img: 'https://loremflickr.com/600/800/nightclub,party/all?lock=1' },
+  { id: 'transporte', color: '#38bdf8', nombre: 'LOGÍSTICA & FLOTA', path: '/demo/transporte', tags: ['industrial', 'backend'], img: 'https://loremflickr.com/600/800/truck,logistics/all?lock=1' },
 ];
 
 const allTags = [...new Set(demos.flatMap((d) => d.tags))];
