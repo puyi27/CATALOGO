@@ -188,7 +188,7 @@ export default function SostenibilidadDemo() {
           <div className="md:col-span-4 flex flex-col gap-6 md:gap-8 justify-start pt-2 md:pt-4">
             <Leaf strokeWidth={1} className="w-10 h-10 md:w-12 md:h-12 text-[#4A5D23]" />
             <h2 className="text-4xl md:text-5xl font-serif text-[#4A5D23] leading-none">
-              Mindful<br className="hidden md:block"/> Journeys
+              Mindful<br className="block"/> Journeys
             </h2>
           </div>
           <div className="md:col-span-8 flex flex-col gap-8 md:gap-10">
@@ -250,7 +250,7 @@ export default function SostenibilidadDemo() {
               Explore Destinations
             </span>
             <ArrowRight className="relative z-10 w-4 h-4 transition-transform md:group-hover:translate-x-2" />
-            <div className="absolute inset-0 bg-[#E8E2D5] transform scale-x-0 origin-left transition-transform duration-500 md:group-hover:scale-x-100 hidden md:block" />
+            <div className="absolute inset-0 bg-[#E8E2D5] transform scale-x-0 origin-left transition-transform duration-500 md:group-hover:scale-x-100 block" />
           </button>
         </div>
       </section>
@@ -274,7 +274,6 @@ export default function SostenibilidadDemo() {
 
 function ImpactSection() {
   const sectionRef = useRef(null);
-  const carouselRef = useRef(null);
   const isInView = useInView(sectionRef, { once: true, margin: "-100px" });
 
   const metrics = [
@@ -295,7 +294,7 @@ function ImpactSection() {
         </p>
       </div>
 
-      <div className="hidden md:grid grid-cols-2 gap-x-20 gap-y-16 px-20 max-w-7xl mx-auto">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 md:gap-x-20 gap-y-12 md:gap-y-16 px-6 md:px-20 max-w-7xl mx-auto">
         {metrics.map((metric, index) => (
           <div key={index} className="flex flex-col gap-5">
             <div className="flex justify-between items-end">
@@ -303,11 +302,11 @@ function ImpactSection() {
                 <div className="p-3 bg-[#E8E2D5] rounded-full">
                   {metric.icon}
                 </div>
-                <span className="text-xl font-medium tracking-wide text-[#3E3A32]">
+                <span className="text-lg md:text-xl font-medium tracking-wide text-[#3E3A32]">
                   {metric.label}
                 </span>
               </div>
-              <span className="text-4xl font-serif text-[#8B7355]">
+              <span className="text-3xl md:text-4xl font-serif text-[#8B7355]">
                 {isInView ? (
                   <motion.span
                     initial={{ opacity: 0 }}
@@ -329,49 +328,6 @@ function ImpactSection() {
             </div>
           </div>
         ))}
-      </div>
-
-      <div className="md:hidden w-full overflow-hidden" ref={carouselRef}>
-        <motion.div 
-          drag="x"
-          dragConstraints={carouselRef}
-          dragElastic={0.2}
-          className="flex gap-4 px-6 w-max cursor-grab active:cursor-grabbing pb-8"
-        >
-          {metrics.map((metric, index) => (
-            <div key={index} className="flex flex-col gap-6 bg-[#E8E2D5]/40 border border-[#E8E2D5] p-6 rounded-3xl w-[75vw] shrink-0">
-              <div className="flex flex-col gap-4">
-                <div className="w-12 h-12 bg-[#F5F0E8] rounded-full flex items-center justify-center text-[#4A5D23] shadow-sm">
-                  {metric.icon}
-                </div>
-                <span className="text-lg font-medium leading-tight tracking-wide text-[#3E3A32]">
-                  {metric.label}
-                </span>
-              </div>
-              <div className="mt-auto flex flex-col gap-4 pt-4">
-                <span className="text-5xl font-serif text-[#8B7355]">
-                  {isInView ? (
-                    <motion.span
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      transition={{ duration: 1, delay: 0.2 + index * 0.1 }}
-                    >
-                      {metric.value}%
-                    </motion.span>
-                  ) : "0%"}
-                </span>
-                <div className="w-full h-1.5 bg-[#D8D2C5] rounded-full overflow-hidden">
-                  <motion.div 
-                    className="h-full bg-[#4A5D23]"
-                    initial={{ width: 0 }}
-                    animate={isInView ? { width: `${metric.value}%` } : { width: 0 }}
-                    transition={{ duration: 1.5, delay: 0.2 + index * 0.2, ease: "easeOut" }}
-                  />
-                </div>
-              </div>
-            </div>
-          ))}
-        </motion.div>
       </div>
     </section>
   );

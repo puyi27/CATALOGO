@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import { ArrowLeft, Instagram, Twitter, Menu, X } from 'lucide-react'
@@ -9,8 +9,6 @@ export default function NightfallDemo() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
   const [hoveredDJ, setHoveredDJ] = useState(null)
   const [menuOpen, setMenuOpen] = useState(false)
-  const [carouselWidth, setCarouselWidth] = useState(0)
-  const carouselRef = useRef(null)
   const { scrollY } = useScroll()
 
   useEffect(() => {
@@ -19,19 +17,6 @@ export default function NightfallDemo() {
     }
     window.addEventListener('mousemove', handleMouseMove)
     return () => window.removeEventListener('mousemove', handleMouseMove)
-  }, [])
-
-  useEffect(() => {
-    if (carouselRef.current) {
-      setCarouselWidth(carouselRef.current.scrollWidth - carouselRef.current.offsetWidth)
-    }
-    const handleResize = () => {
-      if (carouselRef.current) {
-        setCarouselWidth(carouselRef.current.scrollWidth - carouselRef.current.offsetWidth)
-      }
-    }
-    window.addEventListener('resize', handleResize)
-    return () => window.removeEventListener('resize', handleResize)
   }, [])
 
   const strobeOpacity = useTransform(scrollY, (y) => (Math.floor(y / 30) % 2 === 0 ? 0 : 0.08))
@@ -61,7 +46,7 @@ export default function NightfallDemo() {
       />
 
       <motion.div
-        className="fixed top-0 left-0 pointer-events-none z-50 w-64 h-80 mix-blend-difference hidden md:block"
+        className="fixed top-0 left-0 pointer-events-none z-50 w-64 h-80 mix-blend-difference"
         animate={{
           x: mousePos.x - 128,
           y: mousePos.y - 160,
@@ -204,7 +189,7 @@ export default function NightfallDemo() {
       <section className="py-16 md:py-24 px-0 md:px-12 border-b-4 border-white bg-black overflow-hidden">
         <h2 className="text-[clamp(3rem,8vw,7rem)] font-black uppercase tracking-tighter mb-8 md:mb-16 text-center text-[#FF00FF] px-4">ATMOSPHERE</h2>
         
-        <div className="hidden md:block columns-2 lg:columns-3 gap-6 space-y-6 max-w-7xl mx-auto">
+        <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6 max-w-7xl mx-auto px-4 md:px-0">
           {gallery.map((img, i) => (
             <div key={i} className="relative break-inside-avoid overflow-hidden group border-4 border-zinc-900 hover:border-[#00FFFF] transition-colors duration-500 cursor-crosshair">
               <img
@@ -216,37 +201,12 @@ export default function NightfallDemo() {
             </div>
           ))}
         </div>
-
-        <div className="md:hidden w-full cursor-grab active:cursor-grabbing" ref={carouselRef}>
-          <motion.div
-            drag="x"
-            dragConstraints={{ right: 0, left: -carouselWidth }}
-            dragElastic={0.1}
-            className="flex gap-4 px-4 w-max"
-          >
-            {gallery.map((img, i) => (
-              <motion.div
-                key={i}
-                whileInView={{ filter: "grayscale(0%)", scale: 1 }}
-                initial={{ filter: "grayscale(100%)", scale: 0.95 }}
-                viewport={{ amount: 0.5 }}
-                className="relative w-[80vw] h-[50vh] border-4 border-[#00FFFF] overflow-hidden shrink-0 pointer-events-none"
-              >
-                <img
-                  src={img}
-                  alt="Party"
-                  className="w-full h-full object-cover saturate-[1.5]"
-                />
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
       </section>
 
       <section className="py-16 md:py-24 px-4 md:px-12 border-b-4 border-white bg-zinc-950">
         <div className="flex flex-col md:flex-row gap-8 max-w-6xl mx-auto">
           <motion.div whileTap={{ scale: 0.98 }} className="flex-1 border-4 border-white p-6 md:p-12 hover:border-[#FF00FF] transition-all duration-300 relative group overflow-hidden md:cursor-crosshair md:hover:shadow-[0_0_60px_rgba(255,0,255,0.2)]">
-            <div className="absolute inset-0 bg-[#FF00FF] opacity-0 group-hover:opacity-10 transition-opacity duration-300 hidden md:block" />
+            <div className="absolute inset-0 bg-[#FF00FF] opacity-0 group-hover:opacity-10 transition-opacity duration-300" />
             <h3 className="text-[clamp(2rem,6vw,5rem)] font-black mb-4 md:mb-6 tracking-tighter md:group-hover:text-[#FF00FF] transition-colors leading-none">GENERAL<br/>ADMISSION</h3>
             <p className="text-base md:text-xl font-bold text-zinc-500 uppercase tracking-widest">Access to main room.<br/>Standard bar.</p>
             <div className="mt-8 md:mt-12 text-lg md:text-xl font-black border-4 border-white inline-block px-6 md:px-8 py-3 md:py-4 md:group-hover:bg-[#FF00FF] md:group-hover:text-black md:group-hover:border-[#FF00FF] transition-all active:bg-white active:text-black">
@@ -254,7 +214,7 @@ export default function NightfallDemo() {
             </div>
           </motion.div>
           <motion.div whileTap={{ scale: 0.98 }} className="flex-1 border-4 border-white p-6 md:p-12 hover:border-[#00FFFF] transition-all duration-300 relative group overflow-hidden md:cursor-crosshair md:hover:shadow-[0_0_60px_rgba(0,255,255,0.2)]">
-            <div className="absolute inset-0 bg-[#00FFFF] opacity-0 group-hover:opacity-10 transition-opacity duration-300 hidden md:block" />
+            <div className="absolute inset-0 bg-[#00FFFF] opacity-0 group-hover:opacity-10 transition-opacity duration-300" />
             <h3 className="text-[clamp(2rem,6vw,5rem)] font-black mb-4 md:mb-6 tracking-tighter md:group-hover:text-[#00FFFF] transition-colors leading-none">VIP<br/>BOOTH</h3>
             <p className="text-base md:text-xl font-bold text-zinc-500 uppercase tracking-widest">Private table.<br/>Bottle service.<br/>Backstage access.</p>
             <div className="mt-8 md:mt-12 text-lg md:text-xl font-black border-4 border-white inline-block px-6 md:px-8 py-3 md:py-4 md:group-hover:bg-[#00FFFF] md:group-hover:text-black md:group-hover:border-[#00FFFF] transition-all active:bg-white active:text-black">

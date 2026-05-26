@@ -9,8 +9,6 @@ export default function FincaLaAlmazara() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const containerRef = useRef(null)
-  const carouselRef = useRef(null)
-  const harvestCarouselRef = useRef(null)
   
   const { scrollYProgress } = useScroll({
     target: containerRef,
@@ -78,11 +76,11 @@ export default function FincaLaAlmazara() {
         animate="visible"
         className="fixed top-0 left-0 w-full p-4 md:p-6 flex justify-between items-center z-40 mix-blend-difference text-[#F5F5E1]"
       >
-        <Link href="/" className="flex items-center gap-2 text-xs md:text-sm uppercase tracking-widest active:scale-95 md:active:scale-100 hover:opacity-70 transition-all">
+        <Link href="/" className="flex items-center gap-2 text-[clamp(0.75rem,2vw,0.875rem)] uppercase tracking-widest active:scale-95 md:active:scale-100 hover:opacity-70 transition-all">
           <ArrowLeft size={16} />
           <span className="hidden md:inline">Catálogo</span>
         </Link>
-        <div className="text-lg md:text-xl tracking-[0.2em] md:tracking-[0.3em] font-light">LA ALMAZARA</div>
+        <div className="text-[clamp(1.125rem,3vw,1.25rem)] tracking-[0.2em] md:tracking-[0.3em] font-light">LA ALMAZARA</div>
         <button onClick={() => setIsMenuOpen(true)} className="active:scale-90 md:active:scale-100 hover:opacity-70 transition-all p-2">
           <Menu size={24} />
         </button>
@@ -111,7 +109,7 @@ export default function FincaLaAlmazara() {
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: 30 }}
                   transition={{ delay: i * 0.1, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                  className="text-4xl md:text-6xl font-light tracking-widest active:scale-95 md:active:scale-100 hover:text-white/70 transition-all cursor-pointer"
+                  className="text-[clamp(2.25rem,6vw,3.75rem)] font-light tracking-widest active:scale-95 md:active:scale-100 hover:text-white/70 transition-all cursor-pointer"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {item}
@@ -152,7 +150,7 @@ export default function FincaLaAlmazara() {
               initial="hidden"
               animate="visible"
               transition={{ delay: 0.2 }}
-              className="text-sm md:text-2xl font-light tracking-[0.2em] md:tracking-widest uppercase"
+              className="text-[clamp(0.875rem,3vw,1.5rem)] font-light tracking-[0.2em] md:tracking-widest uppercase"
             >
               Prensado en frío desde 1890
             </motion.p>
@@ -169,37 +167,21 @@ export default function FincaLaAlmazara() {
             transition={{ duration: 1 }}
           >
             <h2 className="text-[clamp(3rem,8vw,4rem)] font-light mb-6 md:mb-8 leading-tight">La Cosecha<br/>Manual.</h2>
-            <p className="text-base md:text-xl font-sans font-light leading-relaxed max-w-md opacity-80">
+            <p className="text-[clamp(1rem,3vw,1.25rem)] font-sans font-light leading-relaxed max-w-md opacity-80">
               Respetamos los tiempos de la naturaleza. Cada oliva es seleccionada a mano en su punto óptimo de maduración, garantizando la máxima expresión de sabor y pureza en cada gota de nuestro aceite.
             </p>
           </motion.div>
         </div>
         
-        <div className="w-full md:w-1/2 flex flex-col md:block">
-          <div className="hidden md:block">
-            <div className="h-screen w-full relative">
-              <img src="https://loremflickr.com/800/1200/olive,farmer?lock=41" alt="Harvest 1" className="w-full h-full object-cover pointer-events-none" />
-            </div>
-            <div className="h-screen w-full relative">
-              <img src="https://loremflickr.com/800/1200/olive,nature?lock=42" alt="Harvest 2" className="w-full h-full object-cover pointer-events-none" />
-            </div>
-            <div className="h-screen w-full relative">
-              <img src="https://loremflickr.com/800/1200/olive,tree?lock=43" alt="Harvest 3" className="w-full h-full object-cover pointer-events-none" />
-            </div>
+        <div className="w-full md:w-1/2 block">
+          <div className="h-[60vh] md:h-screen w-full relative">
+            <img src="https://loremflickr.com/800/1200/olive,farmer?lock=41" alt="Harvest 1" className="w-full h-full object-cover pointer-events-none" />
           </div>
-
-          <div ref={harvestCarouselRef} className="block md:hidden w-full overflow-hidden pb-12 cursor-grab active:cursor-grabbing">
-            <motion.div 
-              drag="x"
-              dragConstraints={harvestCarouselRef}
-              className="flex w-max gap-4 px-4"
-            >
-              {[41, 42, 43].map((lock, i) => (
-                <div key={i} className="w-[85vw] h-[60vh] relative flex-shrink-0">
-                  <img src={`https://loremflickr.com/800/1200/olive,farmer?lock=${lock}`} alt={`Harvest ${i+1}`} className="w-full h-full object-cover rounded-sm pointer-events-none" />
-                </div>
-              ))}
-            </motion.div>
+          <div className="h-[60vh] md:h-screen w-full relative">
+            <img src="https://loremflickr.com/800/1200/olive,nature?lock=42" alt="Harvest 2" className="w-full h-full object-cover pointer-events-none" />
+          </div>
+          <div className="h-[60vh] md:h-screen w-full relative">
+            <img src="https://loremflickr.com/800/1200/olive,tree?lock=43" alt="Harvest 3" className="w-full h-full object-cover pointer-events-none" />
           </div>
         </div>
       </section>
@@ -216,12 +198,8 @@ export default function FincaLaAlmazara() {
             Nuestros Aceites
           </motion.h2>
           
-          <div ref={carouselRef} className="w-full overflow-hidden cursor-grab active:cursor-grabbing md:cursor-none">
-            <motion.div 
-              drag="x"
-              dragConstraints={carouselRef}
-              className="flex md:grid md:grid-cols-3 w-max md:w-full gap-6 md:gap-12 px-6 md:px-6"
-            >
+          <div className="w-full overflow-hidden md:cursor-none">
+            <div className="grid grid-cols-1 md:grid-cols-3 w-full gap-12 px-6">
               {oils.map((oil, idx) => (
                 <motion.div 
                   key={idx}
@@ -229,22 +207,19 @@ export default function FincaLaAlmazara() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.8, delay: idx * 0.1 }}
-                  className="w-[75vw] md:w-auto flex-shrink-0 group relative flex flex-col items-center active:scale-[0.98] md:active:scale-100 transition-transform"
+                  className="w-full group relative flex flex-col items-center transition-transform"
                 >
-                  <div className="w-full aspect-[3/4] overflow-hidden bg-black/10 relative mb-6 md:mb-8 rounded-sm md:rounded-none">
+                  <div className="w-full aspect-[3/4] overflow-hidden bg-black/10 relative mb-8 rounded-sm md:rounded-none">
                     <img src={oil.image} alt={oil.name} className="w-full h-full object-cover transition-transform duration-1000 md:group-hover:scale-105 pointer-events-none" />
-                    <div className="hidden md:flex absolute inset-0 bg-[#3B4F2D]/90 opacity-0 group-hover:opacity-100 transition-opacity duration-500 items-center justify-center p-8 text-center pointer-events-none">
-                      <p className="font-sans font-light text-lg">{oil.notes}</p>
+                    <div className="flex absolute inset-0 bg-[#3B4F2D]/90 opacity-0 hover:opacity-100 active:opacity-100 md:group-hover:opacity-100 transition-opacity duration-500 items-center justify-center p-8 text-center pointer-events-none">
+                      <p className="font-sans font-light text-[clamp(1rem,3vw,1.125rem)]">{oil.notes}</p>
                     </div>
                   </div>
-                  <h3 className="text-xl md:text-2xl tracking-widest mb-2 text-center">{oil.name}</h3>
-                  <span className="font-sans font-light opacity-70 mb-3">{oil.price}</span>
-                  <p className="md:hidden font-sans font-light text-sm text-center opacity-80 px-4">
-                    {oil.notes}
-                  </p>
+                  <h3 className="text-[clamp(1.25rem,4vw,1.5rem)] tracking-widest mb-2 text-center">{oil.name}</h3>
+                  <span className="font-sans font-light opacity-70 mb-3 text-[clamp(0.875rem,2.5vw,1rem)]">{oil.price}</span>
                 </motion.div>
               ))}
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>
@@ -259,7 +234,7 @@ export default function FincaLaAlmazara() {
             className="text-center mb-16 md:mb-20"
           >
             <h2 className="text-[clamp(2.5rem,6vw,4rem)] font-light mb-6">Compromiso Vital</h2>
-            <p className="font-sans font-light max-w-2xl mx-auto opacity-80 text-base md:text-lg">
+            <p className="font-sans font-light max-w-2xl mx-auto opacity-80 text-[clamp(1rem,3vw,1.125rem)]">
               La tierra nos da todo. Nuestra responsabilidad es devolverle el favor mediante prácticas que aseguran el futuro de nuestro entorno.
             </p>
           </motion.div>
@@ -275,8 +250,8 @@ export default function FincaLaAlmazara() {
                 className="flex flex-col items-center text-center p-8 border border-[#3B4F2D]/20 rounded-3xl md:rounded-full aspect-auto md:aspect-square justify-center bg-white/30 md:bg-transparent"
               >
                 <stat.icon size={40} strokeWidth={1} className="mb-4 md:mb-6 opacity-70" />
-                <span className="text-4xl md:text-5xl font-light mb-2 md:mb-4">{stat.value}</span>
-                <span className="font-sans font-light tracking-widest uppercase text-xs md:text-sm opacity-80">{stat.label}</span>
+                <span className="text-[clamp(2.25rem,5vw,3rem)] font-light mb-2 md:mb-4">{stat.value}</span>
+                <span className="font-sans font-light tracking-widest uppercase text-[clamp(0.75rem,2vw,0.875rem)] opacity-80">{stat.label}</span>
               </motion.div>
             ))}
           </div>
@@ -292,11 +267,11 @@ export default function FincaLaAlmazara() {
           className="w-full max-w-2xl"
         >
           <h2 className="text-[clamp(3rem,8vw,5.5rem)] font-light mb-6 md:mb-8 leading-none">Vive la Finca</h2>
-          <p className="font-sans font-light text-base md:text-xl mx-auto mb-12 md:mb-16 opacity-80">
+          <p className="font-sans font-light text-[clamp(1rem,3vw,1.25rem)] mx-auto mb-12 md:mb-16 opacity-80">
             Pasea entre olivos centenarios, conoce la almazara desde dentro y degusta nuestra historia.
           </p>
           
-          <button className="w-full md:w-auto group relative inline-flex items-center justify-center px-8 md:px-12 py-5 md:py-6 border border-[#F5F5E1] overflow-hidden text-base md:text-lg tracking-widest uppercase active:scale-95 transition-transform">
+          <button className="w-full md:w-auto group relative inline-flex items-center justify-center px-8 md:px-12 py-5 md:py-6 border border-[#F5F5E1] overflow-hidden text-[clamp(1rem,3vw,1.125rem)] tracking-widest uppercase active:scale-95 transition-transform">
             <div className="absolute inset-0 w-0 bg-[#F5F5E1] transition-all duration-[600ms] ease-out md:group-hover:w-full" />
             <span className="relative text-[#F5F5E1] md:group-hover:text-[#3B4F2D] transition-colors duration-300">
               Reservar Visita
@@ -305,7 +280,7 @@ export default function FincaLaAlmazara() {
         </motion.div>
       </section>
 
-      <footer className="bg-[#1f2b18] text-[#F5F5E1] py-12 px-6 flex flex-col md:flex-row justify-between items-center font-sans font-light text-xs md:text-sm tracking-widest opacity-80 gap-8 md:gap-0">
+      <footer className="bg-[#1f2b18] text-[#F5F5E1] py-12 px-6 flex flex-col md:flex-row justify-between items-center font-sans font-light text-[clamp(0.75rem,2vw,0.875rem)] tracking-widest opacity-80 gap-8 md:gap-0">
         <div>© 2024 FINCA LA ALMAZARA</div>
         <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-center">
           <span className="active:opacity-50 md:hover:opacity-100 cursor-pointer transition-opacity">INSTAGRAM</span>

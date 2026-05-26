@@ -265,8 +265,6 @@ function Hero() {
 }
 
 function Collections() {
-  const carouselRef = useRef(null)
-
   return (
     <section id="collections" className="bg-[#FBF9F6] py-20 md:py-32 overflow-hidden">
       <div className="px-6 md:px-12 mb-12 md:mb-16">
@@ -285,60 +283,36 @@ function Collections() {
         </motion.div>
       </div>
 
-      <div className="md:hidden pl-6" ref={carouselRef}>
-        <motion.div 
-          drag="x"
-          dragConstraints={carouselRef}
-          className="flex gap-4 cursor-grab active:cursor-grabbing pr-6 w-max"
-        >
-          {COLLECTIONS.map((c, i) => (
-            <div key={c.name} className="w-[280px] shrink-0">
-              <CollectionCard c={c} i={i} isMobile={true} />
-            </div>
-          ))}
-        </motion.div>
-      </div>
-
-      <div className="hidden md:grid grid-cols-3 gap-[2px] px-12">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-[2px] px-6 md:px-12">
         {COLLECTIONS.map((c, i) => (
-          <CollectionCard key={c.name} c={c} i={i} isMobile={false} />
+          <CollectionCard key={c.name} c={c} i={i} />
         ))}
       </div>
     </section>
   )
 }
 
-function CollectionCard({ c, i, isMobile }) {
-  const [hovered, setHovered] = useState(false)
-
+function CollectionCard({ c, i }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ duration: 0.8, delay: isMobile ? 0 : i * 0.15 }}
-      onHoverStart={() => !isMobile && setHovered(true)}
-      onHoverEnd={() => !isMobile && setHovered(false)}
+      transition={{ duration: 0.8, delay: i * 0.15 }}
       whileTap={{ scale: 0.98 }}
       className="cursor-pointer group block"
     >
       <div className="relative overflow-hidden aspect-[4/5]">
-        <motion.img
+        <img
           src={c.img}
           alt={c.name}
-          animate={{ filter: hovered && !isMobile ? 'grayscale(0%)' : 'grayscale(100%)', scale: hovered && !isMobile ? 1.04 : 1 }}
-          transition={{ duration: 0.6, ease: [0.25, 0.1, 0.25, 1] }}
-          className="w-full h-full object-cover block"
+          className="w-full h-full object-cover block transition-all duration-[600ms] ease-[cubic-bezier(0.25,0.1,0.25,1)] grayscale-0 md:grayscale md:group-hover:grayscale-0 md:group-hover:scale-[1.04]"
         />
-        <motion.div
-          animate={{ opacity: isMobile || hovered ? 1 : 0 }}
-          transition={{ duration: 0.3 }}
-          className="absolute inset-0 bg-gradient-to-t from-[#1C2A39]/80 via-transparent to-transparent flex items-end p-6"
-        >
+        <div className="absolute inset-0 bg-gradient-to-t from-[#1C2A39]/80 via-transparent to-transparent flex items-end p-6 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300">
           <span className="inline-flex items-center gap-2 font-sans text-[10px] tracking-[0.18em] uppercase text-[#FBF9F6]">
             Solicitar Información <ArrowUpRight size={12} />
           </span>
-        </motion.div>
+        </div>
 
         <div className="absolute top-4 right-4 md:top-5 md:right-5 bg-[#FBF9F6]/90 backdrop-blur-sm px-[10px] py-1">
           <span className="font-sans text-[9px] tracking-[0.14em] text-[#1C2A39]">

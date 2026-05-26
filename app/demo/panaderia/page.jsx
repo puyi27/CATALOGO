@@ -3,7 +3,7 @@
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import { ShoppingBag, ArrowLeft, MapPin, Clock, Phone, Menu, X } from 'lucide-react'
-import { useEffect, useState, useRef } from 'react'
+import { useEffect, useState } from 'react'
 
 export default function Panaderia() {
   const { scrollYProgress } = useScroll()
@@ -13,9 +13,6 @@ export default function Panaderia() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const [isHovering, setIsHovering] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
-  
-  const processCarouselRef = useRef(null)
-  const productsCarouselRef = useRef(null)
 
   useEffect(() => {
     const handleMouseMove = (e) => {
@@ -168,7 +165,7 @@ export default function Panaderia() {
             <p className="text-3xl md:text-5xl text-[#6A3E1E] italic px-4">El ritual de cada madrugada</p>
           </motion.div>
 
-          <div className="hidden md:grid grid-cols-3 gap-8 px-20">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-6 md:px-20">
             {processSteps.map((step, i) => (
               <motion.div 
                 key={i}
@@ -181,13 +178,13 @@ export default function Panaderia() {
                 onMouseLeave={() => setIsHovering(false)}
               >
                 <div className="overflow-hidden mb-6 aspect-[4/5] relative">
-                  <div className="absolute inset-0 bg-[#6A3E1E]/20 z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                  <div className="absolute inset-0 bg-[#6A3E1E]/20 z-10 opacity-0 md:group-hover:opacity-100 transition-opacity duration-500" />
                   <img 
                     src={step.img} 
                     alt={step.title}
-                    className="w-full h-full object-cover scale-105 group-hover:scale-100 transition-transform duration-700 ease-out grayscale group-hover:grayscale-0"
+                    className="w-full h-full object-cover md:scale-105 md:group-hover:scale-100 transition-transform duration-700 ease-out md:grayscale md:group-hover:grayscale-0"
                   />
-                  <div className="absolute top-4 left-4 z-20 text-[#FAF9F6] text-xl font-serif italic opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                  <div className="absolute top-4 left-4 z-20 text-[#FAF9F6] text-xl font-serif italic md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-500">
                     0{i + 1}.
                   </div>
                 </div>
@@ -196,32 +193,6 @@ export default function Panaderia() {
               </motion.div>
             ))}
           </div>
-
-          <motion.div ref={processCarouselRef} className="md:hidden overflow-hidden touch-pan-y cursor-grab active:cursor-grabbing">
-            <motion.div 
-              drag="x" 
-              dragConstraints={processCarouselRef}
-              className="flex gap-4 px-6 w-max"
-            >
-              {processSteps.map((step, i) => (
-                <div key={i} className="w-[85vw] max-w-[320px] shrink-0 active:scale-[0.98] transition-transform duration-300">
-                  <div className="overflow-hidden mb-5 aspect-[4/5] relative rounded-sm shadow-lg">
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#6A3E1E]/60 to-transparent z-10 opacity-60" />
-                    <img 
-                      src={step.img} 
-                      alt={step.title}
-                      className="w-full h-full object-cover"
-                    />
-                    <div className="absolute bottom-4 left-4 z-20 text-[#FAF9F6] text-3xl font-serif italic drop-shadow-md">
-                      0{i + 1}.
-                    </div>
-                  </div>
-                  <h3 className="text-xl text-[#6A3E1E] mb-2 uppercase tracking-widest">{step.title}</h3>
-                  <p className="text-[#2C2C2C]/80 font-light leading-relaxed text-sm">{step.desc}</p>
-                </div>
-              ))}
-            </motion.div>
-          </motion.div>
         </div>
       </section>
 
@@ -248,7 +219,7 @@ export default function Panaderia() {
             </motion.button>
           </div>
 
-          <div className="hidden md:grid grid-cols-4 gap-8 px-20">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 px-6 md:px-20">
             {products.map((product, i) => (
               <motion.div 
                 key={i}
@@ -260,12 +231,12 @@ export default function Panaderia() {
                 onMouseEnter={() => setIsHovering(true)}
                 onMouseLeave={() => setIsHovering(false)}
               >
-                <div className="aspect-[3/4] overflow-hidden mb-4 border border-transparent group-hover:border-[#E6C280] transition-colors duration-500 p-2">
+                <div className="aspect-[3/4] overflow-hidden mb-4 border border-transparent md:group-hover:border-[#E6C280] transition-colors duration-500 p-2">
                   <div className="w-full h-full overflow-hidden">
                     <img 
                       src={product.img} 
                       alt={product.name}
-                      className="w-full h-full object-cover scale-100 group-hover:scale-110 transition-transform duration-700"
+                      className="w-full h-full object-cover scale-100 md:group-hover:scale-110 transition-transform duration-700"
                     />
                   </div>
                 </div>
@@ -276,30 +247,6 @@ export default function Panaderia() {
               </motion.div>
             ))}
           </div>
-
-          <motion.div ref={productsCarouselRef} className="md:hidden overflow-hidden touch-pan-y cursor-grab active:cursor-grabbing">
-            <motion.div 
-              drag="x" 
-              dragConstraints={productsCarouselRef}
-              className="flex gap-4 px-6 w-max"
-            >
-              {products.map((product, i) => (
-                <div key={i} className="w-[65vw] max-w-[260px] shrink-0 flex flex-col active:scale-[0.98] transition-transform duration-300">
-                  <div className="aspect-[3/4] overflow-hidden mb-4 p-1 border border-[#E6C280]/30 rounded-sm bg-[#FAF9F6]/5">
-                    <img 
-                      src={product.img} 
-                      alt={product.name}
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <div className="flex flex-col gap-2 pt-1">
-                    <h3 className="text-base uppercase tracking-wide leading-tight">{product.name}</h3>
-                    <span className="text-[#E6C280] font-medium text-sm">{product.price}</span>
-                  </div>
-                </div>
-              ))}
-            </motion.div>
-          </motion.div>
         </div>
       </section>
 

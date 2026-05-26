@@ -169,30 +169,10 @@ const menuItems = [
 
 const Experience = () => {
   const [activeItem, setActiveItem] = useState(0)
-  const carouselRef = useRef(null)
-  const [width, setWidth] = useState(0)
-
-  useEffect(() => {
-    const updateWidth = () => {
-      if (carouselRef.current) {
-        setWidth(carouselRef.current.scrollWidth - carouselRef.current.offsetWidth)
-      }
-    }
-    updateWidth()
-    const observer = new ResizeObserver(updateWidth)
-    if (carouselRef.current) {
-      observer.observe(carouselRef.current)
-    }
-    window.addEventListener("resize", updateWidth)
-    return () => {
-      observer.disconnect()
-      window.removeEventListener("resize", updateWidth)
-    }
-  }, [])
 
   return (
     <section className="relative w-full min-h-screen py-24 md:py-32 flex flex-col items-center justify-center bg-black overflow-hidden">
-      <div className="absolute inset-0 z-0 hidden md:block">
+      <div className="absolute inset-0 z-0">
         <AnimatePresence mode="wait">
           <motion.img
             key={activeItem}
@@ -217,39 +197,19 @@ const Experience = () => {
           La Experiencia
         </motion.h2>
 
-        <div className="md:hidden w-full pl-6 overflow-hidden" ref={carouselRef}>
-          <motion.div 
-            drag="x"
-            dragConstraints={{ right: 0, left: -width }}
-            className="flex gap-6 w-max cursor-grab active:cursor-grabbing pb-8 pr-6"
-          >
-            {menuItems.map((item, index) => (
-              <motion.div 
-                key={index}
-                className="w-[80vw] h-[60vh] shrink-0 relative rounded-sm overflow-hidden"
-              >
-                <img src={item.img} alt={item.name} className="absolute inset-0 w-full h-full object-cover opacity-70 pointer-events-none" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent pointer-events-none" />
-                <h3 className="absolute bottom-8 left-6 right-6 text-3xl font-serif text-white tracking-wide z-10 pointer-events-none">
-                  {item.name}
-                </h3>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-
-        <div className="hidden md:flex flex-col items-center w-full px-6">
+        <div className="flex flex-col items-center w-full px-6">
           {menuItems.map((item, index) => (
             <motion.div
               key={index}
               onMouseEnter={() => setActiveItem(index)}
+              onClick={() => setActiveItem(index)}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: index * 0.1 }}
               className="group cursor-pointer py-8 w-full text-center border-b border-white/5 last:border-0 relative"
             >
-              <h3 className="text-3xl md:text-6xl font-serif text-white/30 group-hover:text-white transition-colors duration-500 tracking-wide relative z-10">
+              <h3 className={`text-3xl md:text-6xl font-serif transition-colors duration-500 tracking-wide relative z-10 ${activeItem === index ? 'text-white' : 'text-white/30 group-hover:text-white'}`}>
                 {item.name}
               </h3>
             </motion.div>
@@ -303,30 +263,11 @@ const Chef = () => {
 
 const Cellar = () => {
   const targetRef = useRef(null)
-  const carouselRef = useRef(null)
-  const [width, setWidth] = useState(0)
-
-  useEffect(() => {
-    const updateWidth = () => {
-      if (carouselRef.current) {
-        setWidth(carouselRef.current.scrollWidth - carouselRef.current.offsetWidth)
-      }
-    }
-    updateWidth()
-    const observer = new ResizeObserver(updateWidth)
-    if (carouselRef.current) {
-      observer.observe(carouselRef.current)
-    }
-    window.addEventListener("resize", updateWidth)
-    return () => {
-      observer.disconnect()
-      window.removeEventListener("resize", updateWidth)
-    }
-  }, [])
 
   const { scrollYProgress } = useScroll({
     target: targetRef,
   })
+  
   const x = useTransform(scrollYProgress, [0, 1], ["0%", "-66%"])
   
   const wines = [
@@ -336,60 +277,29 @@ const Cellar = () => {
   ]
 
   return (
-    <>
-      <section className="md:hidden relative py-24 bg-black overflow-hidden flex flex-col">
-        <div className="px-6 mb-12">
+    <section ref={targetRef} className="relative h-[300vh] bg-black">
+      <div className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden">
+        <div className="absolute top-24 md:top-32 left-6 md:left-24 z-10">
           <h2 className="text-gray-500 uppercase tracking-[0.4em] text-xs">La Bodega</h2>
         </div>
-        <div className="w-full pl-6 overflow-hidden" ref={carouselRef}>
-          <motion.div 
-            drag="x"
-            dragConstraints={{ right: 0, left: -width }}
-            className="flex gap-6 w-max cursor-grab active:cursor-grabbing pr-6 pb-8"
-          >
-            {wines.map((wine, idx) => (
-              <div key={idx} className="w-[75vw] h-[60vh] shrink-0 relative">
-                <div className="w-full h-full overflow-hidden rounded-sm">
-                  <img
-                    src={wine.img}
-                    className="w-full h-full object-cover opacity-80 pointer-events-none"
-                    alt={wine.title}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent pointer-events-none" />
-                </div>
-                <h3 className="absolute bottom-8 left-6 text-3xl font-serif text-white tracking-widest uppercase pointer-events-none">
-                  {wine.title}
-                </h3>
+        <motion.div style={{ x }} className="flex w-max gap-12 md:gap-24 px-6 md:px-24 mt-20">
+          {wines.map((wine, idx) => (
+            <div key={idx} className="w-[75vw] md:w-[35vw] h-[50vh] md:h-[60vh] shrink-0 relative group">
+              <div className="w-full h-full overflow-hidden">
+                <img
+                  src={wine.img}
+                  className="w-full h-full object-cover grayscale opacity-50 group-hover:grayscale-0 group-hover:scale-105 group-hover:opacity-100 transition-all duration-700"
+                  alt={wine.title}
+                />
               </div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-
-      <section ref={targetRef} className="hidden md:block relative h-[300vh] bg-black">
-        <div className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden">
-          <div className="absolute top-32 left-24 z-10">
-            <h2 className="text-gray-500 uppercase tracking-[0.4em] text-xs">La Bodega</h2>
-          </div>
-          <motion.div style={{ x }} className="flex gap-24 px-24 mt-20">
-            {wines.map((wine, idx) => (
-              <div key={idx} className="w-[35vw] h-[60vh] shrink-0 relative group">
-                <div className="w-full h-full overflow-hidden">
-                  <img
-                    src={wine.img}
-                    className="w-full h-full object-cover grayscale opacity-50 group-hover:grayscale-0 group-hover:scale-105 group-hover:opacity-100 transition-all duration-700"
-                    alt={wine.title}
-                  />
-                </div>
-                <h3 className="absolute bottom-8 left-8 text-3xl font-serif text-white tracking-widest uppercase">
-                  {wine.title}
-                </h3>
-              </div>
-            ))}
-          </motion.div>
-        </div>
-      </section>
-    </>
+              <h3 className="absolute bottom-8 left-8 text-2xl md:text-3xl font-serif text-white tracking-widest uppercase">
+                {wine.title}
+              </h3>
+            </div>
+          ))}
+        </motion.div>
+      </div>
+    </section>
   )
 }
 

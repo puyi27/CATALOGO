@@ -13,19 +13,6 @@ export default function CreativoDemo() {
   const cardsRef = useRef([]);
   const [hoverState, setHoverState] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
-  const carouselRef = useRef(null);
-  const [carouselWidth, setCarouselWidth] = useState(0);
-
-  useEffect(() => {
-    const updateWidth = () => {
-      if (carouselRef.current) {
-        setCarouselWidth(carouselRef.current.scrollWidth - carouselRef.current.offsetWidth);
-      }
-    };
-    updateWidth();
-    window.addEventListener("resize", updateWidth);
-    return () => window.removeEventListener("resize", updateWidth);
-  }, []);
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
@@ -43,7 +30,7 @@ export default function CreativoDemo() {
 
     const mm = gsap.matchMedia();
 
-    mm.add("(min-width: 768px)", () => {
+    mm.add("all", () => {
       const cards = cardsRef.current;
       if (cards.length > 1) {
         const tl = gsap.timeline({
@@ -202,98 +189,48 @@ export default function CreativoDemo() {
           <p className="font-mono text-[10px] md:text-sm uppercase tracking-widest max-w-sm text-white/60">
             Pushing boundaries of digital experiences. Scroll to explore the archive.
           </p>
-          <ArrowUpRight className="w-6 h-6 md:w-8 md:h-8 text-white/40 animate-pulse hidden md:block" />
+          <ArrowUpRight className="w-6 h-6 md:w-8 md:h-8 text-white/40 animate-pulse" />
         </div>
       </section>
 
-      <div className="hidden md:block">
-        <section ref={containerRef} className="h-screen w-full relative overflow-hidden bg-[#0f0f0f]">
-          {projects.map((project, index) => (
+      <section ref={containerRef} className="h-screen w-full relative overflow-hidden bg-[#0f0f0f]">
+        {projects.map((project, index) => (
+          <div
+            key={project.id}
+            ref={(el) => { if (el) cardsRef.current[index] = el; }}
+            className="absolute top-0 left-0 w-full h-full flex items-center justify-center p-4 sm:p-6 md:p-12 will-change-transform"
+          >
             <div
-              key={project.id}
-              ref={(el) => { if (el) cardsRef.current[index] = el; }}
-              className="absolute top-0 left-0 w-full h-full flex items-center justify-center p-6 md:p-12 will-change-transform"
+              className="relative w-full h-full max-w-[1400px] max-h-[800px] rounded-[2rem] md:rounded-[3rem] overflow-hidden group bg-black"
+              onMouseEnter={() => setHoverState(true)}
+              onMouseLeave={() => setHoverState(false)}
             >
-              <div
-                className="relative w-full h-full max-w-[1400px] max-h-[800px] rounded-[2rem] md:rounded-[3rem] overflow-hidden group bg-black"
-                onMouseEnter={() => setHoverState(true)}
-                onMouseLeave={() => setHoverState(false)}
-              >
-                <img
-                  src={project.image}
-                  alt={project.title}
-                  className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-700 group-hover:scale-105"
-                />
-                <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/80" />
-                
-                <div className="absolute bottom-0 left-0 w-full p-8 md:p-16 flex flex-col md:flex-row justify-between items-end md:items-end gap-6 pointer-events-none">
-                  <div>
-                    <div className="flex items-center gap-4 mb-4">
-                      <span className="font-mono text-[10px] md:text-xs uppercase tracking-widest px-3 py-1 border border-white/30 rounded-full backdrop-blur-md bg-black/20">
-                        {project.year}
-                      </span>
-                      <span className="font-mono text-[10px] md:text-xs uppercase tracking-widest text-white/80">
-                        {project.category}
-                      </span>
-                    </div>
-                    <h2 className="font-serif text-5xl md:text-8xl tracking-tighter text-white uppercase leading-none">
-                      {project.title}
-                    </h2>
+              <img
+                src={project.image}
+                alt={project.title}
+                className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-700 group-hover:scale-105"
+              />
+              <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/80" />
+              
+              <div className="absolute bottom-0 left-0 w-full p-6 sm:p-8 md:p-16 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 pointer-events-none">
+                <div>
+                  <div className="flex items-center gap-3 md:gap-4 mb-4">
+                    <span className="font-mono text-[9px] md:text-xs uppercase tracking-widest px-3 py-1 border border-white/30 rounded-full backdrop-blur-md bg-black/20">
+                      {project.year}
+                    </span>
+                    <span className="font-mono text-[9px] md:text-xs uppercase tracking-widest text-white/80">
+                      {project.category}
+                    </span>
                   </div>
+                  <h2 className="font-serif text-[clamp(2.5rem,8vw,6rem)] tracking-tighter text-white uppercase leading-none">
+                    {project.title}
+                  </h2>
                 </div>
               </div>
             </div>
-          ))}
-        </section>
-      </div>
-
-      <div className="md:hidden block">
-        <section className="w-full py-12 bg-[#0f0f0f] overflow-hidden">
-          <div className="px-4 mb-8 flex justify-between items-center">
-            <h2 className="font-mono text-[10px] uppercase tracking-widest text-white/50">Selected Works</h2>
-            <div className="flex items-center gap-2">
-              <span className="font-mono text-[9px] uppercase tracking-widest text-white/40">Swipe</span>
-              <ArrowLeft className="w-3 h-3 text-white/40 rotate-180" />
-            </div>
           </div>
-          <motion.div ref={carouselRef} className="cursor-grab active:cursor-grabbing overflow-hidden">
-            <motion.div 
-              drag="x" 
-              dragConstraints={{ right: 0, left: -carouselWidth }} 
-              className="flex gap-4 px-4 w-max"
-            >
-              {projects.map((project) => (
-                <motion.div 
-                  key={project.id} 
-                  className="relative w-[85vw] h-[60vh] rounded-[2rem] overflow-hidden bg-black flex-shrink-0"
-                  whileTap={{ scale: 0.97 }}
-                >
-                  <img
-                    src={project.image}
-                    alt={project.title}
-                    className="absolute inset-0 w-full h-full object-cover opacity-80 pointer-events-none"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/90 pointer-events-none" />
-                  
-                  <div className="absolute bottom-0 left-0 w-full p-6 flex flex-col justify-end pointer-events-none">
-                    <div className="flex items-center gap-2 mb-3">
-                      <span className="font-mono text-[9px] uppercase tracking-wider px-2 py-1 border border-white/30 rounded-full backdrop-blur-md bg-black/20">
-                        {project.year}
-                      </span>
-                      <span className="font-mono text-[9px] uppercase tracking-wider text-white/80">
-                        {project.category}
-                      </span>
-                    </div>
-                    <h2 className="font-serif text-4xl tracking-tighter text-white uppercase leading-none">
-                      {project.title}
-                    </h2>
-                  </div>
-                </motion.div>
-              ))}
-            </motion.div>
-          </motion.div>
-        </section>
-      </div>
+        ))}
+      </section>
 
       <footer className="h-[60vh] md:h-screen flex flex-col items-center justify-center bg-[#050505] relative z-10 text-center px-4">
         <h3 className="font-serif text-[clamp(2.5rem,8vw,6rem)] leading-none tracking-tight mb-10">
