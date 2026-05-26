@@ -2,13 +2,13 @@
 
 import React from 'react';
 import { LazyMotion, domAnimation, m } from 'framer-motion';
-import { Cpu, Server, Database, ShieldCheck, TrendingDown, Zap } from 'lucide-react';
+import { Cpu, Server, Database, ShieldCheck, TrendingDown, Zap, AlertTriangle, DollarSign } from 'lucide-react';
 
 const benefits = [
-  { icon: Server, label: 'Arquitectura Node.js + Express', desc: 'Hasta 40.000 conexiones concurrentes con una huella de memoria mínima. Sin servidores hinchados.' },
-  { icon: Database, label: 'Soberanía del Dato', desc: 'Tu código fuente es tuyo. Sin licencias mensuales, sin plugins de terceros que te aten de por vida.' },
-  { icon: ShieldCheck, label: 'Deuda Técnica Cero', desc: 'Olvida los parches de seguridad de WordPress. Construimos desde cero, sin heredar basura.' },
-  { icon: TrendingDown, label: 'Ahorro en Hosting', desc: 'El bucle de eventos asíncrono de Node.js reduce drásticamente el coste mensual de infraestructura.' },
+  { icon: Server, label: 'Arquitectura Node.js + Express', desc: 'Hasta 40.000 conexiones concurrentes con una huella de memoria mínima. El bucle de eventos asíncrono de un único hilo lo hace posible.' },
+  { icon: Database, label: 'Soberanía del Dato Empresarial', desc: 'Tu código fuente es tuyo. Sin licencias mensuales, sin plugins de terceros que te aten. Eres dueño de tu infraestructura.' },
+  { icon: ShieldCheck, label: 'Deuda Técnica Cero', desc: 'WordPress acumula parches de seguridad y plugins hinchados. Nosotros construimos desde cero, sin heredar basura de terceros.' },
+  { icon: TrendingDown, label: 'Ahorro en Hosting', desc: 'El bucle de eventos asíncrono de Node.js reduce drásticamente el coste mensual de infraestructura. Pagas menos, rindes más.' },
 ];
 
 const comparisonRows = [
@@ -42,12 +42,12 @@ export default function TechMuscle() {
               <span className="text-xs font-mono text-indigo-400 uppercase tracking-[0.25em]">Músculo Técnico</span>
             </div>
             <h2 className="text-4xl md:text-7xl lg:text-8xl font-black uppercase tracking-tighter leading-[0.85] max-w-5xl">
-              <span className="block text-white">No vendemos</span>
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-zinc-500">plantillas.</span>
-              <span className="block text-white/80">Vendemos infraestructura.</span>
+              <span className="block text-white">¿Por qué pagar</span>
+              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-zinc-500">más de 2.000€</span>
+              <span className="block text-white/80">por un WordPress?</span>
             </h2>
             <p className="mt-6 text-zinc-400 font-mono text-sm md:text-base max-w-2xl leading-relaxed uppercase tracking-widest">
-              WordPress es para blogs. Tu negocio merece una arquitectura soberana, rápida y blindada.
+              El Síndrome del Kit Digital infló los precios y llenó el mercado de plantillas genéricas. Tu negocio merece una arquitectura soberana, rápida y blindada.
             </p>
           </m.div>
 
@@ -69,6 +69,22 @@ export default function TechMuscle() {
                   </div>
                 </m.div>
               ))}
+
+              <m.div
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: 0.4, duration: 0.6 }}
+                className="flex gap-4 p-4 rounded-lg border border-amber-500/20 bg-amber-500/5"
+              >
+                <AlertTriangle className="w-6 h-6 text-amber-400 shrink-0 mt-1" />
+                <div>
+                  <h3 className="text-sm font-bold uppercase tracking-widest mb-1 text-amber-400">El Síndrome del Kit Digital</h3>
+                  <p className="text-xs font-mono text-zinc-500 leading-relaxed">
+                    Subvenciones públicas inflaron precios y llenaron el mercado de agencias low-cost con WordPress. Resultado: webs lentas, inseguras y clónicas que no generan negocio.
+                  </p>
+                </div>
+              </m.div>
             </div>
 
             <m.div
@@ -78,8 +94,9 @@ export default function TechMuscle() {
               transition={{ duration: 0.8, delay: 0.3 }}
               className="border border-white/10 rounded-xl overflow-hidden"
             >
-              <div className="bg-white/5 px-6 py-4 border-b border-white/10">
+              <div className="bg-white/5 px-6 py-4 border-b border-white/10 flex items-center justify-between">
                 <span className="text-xs font-mono uppercase tracking-widest text-zinc-400">WordPress vs Arquitectura Custom</span>
+                <DollarSign className="w-4 h-4 text-green-400" />
               </div>
               <div className="divide-y divide-white/5">
                 {comparisonRows.map((row, i) => (
@@ -108,8 +125,8 @@ export default function TechMuscle() {
                 </div>
                 <h3 className="text-2xl md:text-4xl font-black uppercase tracking-tighter mb-4">Portal Musical Masivo</h3>
                 <p className="text-zinc-400 font-mono text-xs md:text-sm leading-relaxed max-w-xl">
-                  Plataforma con bases de datos relacionales, reviews, gamificación y millones de hits diarios.
-                  Todo sobre una arquitectura Node.js + Express. Sin WordPress. Sin plugins. Sin límites.
+                  Bases de datos relacionales y documentales, sistemas de reviews complejos, mecánicas de gamificación y millones de hits diarios.
+                  Todo sobre una arquitectura Node.js + Express. Sin WordPress. Sin plugins. Sin límites. Gobernado al 100% por código personalizado.
                 </p>
                 <div className="mt-6 flex flex-wrap gap-6">
                   <div>

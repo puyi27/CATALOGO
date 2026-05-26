@@ -1,15 +1,13 @@
 import "./globals.css";
-// 1. Importamos la fuente optimizada de Next.js
 import { Inter } from "next/font/google";
 
-// 2. Configuramos la fuente
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 
 export const metadata = {
-  title: "Elite Showroom - Creative Architecture",
-  description: "Un showroom inmersivo creado con React, Next.js, GSAP y R3F.",
-  keywords: ["Desarrollo Web", "Showroom", "Experiencias Inmersivas", "Next.js 14"],
-  authors: [{ name: "Tu Agencia" }],
+  title: "Catálogo — Agencia de Arquitectura Digital",
+  description: "Mitad científicos, mitad artistas. Showroom de prototipos WaaS para pymes industriales y tradicionales de Alcalá de Guadaíra. Next.js, Node.js, IA.",
+  keywords: ["Desarrollo Web", "Alcalá de Guadaíra", "Pymes Industriales", "Node.js", "Next.js", "WaaS"],
+  authors: [{ name: "Agencia" }],
 };
 
 import SmoothScroll from "@/components/SmoothScroll";

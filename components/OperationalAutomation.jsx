@@ -2,20 +2,26 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { LazyMotion, domAnimation, m, AnimatePresence } from 'framer-motion';
-import { MessageCircle, Phone, Bot, ArrowRight, CheckCircle, Clock, Users, MessageSquare } from 'lucide-react';
+import { MessageCircle, Phone, Bot, ArrowRight, CheckCircle, Clock, Users, MessageSquare, Construction, Wheat, Building2 } from 'lucide-react';
 
 const chatMessages = [
   { from: 'bot', text: '¡Hola! Soy el asistente virtual de la agencia. ¿En qué puedo ayudarte?' },
   { from: 'user', text: 'Quiero información sobre precios de páginas web' },
   { from: 'bot', text: 'Claro. ¿Podrías decirme a qué se dedica tu negocio?' },
-  { from: 'user', text: 'Taller mecánico en Alcalá' },
+  { from: 'user', text: 'Taller mecánico en el polígono Cabeza Hermosa' },
   { from: 'bot', text: 'Perfecto. ¿Tienes web actualmente o empiezas de cero?' },
-  { from: 'user', text: 'Tengo una pero es muy antigua' },
-  { from: 'bot', text: 'Entendido. He registrado tu consulta. Un asesor te llamará en menos de 5 minutos al número que nos has proporcionado. ¡Gracias!' },
+  { from: 'user', text: 'Tengo una pero es muy antigua, no la actualicé desde 2019' },
+  { from: 'bot', text: 'Entendido. He registrado tu consulta. Un asesor especializado en industria te llamará en menos de 5 minutos. ¡Gracias!' },
+];
+
+const painPoints = [
+  { icon: Construction, text: '"Estoy en medio de una soldadura y el teléfono no para de sonar. Pierdo clientes porque no puedo atender."' },
+  { icon: Wheat, text: '"Tengo obrador. Mientras amaso, me pierdo tres llamadas de pedidos para catering."' },
+  { icon: Building2, text: '"Superviso una obra y no puedo estar pendiente del WhatsApp de los clientes."' },
 ];
 
 const stats = [
-  { icon: Clock, value: '24/7', label: 'Disponibilidad total' },
+  { icon: Clock, value: '24/7', label: 'Disponibilidad total — sin bajas' },
   { icon: MessageSquare, value: '45s', label: 'Tiempo medio de cualificación' },
   { icon: Users, value: '3x', label: 'Más leads cualificados' },
   { icon: CheckCircle, value: '92%', label: 'Satisfacción clientes' },
@@ -68,15 +74,15 @@ export default function OperationalAutomation() {
           >
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-emerald-500/20 bg-emerald-500/5 mb-6">
               <Bot className="w-4 h-4 text-emerald-400" />
-              <span className="text-xs font-mono text-emerald-400 uppercase tracking-[0.25em]">Automatización Operativa</span>
+              <span className="text-xs font-mono text-emerald-400 uppercase tracking-[0.25em]">El Empleado Infatigable</span>
             </div>
             <h2 className="text-4xl md:text-7xl lg:text-8xl font-black uppercase tracking-tighter leading-[0.85] max-w-5xl">
-              <span className="block text-white">Tu teléfono suena</span>
+              <span className="block text-white">El teléfono suena</span>
               <span className="block text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-zinc-500">mientras trabajas.</span>
-              <span className="block text-white/80">Nosotros respondemos.</span>
+              <span className="block text-white/80">Nosotros respondemos por ti.</span>
             </h2>
             <p className="mt-6 text-zinc-400 font-mono text-sm md:text-base max-w-2xl leading-relaxed uppercase tracking-widest">
-              Asistentes conversacionales con IA que cualifican leads 24/7 y los transfieren limpios a tu WhatsApp.
+              Asistentes conversacionales con inteligencia artificial y arquitectura RAG que cualifican leads 24/7 y transfieren los datos limpios directamente al WhatsApp del cliente.
             </p>
           </m.div>
 
@@ -92,24 +98,18 @@ export default function OperationalAutomation() {
                   <Phone className="w-5 h-5 text-red-400" />
                 </div>
                 <div>
-                  <span className="text-xs font-mono uppercase tracking-widest text-red-400/80">El Problema</span>
-                  <p className="text-sm font-bold uppercase tracking-wider text-white/60">El empleado fantasma que nunca descansa</p>
+                  <span className="text-xs font-mono uppercase tracking-widest text-red-400/80">El Dolor Operativo</span>
+                  <p className="text-sm font-bold uppercase tracking-wider text-white/60">El empresario no puede estar en dos sitios a la vez</p>
                 </div>
               </div>
 
               <div className="space-y-4 mb-10">
-                <div className="flex gap-3 p-4 rounded-lg border border-red-500/10 bg-red-500/5">
-                  <Phone className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
-                  <p className="text-xs font-mono text-zinc-400 leading-relaxed">
-                    "Estoy en medio de una soldadura y el teléfono no para de sonar. Pierdo clientes porque no puedo atender."
-                  </p>
-                </div>
-                <div className="flex gap-3 p-4 rounded-lg border border-red-500/10 bg-red-500/5">
-                  <MessageCircle className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
-                  <p className="text-xs font-mono text-zinc-400 leading-relaxed">
-                    "Gasto 2 horas al día respondiendo las mismas preguntas: precios, horarios, disponibilidad..."
-                  </p>
-                </div>
+                {painPoints.map((p, i) => (
+                  <div key={i} className="flex gap-3 p-4 rounded-lg border border-red-500/10 bg-red-500/5">
+                    <p.icon className="w-5 h-5 text-red-400 shrink-0 mt-0.5" />
+                    <p className="text-xs font-mono text-zinc-400 leading-relaxed">{p.text}</p>
+                  </div>
+                ))}
               </div>
 
               <div className="flex items-center gap-3 mb-8">
@@ -118,7 +118,7 @@ export default function OperationalAutomation() {
                 </div>
                 <div>
                   <span className="text-xs font-mono uppercase tracking-widest text-emerald-400/80">La Solución</span>
-                  <p className="text-sm font-bold uppercase tracking-wider text-white/60">Un empleado infatigable que trabaja por ti</p>
+                  <p className="text-sm font-bold uppercase tracking-wider text-white/60">Un empleado virtual que nunca descansa</p>
                 </div>
               </div>
 
@@ -129,15 +129,15 @@ export default function OperationalAutomation() {
                 </div>
                 <div className="flex items-center gap-2 text-xs font-mono text-zinc-500 border border-white/10 rounded-full px-4 py-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                  Cualificación automática
+                  Cualificación automática 24/7
                 </div>
                 <div className="flex items-center gap-2 text-xs font-mono text-zinc-500 border border-white/10 rounded-full px-4 py-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                  Integración WhatsApp
+                  Transferencia directa a WhatsApp
                 </div>
                 <div className="flex items-center gap-2 text-xs font-mono text-zinc-500 border border-white/10 rounded-full px-4 py-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                  Leads listos para cerrar
+                  Datos limpios y listos para cerrar
                 </div>
               </div>
 
@@ -157,6 +157,10 @@ export default function OperationalAutomation() {
                   </m.div>
                 ))}
               </div>
+
+              <p className="mt-6 text-[10px] font-mono text-zinc-600 uppercase tracking-widest leading-relaxed">
+                La web de tu negocio no es un gasto: es un empleado que trabaja por ti mientras tú trabajas en lo que importa.
+              </p>
             </m.div>
 
             <m.div
@@ -230,7 +234,7 @@ export default function OperationalAutomation() {
               </div>
 
               <p className="mt-4 text-[10px] font-mono text-zinc-600 text-center uppercase tracking-widest">
-                Esta demo simula una conversación real con nuestro sistema de cualificación por IA
+                Demo en vivo — simula una conversación real con nuestro sistema de cualificación por IA + arquitectura RAG
               </p>
             </m.div>
           </div>

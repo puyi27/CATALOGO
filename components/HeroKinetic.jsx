@@ -3,7 +3,6 @@
 import React, { useRef, useState, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { LazyMotion, domAnimation, m, AnimatePresence } from 'framer-motion';
-import Link from 'next/link';
 
 const Canvas = dynamic(() => import('@react-three/fiber').then(mod => mod.Canvas), { ssr: false });
 const Points = dynamic(() => import('@react-three/drei').then(mod => mod.Points), { ssr: false });
@@ -16,7 +15,7 @@ function Starfield(props) {
     const random = require('maath/random/dist/maath-random.esm');
     return random.inSphere(new Float32Array(5000), { radius: 1.5 });
   });
-  
+
   useEffect(() => {
     const animate = () => {
       if (!ref.current) return;
@@ -37,7 +36,7 @@ function Starfield(props) {
   );
 }
 
-const words = ["Inmersivas.", "Brutales.", "Originales.", "Premium.", "Memorables."];
+const words = ["Precisión Artesanal.", "Solvencia Algorítmica.", "Arquitectura Soberana.", "Lead Generation.", "Infraestructura."];
 
 export default function HeroKinetic() {
   const [wordIndex, setWordIndex] = useState(0);
@@ -54,7 +53,6 @@ export default function HeroKinetic() {
   }, []);
 
   useEffect(() => {
-    // Direct DOM update — zero React re-renders on mousemove
     const handler = (e) => {
       if (!gradientRef.current) return;
       const x = 50 + (e.clientX / window.innerWidth - 0.5) * 20;
@@ -91,7 +89,7 @@ export default function HeroKinetic() {
           >
             <span className="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse" />
             <span className="text-xs font-mono text-zinc-400 uppercase tracking-[0.25em]">
-              Catálogo de Prototipos — 2025
+              Mitad Científicos. Mitad Artistas. — Alcalá de Guadaíra
             </span>
           </m.div>
 
@@ -101,11 +99,11 @@ export default function HeroKinetic() {
             transition={{ delay: 0.5, duration: 1, ease: [0.16, 1, 0.3, 1] }}
             className="text-[3.5rem] sm:text-[5rem] md:text-[7rem] lg:text-[9rem] font-black uppercase tracking-tighter leading-[0.82] text-white"
           >
-            <span className="block">Webs que</span>
-            <span className="block">no se</span>
+            <span className="block">No vendemos</span>
+            <span className="block">páginas web.</span>
             <span className="block relative overflow-hidden">
-              <span className="relative">olvidan</span>
-              <span className="text-transparent ml-4" style={{ WebkitTextStroke: '2px rgba(255,255,255,0.3)' }}>nunca.</span>
+              <span className="relative">Vendemos</span>
+              <span className="text-transparent ml-4" style={{ WebkitTextStroke: '2px rgba(255,255,255,0.3)' }}>activos digitales.</span>
             </span>
           </m.h1>
 
@@ -115,8 +113,8 @@ export default function HeroKinetic() {
             transition={{ delay: 1 }}
             className="mt-10 flex items-center justify-center gap-3 text-zinc-500"
           >
-            <span className="text-sm font-mono uppercase tracking-widest">Experiencias</span>
-            <div className="h-8 overflow-hidden relative w-36">
+            <span className="text-sm font-mono uppercase tracking-widest">Ingeniería</span>
+            <div className="h-8 overflow-hidden relative w-48">
               <AnimatePresence mode="wait">
                 <m.span
                   key={wordIndex}
@@ -154,12 +152,10 @@ export default function HeroKinetic() {
               </m.span>
             </a>
             <a
-              href="https://github.com/puyi27/CAT-LOGO"
-              target="_blank"
-              rel="noopener noreferrer"
+              href="#contacto"
               className="inline-flex items-center gap-2 border border-white/10 text-white px-8 py-4 rounded-full font-bold text-sm uppercase tracking-widest hover:border-white/30 hover:bg-white/5 transition-colors"
             >
-              GitHub →
+              Solicitar Auditoría →
             </a>
           </m.div>
 
