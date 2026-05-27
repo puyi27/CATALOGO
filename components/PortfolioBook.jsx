@@ -4,7 +4,7 @@ import React, { useRef, useState } from 'react';
 import HTMLFlipBook from 'react-pageflip';
 import Image from 'next/image';
 import Link from 'next/link';
-import { m, AnimatePresence } from 'framer-motion';
+import { m, AnimatePresence, LazyMotion, domAnimation } from 'framer-motion';
 
 const demos = [
   { id: 'metal', color: '#ff4500', nombre: 'INDUSTRIA PESADA', path: '/demo/metal', tags: ['industrial', 'backend'], img: '/previews/metal.jpg', fontClass: 'font-mono font-black uppercase tracking-tighter' },
@@ -38,142 +38,144 @@ export default function PortfolioBook() {
   const activeDemo = currentPage > 0 && currentPage <= demos.length ? demos[currentPage - 1] : null;
 
   return (
-    <div id="catalogo-mini" className="flex flex-col md:flex-row justify-center items-center gap-8 md:gap-16 w-full relative z-20 max-w-6xl mx-auto">
-      
-      {/* Lado Izquierdo (Info) */}
-      <div className="hidden md:flex flex-1 justify-end items-center">
-         <AnimatePresence mode="wait">
-           {activeDemo ? (
-             <m.div 
-               key={activeDemo.id}
-               initial={{ opacity: 0, filter: "blur(10px)", x: -20 }}
-               animate={{ opacity: 1, filter: "blur(0px)", x: 0 }}
-               exit={{ opacity: 0, filter: "blur(10px)", x: -20 }}
-               className="text-right flex flex-col items-end"
-             >
-               <div className="flex items-center gap-3 mb-4">
-                 <p className="text-white/50 text-xs font-mono tracking-[0.2em] uppercase">{activeDemo.tags[0]}</p>
-                 <span className="w-2 h-2 rounded-full" style={{ backgroundColor: activeDemo.color, boxShadow: `0 0 10px ${activeDemo.color}` }} />
-               </div>
-               <h2 className={`text-white text-5xl mb-6 leading-[0.9] ${activeDemo.fontClass || 'font-serif'}`}>
-                 {activeDemo.nombre}
-               </h2>
-               <Link 
-                 href={activeDemo.path}
-                 className="w-fit border-b border-white/30 text-white uppercase text-xs font-mono tracking-[0.2em] pb-2 hover:text-white/80 transition-colors"
+    <LazyMotion features={domAnimation}>
+      <div id="catalogo-mini" className="flex flex-col md:flex-row justify-center items-center gap-8 md:gap-16 w-full relative z-20 max-w-6xl mx-auto">
+        
+        {/* Lado Izquierdo (Info) */}
+        <div className="hidden md:flex flex-1 justify-end items-center">
+           <AnimatePresence mode="wait">
+             {activeDemo ? (
+               <m.div 
+                 key={activeDemo.id}
+                 initial={{ opacity: 0, filter: "blur(10px)", x: -20 }}
+                 animate={{ opacity: 1, filter: "blur(0px)", x: 0 }}
+                 exit={{ opacity: 0, filter: "blur(10px)", x: -20 }}
+                 className="text-right flex flex-col items-end"
                >
-                 Explorar Prototipo
-               </Link>
-             </m.div>
-           ) : (
-             <div className="text-right flex flex-col items-end opacity-50">
-                <p className="text-white/50 text-xs font-mono tracking-[0.2em] uppercase mb-4">Book</p>
-                <h2 className="text-white text-4xl font-serif">Abre para<br/>explorar</h2>
-             </div>
-           )}
-         </AnimatePresence>
-      </div>
+                 <div className="flex items-center gap-3 mb-4">
+                   <p className="text-white/50 text-xs font-mono tracking-[0.2em] uppercase">{activeDemo.tags[0]}</p>
+                   <span className="w-2 h-2 rounded-full" style={{ backgroundColor: activeDemo.color, boxShadow: `0 0 10px ${activeDemo.color}` }} />
+                 </div>
+                 <h2 className={`text-white text-5xl mb-6 leading-[0.9] ${activeDemo.fontClass || 'font-serif'}`}>
+                   {activeDemo.nombre}
+                 </h2>
+                 <Link 
+                   href={activeDemo.path}
+                   className="w-fit border-b border-white/30 text-white uppercase text-xs font-mono tracking-[0.2em] pb-2 hover:text-white/80 transition-colors"
+                 >
+                   Explorar Prototipo
+                 </Link>
+               </m.div>
+             ) : (
+               <div className="text-right flex flex-col items-end opacity-50">
+                  <p className="text-white/50 text-xs font-mono tracking-[0.2em] uppercase mb-4">Book</p>
+                  <h2 className="text-white text-4xl font-serif">Abre para<br/>explorar</h2>
+               </div>
+             )}
+           </AnimatePresence>
+        </div>
 
-      {/* Centro (Libro) */}
-      <div className="shrink-0 relative">
-          <HTMLFlipBook 
-            width={300} 
-            height={400} 
-            size="stretch"
-            minWidth={200}
-            maxWidth={400}
-            minHeight={250}
-            maxHeight={500}
-            maxShadowOpacity={0.1}
-            showCover={true}
-            mobileScrollSupport={true}
-            onFlip={(e) => setCurrentPage(e.data)}
-            ref={bookRef}
-            className="shadow-2xl shadow-black"
-          >
-            {/* PORTADA */}
-            <div className="demoPage bg-stone-100 text-blue-950 flex flex-col justify-center items-center border-r border-stone-300">
-              <h1 className="text-5xl md:text-6xl font-serif tracking-tighter uppercase mb-4 text-center leading-[0.85]">
-                The<br/>Prototypes
-              </h1>
-              <p className="text-xs tracking-[0.3em] uppercase font-light mt-8 text-stone-500">2026 Edition</p>
-            </div>
-
-            {/* PÁGINAS INTERNAS (Sin info superpuesta) */}
-            {demos.map((demo, index) => (
-              <div key={index} className="demoPage bg-[#050505] overflow-hidden relative group">
-                <Image 
-                  src={demo.img} 
-                  alt={demo.nombre} 
-                  fill
-                  className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700 ease-out scale-105 group-hover:scale-100"
-                />
+        {/* Centro (Libro) */}
+        <div className="shrink-0 relative">
+            <HTMLFlipBook 
+              width={300} 
+              height={400} 
+              size="stretch"
+              minWidth={200}
+              maxWidth={400}
+              minHeight={250}
+              maxHeight={500}
+              maxShadowOpacity={0.1}
+              showCover={true}
+              mobileScrollSupport={true}
+              onFlip={(e) => setCurrentPage(e.data)}
+              ref={bookRef}
+              className="shadow-2xl shadow-black"
+            >
+              {/* PORTADA */}
+              <div className="demoPage bg-stone-100 text-blue-950 flex flex-col justify-center items-center border-r border-stone-300">
+                <h1 className="text-5xl md:text-6xl font-serif tracking-tighter uppercase mb-4 text-center leading-[0.85]">
+                  The<br/>Prototypes
+                </h1>
+                <p className="text-xs tracking-[0.3em] uppercase font-light mt-8 text-stone-500">2026 Edition</p>
               </div>
-            ))}
 
-            {/* CONTRAPORTADA */}
-            <div className="demoPage bg-[#111] text-stone-100 flex flex-col items-center justify-center border-l border-white/5">
-              <h2 className="text-3xl font-serif tracking-tighter uppercase mb-4 text-center leading-none text-white/20">
-                End of<br/>Catalog
-              </h2>
-              <p className="text-[9px] font-mono tracking-[0.3em] uppercase text-white/50 mt-12">Antigravity</p>
-            </div>
-          </HTMLFlipBook>
-      </div>
-
-      {/* Lado Derecho (Info extra o paginación) */}
-      <div className="hidden md:flex flex-1 justify-start items-center">
-         <AnimatePresence mode="wait">
-           {activeDemo ? (
-             <m.div 
-               key={activeDemo.id}
-               initial={{ opacity: 0, x: 20 }}
-               animate={{ opacity: 1, x: 0 }}
-               exit={{ opacity: 0, x: 20 }}
-               className="text-left flex flex-col items-start"
-             >
-                <div className="text-white/20 font-mono text-[8rem] leading-none font-black opacity-20 selection:bg-transparent">
-                  {String(currentPage).padStart(2, '0')}
+              {/* PÁGINAS INTERNAS (Sin info superpuesta) */}
+              {demos.map((demo, index) => (
+                <div key={index} className="demoPage bg-[#050505] overflow-hidden relative group">
+                  <Image 
+                    src={demo.img} 
+                    alt={demo.nombre} 
+                    fill
+                    className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700 ease-out scale-105 group-hover:scale-100"
+                  />
                 </div>
-             </m.div>
-           ) : (
-             <div className="text-left flex flex-col items-start opacity-50">
-                <div className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center text-white/20">
-                  <span className="text-xs font-mono">{currentPage}</span>
-                </div>
-             </div>
-           )}
-         </AnimatePresence>
-      </div>
+              ))}
 
-      {/* Mobile Info */}
-      <div className="md:hidden mt-8 w-full flex flex-col items-center text-center">
-         <AnimatePresence mode="wait">
-           {activeDemo && (
-             <m.div 
-               key={activeDemo.id}
-               initial={{ opacity: 0, y: 10 }}
-               animate={{ opacity: 1, y: 0 }}
-               exit={{ opacity: 0, y: 10 }}
-               className="flex flex-col items-center"
-             >
-               <div className="flex items-center gap-2 mb-2">
-                 <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: activeDemo.color }} />
-                 <p className="text-white/50 text-[10px] font-mono tracking-[0.2em] uppercase">{activeDemo.tags[0]}</p>
-               </div>
-               <h2 className={`text-white text-3xl mb-4 ${activeDemo.fontClass || 'font-serif'}`}>
-                 {activeDemo.nombre}
-               </h2>
-               <Link 
-                 href={activeDemo.path}
-                 className="w-fit border-b border-white/30 text-white uppercase text-[10px] font-mono tracking-[0.2em] pb-1"
+              {/* CONTRAPORTADA */}
+              <div className="demoPage bg-[#111] text-stone-100 flex flex-col items-center justify-center border-l border-white/5">
+                <h2 className="text-3xl font-serif tracking-tighter uppercase mb-4 text-center leading-none text-white/20">
+                  End of<br/>Catalog
+                </h2>
+                <p className="text-[9px] font-mono tracking-[0.3em] uppercase text-white/50 mt-12">Antigravity</p>
+              </div>
+            </HTMLFlipBook>
+        </div>
+
+        {/* Lado Derecho (Info extra o paginación) */}
+        <div className="hidden md:flex flex-1 justify-start items-center">
+           <AnimatePresence mode="wait">
+             {activeDemo ? (
+               <m.div 
+                 key={activeDemo.id}
+                 initial={{ opacity: 0, x: 20 }}
+                 animate={{ opacity: 1, x: 0 }}
+                 exit={{ opacity: 0, x: 20 }}
+                 className="text-left flex flex-col items-start"
                >
-                 Explorar Prototipo
-               </Link>
-             </m.div>
-           )}
-         </AnimatePresence>
+                  <div className="text-white/20 font-mono text-[8rem] leading-none font-black opacity-20 selection:bg-transparent">
+                    {String(currentPage).padStart(2, '0')}
+                  </div>
+               </m.div>
+             ) : (
+               <div className="text-left flex flex-col items-start opacity-50">
+                  <div className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center text-white/20">
+                    <span className="text-xs font-mono">{currentPage}</span>
+                  </div>
+               </div>
+             )}
+           </AnimatePresence>
+        </div>
+
+        {/* Mobile Info */}
+        <div className="md:hidden mt-8 w-full flex flex-col items-center text-center">
+           <AnimatePresence mode="wait">
+             {activeDemo && (
+               <m.div 
+                 key={activeDemo.id}
+                 initial={{ opacity: 0, y: 10 }}
+                 animate={{ opacity: 1, y: 0 }}
+                 exit={{ opacity: 0, y: 10 }}
+                 className="flex flex-col items-center"
+               >
+                 <div className="flex items-center gap-2 mb-2">
+                   <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: activeDemo.color }} />
+                   <p className="text-white/50 text-[10px] font-mono tracking-[0.2em] uppercase">{activeDemo.tags[0]}</p>
+                 </div>
+                 <h2 className={`text-white text-3xl mb-4 ${activeDemo.fontClass || 'font-serif'}`}>
+                   {activeDemo.nombre}
+                 </h2>
+                 <Link 
+                   href={activeDemo.path}
+                   className="w-fit border-b border-white/30 text-white uppercase text-[10px] font-mono tracking-[0.2em] pb-1"
+                 >
+                   Explorar Prototipo
+                 </Link>
+               </m.div>
+             )}
+           </AnimatePresence>
+        </div>
       </div>
-    </div>
+    </LazyMotion>
   );
 }
