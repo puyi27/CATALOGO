@@ -34,24 +34,24 @@ export default function PortfolioBook() {
   const bookRef = useRef();
 
   return (
-    <section id="catalogo" className="flex justify-center items-center min-h-screen bg-stone-200 py-24 md:py-32 relative z-20">
+    <div id="catalogo-mini" className="flex justify-center items-center w-full relative z-20">
       {/* Configuración premium: 
         - drawShadow: false (evita sombras baratas por defecto)
         - usePortrait: true (responsive)
       */}
       <HTMLFlipBook 
-        width={550} 
-        height={750} 
+        width={300} 
+        height={400} 
         size="stretch"
-        minWidth={315}
-        maxWidth={1000}
-        minHeight={400}
-        maxHeight={1533}
+        minWidth={200}
+        maxWidth={400}
+        minHeight={250}
+        maxHeight={500}
         maxShadowOpacity={0.1}
         showCover={true}
         mobileScrollSupport={true}
         ref={bookRef}
-        className="shadow-2xl shadow-blue-950/20"
+        className="shadow-lg shadow-blue-950/10"
       >
         {/* PORTADA */}
         <div className="demoPage bg-stone-100 text-blue-950 flex flex-col justify-center items-center border-r border-stone-300">
@@ -97,6 +97,6 @@ export default function PortfolioBook() {
           <p className="text-[10px] font-mono tracking-[0.3em] uppercase text-white/50 mt-12">Powered by Antigravity</p>
         </div>
       </HTMLFlipBook>
-    </section>
+    </div>
   );
 }
