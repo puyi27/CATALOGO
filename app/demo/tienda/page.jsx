@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence, useMotionValue, useSpring } from "framer-motion";
 import Link from "next/link";
 import { ShoppingCart, X, ArrowLeft, ArrowRight, Zap, Target, Shield, Globe } from "lucide-react";
+import DemoLayout from "@/components/DemoLayout";
 
 export default function ObsidianApparel() {
   const [isCartOpen, setIsCartOpen] = useState(false);
@@ -26,7 +27,8 @@ export default function ObsidianApparel() {
   }, [cursorX, cursorY]);
 
   return (
-    <div className="min-h-screen bg-[#000000] text-white font-sans uppercase selection:bg-[#00FF00] selection:text-black md:cursor-none overflow-x-hidden">
+    <DemoLayout title="Tienda Dystopia">
+    <div className="text-white font-sans uppercase selection:bg-[#00FF00] selection:text-black md:cursor-none overflow-x-hidden">
       <motion.div
         className="hidden md:flex fixed top-0 left-0 w-6 h-6 border-2 border-[#00FF00] rounded-full pointer-events-none z-[100] mix-blend-difference items-center justify-center"
         style={{ x: cursorXSpring, y: cursorYSpring }}
@@ -54,7 +56,7 @@ export default function ObsidianApparel() {
           <motion.div
             animate={{ x: ["0%", "-50%"] }}
             transition={{ repeat: Infinity, ease: "linear", duration: 15 }}
-            className="flex whitespace-nowrap text-[#00FF00] font-black text-[clamp(2.5rem,6vw,6rem)] md:text-8xl tracking-tighter"
+            className="flex whitespace-nowrap text-[#00FF00] font-black text-6xl md:text-9xl tracking-tighter"
           >
             <span className="pr-8 md:pr-12">NEW COLLECTION DROP :: OBSIDIAN SS26 ::</span>
             <span className="pr-8 md:pr-12">NEW COLLECTION DROP :: OBSIDIAN SS26 ::</span>
@@ -67,7 +69,7 @@ export default function ObsidianApparel() {
       <main>
         <section className="py-20 md:py-32 px-4 md:px-6 max-w-[1400px] mx-auto overflow-hidden">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 md:mb-16 gap-4 md:gap-6">
-            <h2 className="text-[clamp(3rem,8vw,6rem)] md:text-8xl font-black tracking-tighter leading-none">INVENTORY</h2>
+            <h2 className="text-6xl md:text-9xl font-black tracking-tighter leading-none">INVENTORY</h2>
             <p className="text-zinc-500 font-bold tracking-widest text-xs md:text-sm pb-1 md:pb-3">SEASON 26 :: CLASSIFIED GEAR</p>
           </div>
           
@@ -125,28 +127,28 @@ export default function ObsidianApparel() {
           <div className="max-w-[1400px] mx-auto px-4 md:px-6 grid grid-cols-1 md:grid-cols-3 gap-16 md:gap-8 text-center relative z-10">
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} className="flex flex-col items-center">
               <Target className="text-[#00FF00] mb-6 md:mb-8 w-10 h-10 md:w-12 md:h-12" />
-              <div className="text-[clamp(4rem,10vw,5rem)] md:text-7xl font-black text-white/5 tracking-tighter mb-4 absolute top-0 -z-10">01</div>
-              <h3 className="text-xl md:text-2xl font-black tracking-widest mb-3 md:mb-4">LIMITED PRODUCTION</h3>
-              <p className="text-zinc-500 text-[10px] md:text-xs font-bold tracking-widest leading-loose max-w-xs px-4">EACH GARMENT IS PRODUCED IN STRICTLY LIMITED QUANTITIES TO ENSURE EXCLUSIVITY.</p>
+              <div className="text-6xl md:text-9xl font-black text-white/5 tracking-tighter mb-4 absolute top-0 -z-10">01</div>
+              <h3 className="text-2xl md:text-4xl font-black tracking-widest mb-3 md:mb-4">LIMITED PRODUCTION</h3>
+              <p className="text-zinc-500 text-xs md:text-base font-bold tracking-widest leading-loose max-w-xs px-4">EACH GARMENT IS PRODUCED IN STRICTLY LIMITED QUANTITIES TO ENSURE EXCLUSIVITY.</p>
             </motion.div>
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ delay: 0.1 }} className="flex flex-col items-center">
               <Shield className="text-[#00FF00] mb-6 md:mb-8 w-10 h-10 md:w-12 md:h-12" />
-              <div className="text-[clamp(4rem,10vw,5rem)] md:text-7xl font-black text-white/5 tracking-tighter mb-4 absolute top-0 -z-10">02</div>
-              <h3 className="text-xl md:text-2xl font-black tracking-widest mb-3 md:mb-4">TACTICAL UTILITY</h3>
-              <p className="text-zinc-500 text-[10px] md:text-xs font-bold tracking-widest leading-loose max-w-xs px-4">ENGINEERED FOR THE URBAN BATTLEFIELD WITH MILITARY-GRADE MATERIALS.</p>
+              <div className="text-6xl md:text-9xl font-black text-white/5 tracking-tighter mb-4 absolute top-0 -z-10">02</div>
+              <h3 className="text-2xl md:text-4xl font-black tracking-widest mb-3 md:mb-4">TACTICAL UTILITY</h3>
+              <p className="text-zinc-500 text-xs md:text-base font-bold tracking-widest leading-loose max-w-xs px-4">ENGINEERED FOR THE URBAN BATTLEFIELD WITH MILITARY-GRADE MATERIALS.</p>
             </motion.div>
             <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ delay: 0.2 }} className="flex flex-col items-center">
               <Globe className="text-[#00FF00] mb-6 md:mb-8 w-10 h-10 md:w-12 md:h-12" />
-              <div className="text-[clamp(4rem,10vw,5rem)] md:text-7xl font-black text-white/5 tracking-tighter mb-4 absolute top-0 -z-10">03</div>
-              <h3 className="text-xl md:text-2xl font-black tracking-widest mb-3 md:mb-4">GLOBAL SYNDICATE</h3>
-              <p className="text-zinc-500 text-[10px] md:text-xs font-bold tracking-widest leading-loose max-w-xs px-4">A WORLDWIDE NETWORK OF INDIVIDUALS WHO REFUSE TO CONFORM TO THE MASSES.</p>
+              <div className="text-6xl md:text-9xl font-black text-white/5 tracking-tighter mb-4 absolute top-0 -z-10">03</div>
+              <h3 className="text-2xl md:text-4xl font-black tracking-widest mb-3 md:mb-4">GLOBAL SYNDICATE</h3>
+              <p className="text-zinc-500 text-xs md:text-base font-bold tracking-widest leading-loose max-w-xs px-4">A WORLDWIDE NETWORK OF INDIVIDUALS WHO REFUSE TO CONFORM TO THE MASSES.</p>
             </motion.div>
           </div>
         </section>
 
         <section className="py-20 md:py-32 bg-black border-b border-white/10">
           <div className="max-w-[1400px] mx-auto px-0 md:px-6">
-            <h2 className="text-[clamp(2.5rem,6vw,4rem)] md:text-6xl font-black mb-12 md:mb-20 tracking-tighter text-center px-4">SURVEILLANCE LOGS</h2>
+            <h2 className="text-6xl md:text-8xl font-black mb-12 md:mb-20 tracking-tighter text-center px-4">SURVEILLANCE LOGS</h2>
             <div className="flex md:grid md:grid-cols-2 gap-6 md:gap-12 overflow-x-auto md:overflow-visible snap-x snap-mandatory px-4 md:px-0 pb-8 md:pb-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
               <motion.div whileTap={{ scale: 0.98 }} className="p-8 md:p-10 border border-white/10 md:hover:border-[#00FF00]/50 transition-colors bg-[#050505] min-w-[85vw] md:min-w-0 snap-center rounded-xl md:rounded-none shrink-0">
                 <Zap className="text-[#00FF00] mb-6 md:mb-8" size={28} />
@@ -168,7 +170,7 @@ export default function ObsidianApparel() {
             <div className="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
           </div>
           <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
-            <h2 className="text-[clamp(3rem,8vw,6rem)] md:text-8xl font-black tracking-tighter mb-6 md:mb-8 text-[#00FF00] leading-none">JOIN THE SYNDICATE</h2>
+            <h2 className="text-6xl md:text-9xl font-black tracking-tighter mb-6 md:mb-8 text-[#00FF00] leading-none">JOIN THE SYNDICATE</h2>
             <p className="text-sm md:text-xl font-bold tracking-widest mb-10 md:mb-12 text-zinc-400 px-2">ENTER THE MAINFRAME FOR EARLY ACCESS TO CLASSIFIED DROPS.</p>
             <div className="flex flex-col md:flex-row gap-3 md:gap-4 justify-center max-w-2xl mx-auto w-full">
               <input type="email" placeholder="ENTER ENCRYPTED EMAIL" className="bg-black/50 border border-white/30 px-6 py-4 md:py-5 outline-none focus:border-[#00FF00] transition-colors w-full font-bold tracking-widest text-center md:text-left text-xs md:text-sm rounded-lg md:rounded-none placeholder:text-white/30" />
@@ -215,7 +217,7 @@ export default function ObsidianApparel() {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="w-full max-w-lg h-[100svh] bg-[#050505] md:border-l border-[#00FF00]/30 p-6 md:p-8 flex flex-col uppercase font-bold tracking-widest relative overflow-hidden shadow-2xl"
+              className="w-full max-w-lg h-[100svh] bg-[#050505] md:border-l border-[#00FF00]/30 p-6 md:p-8 flex flex-col uppercase font-bold tracking-widest relative overflow-hidden"
             >
               <div className="absolute top-0 right-0 w-64 md:w-96 h-64 md:h-96 bg-[#00FF00] opacity-10 md:opacity-5 blur-[80px] md:blur-[120px] rounded-full pointer-events-none"></div>
 
@@ -246,5 +248,6 @@ export default function ObsidianApparel() {
         )}
       </AnimatePresence>
     </div>
+    </DemoLayout>
   );
 }

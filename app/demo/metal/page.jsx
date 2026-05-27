@@ -2,6 +2,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import DemoLayout from "@/components/DemoLayout";
 import { ArrowLeft, Crosshair, Cpu, Maximize, Activity, Menu, X } from "lucide-react";
 
 export default function TitanPrecision() {
@@ -53,7 +54,8 @@ export default function TitanPrecision() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white font-sans selection:bg-[#ff4500] selection:text-white overflow-hidden md:cursor-none">
+    <DemoLayout title="Precisión Industrial">
+    <div className="text-white font-sans selection:bg-[#ff4500] selection:text-white md:cursor-none">
       <motion.div
         className="fixed top-0 left-0 w-6 h-6 bg-[#ff4500] pointer-events-none z-50 mix-blend-difference hidden md:block"
         animate={{
@@ -65,7 +67,7 @@ export default function TitanPrecision() {
         style={{ borderRadius: "0px" }}
       />
 
-      <nav className="fixed top-0 left-0 w-full p-4 md:p-6 flex justify-between items-center z-50 bg-[#0a0a0a]/80 backdrop-blur-md border-b border-white/10 uppercase tracking-[0.2em] text-[10px] md:text-xs font-bold">
+      <nav className="fixed top-0 left-0 w-full p-4 md:p-6 flex justify-between items-center z-50 bg-[#0a0a0a]/80 backdrop-blur-md border-b border-stone-200/10 uppercase tracking-[0.2em] text-sm md:text-base font-bold">
         <Link 
           href="/" 
           className="flex items-center gap-2 hover:text-[#ff4500] active:scale-95 transition-all md:cursor-none"
@@ -107,7 +109,7 @@ export default function TitanPrecision() {
         )}
       </AnimatePresence>
 
-      <section className="relative h-[100svh] flex flex-col justify-center items-center px-4 md:px-6 mt-16 md:mt-0 pt-16">
+      <section className="relative h-[100svh] flex flex-col justify-center items-center px-4 md:px-6 pt-16 bg-[#0a0a0a]">
         <div className="absolute inset-0 bg-[url('https://loremflickr.com/1920/1080/metal,industrial/all')] bg-cover bg-center opacity-20 grayscale" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-[#0a0a0a]" />
         
@@ -116,7 +118,7 @@ export default function TitanPrecision() {
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, ease: "easeOut" }}
-            className="text-[clamp(3.5rem,15vw,10rem)] font-black uppercase tracking-tighter leading-[0.85] text-transparent bg-clip-text bg-gradient-to-br from-white to-neutral-600 break-words w-full"
+            className="text-7xl md:text-9xl font-black uppercase tracking-tighter leading-[0.85] text-transparent bg-clip-text bg-gradient-to-br from-white to-neutral-600 break-words w-full"
           >
             PRECISIÓN<br />INDUSTRIAL.
           </motion.h1>
@@ -125,7 +127,7 @@ export default function TitanPrecision() {
             variants={typeWriterVariants}
             initial="hidden"
             animate="visible"
-            className="mt-6 md:mt-8 flex flex-wrap font-mono text-[10px] sm:text-xs md:text-base text-[#ff4500] tracking-[0.2em] uppercase max-w-full"
+            className="mt-6 md:mt-8 flex flex-wrap font-mono text-sm sm:text-base md:text-lg text-[#ff4500] tracking-[0.2em] uppercase max-w-full"
           >
             {typeWriterText.split("").map((char, index) => (
               <motion.span key={index} variants={letterVariants}>
@@ -136,9 +138,7 @@ export default function TitanPrecision() {
         </div>
         
         <motion.div 
-          animate={{ y: [0, 10, 0] }}
-          transition={{ repeat: Infinity, duration: 2 }}
-          className="absolute bottom-6 md:bottom-10 flex flex-col items-center gap-2 text-neutral-500 font-mono text-[10px] md:text-xs uppercase"
+          className="absolute bottom-6 md:bottom-10 flex flex-col items-center gap-2 text-neutral-500 font-mono text-sm md:text-base uppercase"
         >
           <span>Secuencia de inicio</span>
           <div className="w-[1px] h-8 md:h-12 bg-gradient-to-b from-neutral-500 to-transparent" />
@@ -148,11 +148,11 @@ export default function TitanPrecision() {
       <section className="py-24 md:py-32 px-4 md:px-6 border-t border-white/10" ref={blueprintRef}>
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-16">
           <div className="flex flex-col justify-center">
-            <h2 className="text-[clamp(2.5rem,8vw,4rem)] font-black uppercase tracking-tighter mb-6 md:mb-8 leading-[0.9]">ADN de<br />Arquitectura</h2>
-            <p className="text-neutral-400 font-mono text-xs md:text-sm leading-relaxed mb-6 uppercase tracking-widest text-justify md:text-left">
+            <h2 className="text-6xl md:text-8xl font-black uppercase tracking-tighter mb-6 md:mb-8 leading-[0.9]">ADN de<br />Arquitectura</h2>
+            <p className="text-neutral-400 font-mono text-base md:text-lg leading-relaxed mb-6 uppercase tracking-widest text-justify md:text-left">
               Las tolerancias exactas no son una opción, son un requisito estricto en nuestro flujo de trabajo de ensamblaje industrial. Cortamos, soldamos y extruimos materia prima con precisión submilimétrica.
             </p>
-            <div className="flex items-center gap-3 md:gap-4 text-[#ff4500] font-mono text-[10px] md:text-xs uppercase tracking-widest bg-[#ff4500]/10 p-4 border border-[#ff4500]/20 w-fit">
+            <div className="flex items-center gap-3 md:gap-4 text-[#ff4500] font-mono text-sm md:text-base uppercase tracking-widest bg-[#ff4500]/10 p-4 border border-[#ff4500]/20 w-fit">
               <Activity size={16} />
               <span>Análisis de estructura activado</span>
             </div>
@@ -168,7 +168,7 @@ export default function TitanPrecision() {
               <motion.path d="M20,20 L80,80" style={{ pathLength }} />
               <motion.path d="M80,20 L20,80" style={{ pathLength }} />
             </svg>
-            <div className="absolute bottom-2 right-2 md:bottom-4 md:right-4 font-mono text-[8px] md:text-[10px] text-neutral-500 uppercase tracking-widest">
+            <div className="absolute bottom-2 right-2 md:bottom-4 md:right-4 font-mono text-xs md:text-sm text-neutral-500 uppercase tracking-widest">
               Esquema XYZ-409
             </div>
           </div>
@@ -178,8 +178,8 @@ export default function TitanPrecision() {
       <section className="py-24 md:py-32 px-4 md:px-6 border-t border-white/10 bg-neutral-950 overflow-hidden">
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row md:justify-between md:items-end mb-8 md:mb-12 gap-4">
-            <h2 className="text-[clamp(2.5rem,8vw,3.5rem)] font-black uppercase tracking-tighter leading-[0.9]">Telemetría<br />Operativa</h2>
-            <span className="font-mono text-[#ff4500] text-[10px] md:text-xs uppercase tracking-widest flex items-center gap-2 bg-[#ff4500]/10 px-3 py-1.5 border border-[#ff4500]/20 w-fit">
+            <h2 className="text-6xl md:text-7xl font-black uppercase tracking-tighter leading-[0.9]">Telemetría<br />Operativa</h2>
+            <span className="font-mono text-[#ff4500] text-sm md:text-base uppercase tracking-widest flex items-center gap-2 bg-[#ff4500]/10 px-3 py-1.5 border border-[#ff4500]/20 w-fit">
               <span className="w-2 h-2 bg-[#ff4500] animate-pulse" />
               Live Data
             </span>
@@ -189,7 +189,7 @@ export default function TitanPrecision() {
             <div className="min-w-[85vw] sm:min-w-[60vw] md:min-w-0 snap-center border border-white/10 p-6 md:p-8 bg-[#0a0a0a] flex flex-col justify-between aspect-square md:aspect-auto md:h-64 group active:border-[#ff4500] md:hover:border-[#ff4500]/50 transition-colors">
               <div className="flex justify-between items-start">
                 <Cpu className="text-neutral-500 group-active:text-[#ff4500] md:group-hover:text-[#ff4500] transition-colors" size={24} />
-                <span className="font-mono text-[10px] md:text-xs text-neutral-600 uppercase">Ciclos</span>
+                <span className="font-mono text-sm md:text-base text-neutral-600 uppercase">Ciclos</span>
               </div>
               <div className="mt-8 md:mt-0">
                 <motion.div 
@@ -200,25 +200,25 @@ export default function TitanPrecision() {
                 >
                   {cycles.toLocaleString()}
                 </motion.div>
-                <div className="font-mono text-[10px] md:text-xs text-[#ff4500] mt-2 uppercase">Operaciones/Hora</div>
+                <div className="font-mono text-sm md:text-base text-[#ff4500] mt-2 uppercase">Operaciones/Hora</div>
               </div>
             </div>
 
             <div className="min-w-[85vw] sm:min-w-[60vw] md:min-w-0 snap-center border border-white/10 p-6 md:p-8 bg-[#0a0a0a] flex flex-col justify-between aspect-square md:aspect-auto md:h-64 group active:border-[#ff4500] md:hover:border-[#ff4500]/50 transition-colors">
               <div className="flex justify-between items-start">
                 <Maximize className="text-neutral-500 group-active:text-[#ff4500] md:group-hover:text-[#ff4500] transition-colors" size={24} />
-                <span className="font-mono text-[10px] md:text-xs text-neutral-600 uppercase">Tolerancia</span>
+                <span className="font-mono text-sm md:text-base text-neutral-600 uppercase">Tolerancia</span>
               </div>
               <div className="mt-8 md:mt-0">
                 <div className="text-5xl md:text-6xl font-black tracking-tighter">0.001</div>
-                <div className="font-mono text-[10px] md:text-xs text-[#ff4500] mt-2 uppercase">Milímetros</div>
+                <div className="font-mono text-sm md:text-base text-[#ff4500] mt-2 uppercase">Milímetros</div>
               </div>
             </div>
 
             <div className="min-w-[85vw] sm:min-w-[60vw] md:min-w-0 snap-center border border-white/10 p-6 md:p-8 bg-[#0a0a0a] flex flex-col justify-between aspect-square md:aspect-auto md:h-64 group active:border-[#ff4500] md:hover:border-[#ff4500]/50 transition-colors">
               <div className="flex justify-between items-start">
                 <Activity className="text-neutral-500 group-active:text-[#ff4500] md:group-hover:text-[#ff4500] transition-colors" size={24} />
-                <span className="font-mono text-[10px] md:text-xs text-neutral-600 uppercase">Núcleo térmico</span>
+                <span className="font-mono text-sm md:text-base text-neutral-600 uppercase">Núcleo térmico</span>
               </div>
               <div className="mt-8 md:mt-0">
                 <motion.div 
@@ -229,7 +229,7 @@ export default function TitanPrecision() {
                 >
                   {temp}<span className="text-xl md:text-2xl mt-1 md:mt-2">°C</span>
                 </motion.div>
-                <div className="font-mono text-[10px] md:text-xs text-[#ff4500] mt-2 uppercase">Temperatura estable</div>
+                <div className="font-mono text-sm md:text-base text-[#ff4500] mt-2 uppercase">Temperatura estable</div>
               </div>
             </div>
           </div>
@@ -241,10 +241,10 @@ export default function TitanPrecision() {
         <div className="max-w-7xl mx-auto relative z-10">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-16 items-center">
             <div className="order-2 lg:order-1">
-              <h2 className="text-[clamp(2.5rem,8vw,4.5rem)] font-black uppercase tracking-tighter mb-8 leading-[0.9]">
+              <h2 className="text-6xl md:text-8xl font-black uppercase tracking-tighter mb-8 leading-[0.9]">
                 Fabricación<br />Pesada
               </h2>
-              <div className="flex flex-col gap-4 md:gap-6 font-mono text-[10px] md:text-sm text-neutral-400 uppercase tracking-widest">
+              <div className="flex flex-col gap-4 md:gap-6 font-mono text-sm md:text-base text-neutral-400 uppercase tracking-widest">
                 <motion.div whileInView={{ x: 0, opacity: 1 }} initial={{ x: -20, opacity: 0 }} transition={{ delay: 0.1 }} className="flex items-center gap-4 border-b border-white/10 pb-4">
                   <span className="text-[#ff4500] font-black text-lg">01</span>
                   <span>Mecanizado CNC 5 Ejes</span>
@@ -288,7 +288,7 @@ export default function TitanPrecision() {
             <div className="absolute inset-0 bg-white transform translate-y-full md:group-hover:translate-y-0 active:translate-y-0 transition-transform duration-500 ease-out" />
           </motion.button>
           
-          <div className="mt-24 md:mt-32 w-full flex flex-col md:flex-row justify-between items-center gap-6 md:gap-8 font-mono text-[10px] md:text-xs text-neutral-600 uppercase tracking-widest border-t border-white/10 pt-8">
+          <div className="mt-24 md:mt-32 w-full flex flex-col md:flex-row justify-between items-center gap-6 md:gap-8 font-mono text-sm md:text-base text-neutral-600 uppercase tracking-widest border-t border-white/10 pt-8">
             <div className="flex items-center gap-2">
               <Crosshair size={14} />
               <span className="text-center">TITAN PRECISION CORP. © 2024</span>
@@ -306,5 +306,6 @@ export default function TitanPrecision() {
         </div>
       </footer>
     </div>
+    </DemoLayout>
   );
 }

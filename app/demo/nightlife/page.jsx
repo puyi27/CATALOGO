@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
+import DemoLayout from '@/components/DemoLayout'
 import { ArrowLeft, Instagram, Twitter, Menu, X, Users, Wine, Ticket, Plus, Minus, Check, Send, Music } from 'lucide-react'
 
 export default function NightfallDemo() {
@@ -73,7 +74,8 @@ export default function NightfallDemo() {
   const totalOrder = drinkOrder.reduce((sum, d) => sum + parseInt(d.price.replace('€', '')) * d.qty, 0)
 
   return (
-    <div className="bg-black text-white min-h-screen font-sans selection:bg-[#FF00FF] selection:text-black overflow-x-hidden relative">
+    <DemoLayout title="Nightfall">
+    <div className="text-white font-sans selection:bg-[#FF00FF] selection:text-black overflow-x-hidden relative">
       <motion.div className="fixed inset-0 pointer-events-none z-[100] mix-blend-screen bg-white" style={{ opacity: strobeOpacity }} />
 
       <motion.div
@@ -92,7 +94,7 @@ export default function NightfallDemo() {
         {menuOpen && (
           <motion.div initial={{ y: "-100%" }} animate={{ y: 0 }} exit={{ y: "-100%" }} transition={{ type: "spring", damping: 25, stiffness: 200 }} className="fixed inset-0 z-[150] bg-[#FF00FF] text-black flex flex-col justify-center items-center px-4">
             <button onClick={() => setMenuOpen(false)} className="absolute top-6 right-6 p-2 rounded-full hover:bg-black hover:text-[#FF00FF] transition-colors active:scale-90"><X size={32} /></button>
-            <div className="flex flex-col items-center gap-8 text-[clamp(2.5rem,8vw,5rem)] font-black uppercase tracking-tighter">
+            <div className="flex flex-col items-center gap-8 text-6xl md:text-8xl font-black uppercase tracking-tighter">
               {["Lineup", "Atmosphere", "Tickets", "VIP", "Bar"].map((item, i) => (
                 <motion.span key={item} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} whileTap={{ scale: 0.9 }} className="hover:text-white transition-colors cursor-pointer" onClick={() => { setMenuOpen(false); if (item === "Tickets") setTicketModal("GA"); if (item === "VIP") setTicketModal("VIP"); if (item === "Bar") setShowBar(true) }}>{item}</motion.span>
               ))}
@@ -159,7 +161,7 @@ export default function NightfallDemo() {
             <motion.div initial={{ scale: 0.9, y: 30 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 30 }} className="bg-zinc-900 border-4 border-[#00FFFF] w-full max-w-md p-6 md:p-10 relative">
               <button onClick={() => { setGuestlistOpen(false); setGuestlistSent(false) }} className="absolute top-4 right-4 hover:text-[#00FFFF] transition-colors"><X size={24} /></button>
               <h3 className="text-3xl font-black uppercase tracking-tighter mb-2">GUESTLIST</h3>
-              <p className="text-zinc-500 text-xs uppercase tracking-widest mb-8">Nombre + acompañantes</p>
+              <p className="text-zinc-500 text-sm md:text-base uppercase tracking-widest mb-8">Nombre + acompañantes</p>
               {!guestlistSent ? (
                 <form onSubmit={e => { e.preventDefault(); setGuestlistSent(true) }} className="flex flex-col gap-4">
                   <input type="text" placeholder="Tu nombre" required className="w-full bg-zinc-800 border-2 border-white p-4 text-sm uppercase tracking-widest outline-none focus:border-[#00FFFF]" />
@@ -176,7 +178,7 @@ export default function NightfallDemo() {
                 <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-8">
                   <Music size={48} className="mx-auto mb-4 text-[#00FFFF]" />
                   <p className="text-lg font-bold uppercase tracking-widest">¡Recibido!</p>
-                  <p className="text-zinc-500 text-xs mt-2">Te confirmaremos antes del evento.</p>
+                  <p className="text-zinc-500 text-sm md:text-base mt-2">Te confirmaremos antes del evento.</p>
                 </motion.div>
               )}
             </motion.div>
@@ -191,8 +193,8 @@ export default function NightfallDemo() {
         </Link>
         <div className="font-black text-xl md:text-3xl tracking-tighter">NIGHTFALL</div>
         <div className="hidden md:flex items-center gap-6">
-          <button onClick={() => setGuestlistOpen(true)} className="font-bold uppercase tracking-widest hover:text-[#00FFFF] transition-all text-xs cursor-pointer">Guestlist</button>
-          <button onClick={() => setTicketModal("VIP")} className="font-bold uppercase tracking-widest hover:text-[#FF00FF] transition-all text-xs cursor-pointer">VIP Tables</button>
+          <button onClick={() => setGuestlistOpen(true)} className="font-bold uppercase tracking-widest hover:text-[#00FFFF] transition-all text-sm md:text-base cursor-pointer">Guestlist</button>
+          <button onClick={() => setTicketModal("VIP")} className="font-bold uppercase tracking-widest hover:text-[#FF00FF] transition-all text-sm md:text-base cursor-pointer">VIP Tables</button>
         </div>
         <button onClick={() => setMenuOpen(true)} className="md:hidden p-2 active:scale-90 transition-transform"><Menu size={24} /></button>
       </nav>
@@ -201,13 +203,13 @@ export default function NightfallDemo() {
         <motion.div animate={{ opacity: [0.3, 0.7, 0.3], scale: [1, 1.05, 1] }} transition={{ duration: 0.6, repeat: Infinity, ease: "easeInOut" }} className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('https://loremflickr.com/1920/1080/nightclub,laser,party?lock=50')" }} />
         <div className="absolute inset-0 bg-black/60" />
         <div className="relative z-10 flex flex-col items-center px-4 w-full">
-          <motion.h1 animate={{ x: [0, -5, 5, -3, 3, 0, 0, 0, 0, 0], y: [0, 3, -3, 3, -3, 0, 0, 0, 0, 0], textShadow: ["0px 0px 0px transparent", "8px 0px 0px #FF00FF, -8px 0px 0px #00FFFF", "-8px 0px 0px #FF00FF, 8px 0px 0px #00FFFF", "4px 4px 0px #FF00FF, -4px -4px 0px #00FFFF", "0px 0px 0px transparent", "0px 0px 0px transparent", "0px 0px 0px transparent", "0px 0px 0px transparent", "0px 0px 0px transparent", "0px 0px 0px transparent"] }} transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }} className="text-[clamp(4rem,15vw,12rem)] font-black uppercase leading-[0.8] tracking-tighter text-center mix-blend-screen text-white w-full">ENTER<br />THE VOID.</motion.h1>
+          <motion.h1 animate={{ x: [0, -5, 5, -3, 3, 0, 0, 0, 0, 0], y: [0, 3, -3, 3, -3, 0, 0, 0, 0, 0], textShadow: ["0px 0px 0px transparent", "8px 0px 0px #FF00FF, -8px 0px 0px #00FFFF", "-8px 0px 0px #FF00FF, 8px 0px 0px #00FFFF", "4px 4px 0px #FF00FF, -4px -4px 0px #00FFFF", "0px 0px 0px transparent", "0px 0px 0px transparent", "0px 0px 0px transparent", "0px 0px 0px transparent", "0px 0px 0px transparent", "0px 0px 0px transparent"] }} transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }} className="text-7xl md:text-[12rem] font-black uppercase leading-[0.8] tracking-tighter text-center mix-blend-screen text-white w-full">ENTER<br />THE VOID.</motion.h1>
         </div>
       </section>
 
       <section className="py-16 md:py-24 border-b-4 border-white relative bg-zinc-950">
         <div className="whitespace-nowrap overflow-hidden flex border-b-4 border-white pb-4 md:pb-6 mb-8 md:mb-12">
-          <motion.div animate={{ x: ["0%", "-50%"] }} transition={{ duration: 10, repeat: Infinity, ease: "linear" }} className="flex gap-4 md:gap-10 text-[clamp(3rem,10vw,6rem)] font-black uppercase text-transparent" style={{ WebkitTextStroke: "2px white" }}>
+          <motion.div animate={{ x: ["0%", "-50%"] }} transition={{ duration: 10, repeat: Infinity, ease: "linear" }} className="flex gap-4 md:gap-10 text-6xl md:text-8xl font-black uppercase text-transparent" style={{ WebkitTextStroke: "2px white" }}>
             <span className="shrink-0">LINEUP --- LINEUP --- LINEUP --- LINEUP --- </span>
             <span className="shrink-0">LINEUP --- LINEUP --- LINEUP --- LINEUP --- </span>
           </motion.div>
@@ -220,14 +222,14 @@ export default function NightfallDemo() {
               onMouseEnter={() => setHoveredDJ(dj)} onMouseLeave={() => setHoveredDJ(null)}
             >
               <motion.span variants={{ idle: { color: "#52525b" }, active: { color: "#00FFFF" } }} className="text-xl md:text-4xl font-bold mb-1 md:mb-0">{dj.date}</motion.span>
-              <span className="text-[clamp(2.5rem,8vw,8rem)] font-black uppercase tracking-tighter leading-none text-current md:text-right break-words">{dj.name}</span>
+              <span className="text-6xl md:text-9xl font-black uppercase tracking-tighter leading-none text-current md:text-right break-words">{dj.name}</span>
             </motion.div>
           ))}
         </div>
       </section>
 
       <section className="py-16 md:py-24 px-0 md:px-12 border-b-4 border-white bg-black overflow-hidden">
-        <h2 className="text-[clamp(3rem,8vw,7rem)] font-black uppercase tracking-tighter mb-8 md:mb-16 text-center text-[#FF00FF] px-4">ATMOSPHERE</h2>
+        <h2 className="text-6xl md:text-9xl font-black uppercase tracking-tighter mb-8 md:mb-16 text-center text-[#FF00FF] px-4">ATMOSPHERE</h2>
         <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6 max-w-7xl mx-auto px-4 md:px-0">
           {gallery.map((img, i) => (
             <div key={i} className="relative break-inside-avoid overflow-hidden group border-4 border-zinc-900 hover:border-[#00FFFF] transition-colors duration-500 cursor-crosshair">
@@ -240,15 +242,15 @@ export default function NightfallDemo() {
 
       <section className="py-16 md:py-24 px-4 md:px-12 border-b-4 border-white bg-zinc-950">
         <div className="flex flex-col md:flex-row gap-8 max-w-6xl mx-auto">
-          <motion.div whileTap={{ scale: 0.98 }} onClick={() => setTicketModal("GA")} className="flex-1 border-4 border-white p-6 md:p-12 hover:border-[#FF00FF] transition-all duration-300 relative group overflow-hidden md:cursor-crosshair md:hover:shadow-[0_0_60px_rgba(255,0,255,0.2)]">
+          <motion.div whileTap={{ scale: 0.98 }} onClick={() => setTicketModal("GA")} className="flex-1 border-4 border-white p-6 md:p-12 hover:border-[#FF00FF] transition-all duration-300 relative group overflow-hidden md:cursor-crosshair">
             <div className="absolute inset-0 bg-[#FF00FF] opacity-0 group-hover:opacity-10 transition-opacity duration-300" />
-            <h3 className="text-[clamp(2rem,6vw,5rem)] font-black mb-4 md:mb-6 tracking-tighter md:group-hover:text-[#FF00FF] transition-colors leading-none">GENERAL<br/>ADMISSION</h3>
+            <h3 className="text-5xl md:text-7xl font-black mb-4 md:mb-6 tracking-tighter md:group-hover:text-[#FF00FF] transition-colors leading-none">GENERAL<br/>ADMISSION</h3>
             <p className="text-base md:text-xl font-bold text-zinc-500 uppercase tracking-widest">Access to main room.<br/>Standard bar.</p>
             <div className="mt-8 md:mt-12 text-lg md:text-xl font-black border-4 border-white inline-block px-6 md:px-8 py-3 md:py-4 md:group-hover:bg-[#FF00FF] md:group-hover:text-black md:group-hover:border-[#FF00FF] transition-all active:bg-white active:text-black">BUY TICKET</div>
           </motion.div>
-          <motion.div whileTap={{ scale: 0.98 }} onClick={() => setTicketModal("VIP")} className="flex-1 border-4 border-white p-6 md:p-12 hover:border-[#00FFFF] transition-all duration-300 relative group overflow-hidden md:cursor-crosshair md:hover:shadow-[0_0_60px_rgba(0,255,255,0.2)]">
+          <motion.div whileTap={{ scale: 0.98 }} onClick={() => setTicketModal("VIP")} className="flex-1 border-4 border-white p-6 md:p-12 hover:border-[#00FFFF] transition-all duration-300 relative group overflow-hidden md:cursor-crosshair">
             <div className="absolute inset-0 bg-[#00FFFF] opacity-0 group-hover:opacity-10 transition-opacity duration-300" />
-            <h3 className="text-[clamp(2rem,6vw,5rem)] font-black mb-4 md:mb-6 tracking-tighter md:group-hover:text-[#00FFFF] transition-colors leading-none">VIP<br/>BOOTH</h3>
+            <h3 className="text-5xl md:text-7xl font-black mb-4 md:mb-6 tracking-tighter md:group-hover:text-[#00FFFF] transition-colors leading-none">VIP<br/>BOOTH</h3>
             <p className="text-base md:text-xl font-bold text-zinc-500 uppercase tracking-widest">Private table.<br/>Bottle service.<br/>Backstage access.</p>
             <div className="mt-8 md:mt-12 text-lg md:text-xl font-black border-4 border-white inline-block px-6 md:px-8 py-3 md:py-4 md:group-hover:bg-[#00FFFF] md:group-hover:text-black md:group-hover:border-[#00FFFF] transition-all active:bg-white active:text-black">RESERVE</div>
           </motion.div>
@@ -257,8 +259,8 @@ export default function NightfallDemo() {
 
       <section className="py-16 md:py-24 px-4 md:px-12 border-b-4 border-white bg-black overflow-hidden">
         <div className="flex justify-between items-end mb-12 max-w-7xl mx-auto">
-          <h2 className="text-[clamp(2rem,6vw,5rem)] font-black uppercase tracking-tighter">BAR</h2>
-          <button onClick={() => setShowBar(!showBar)} className="font-mono text-xs tracking-widest uppercase hover:text-[#00FFFF] transition-colors flex items-center gap-2">
+          <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter">BAR</h2>
+          <button onClick={() => setShowBar(!showBar)} className="font-mono text-sm md:text-base tracking-widest uppercase hover:text-[#00FFFF] transition-colors flex items-center gap-2">
             <Wine size={16} /> {showBar ? "Cerrar" : "Abrir Carta"}
           </button>
         </div>
@@ -273,8 +275,8 @@ export default function NightfallDemo() {
                     <h3 className="font-bold text-sm uppercase tracking-wider">{drink.name}</h3>
                     <span className="text-[#00FFFF] font-black">{drink.price}</span>
                   </div>
-                  <p className="text-[10px] text-zinc-500 uppercase tracking-widest">{drink.type}</p>
-                  {selectedDrink === drink.name && <p className="text-xs text-zinc-400 mt-2 leading-relaxed">{drink.desc}</p>}
+                  <p className="text-xs md:text-sm text-zinc-500 uppercase tracking-widest">{drink.type}</p>
+                  {selectedDrink === drink.name && <p className="text-sm md:text-base text-zinc-400 mt-2 leading-relaxed">{drink.desc}</p>}
                 </motion.div>
               ))}
             </div>
@@ -298,18 +300,19 @@ export default function NightfallDemo() {
       </section>
 
       <section className="py-24 md:py-40 flex justify-center items-center bg-black border-b-4 border-white px-4">
-        <p className="text-[8px] md:text-xs tracking-[0.3em] md:tracking-[1em] text-zinc-800 font-black uppercase text-center md:hover:text-white transition-colors duration-1000">
+        <p className="text-base md:text-xl tracking-[0.3em] md:tracking-[1em] text-zinc-800 font-black uppercase text-center md:hover:text-white transition-colors duration-1000">
           Strictly black.<br/><br/><br/>No photos inside.
         </p>
       </section>
 
       <footer className="py-16 md:py-24 px-4 md:px-12 bg-black flex flex-col items-center">
-        <h2 className="text-[clamp(3rem,15vw,10rem)] font-black tracking-tighter mb-8 md:mb-12 text-white leading-none">NIGHTFALL</h2>
+        <h2 className="text-6xl md:text-9xl font-black tracking-tighter mb-8 md:mb-12 text-white leading-none">NIGHTFALL</h2>
         <div className="flex gap-6 md:gap-8">
           <motion.a whileTap={{ scale: 0.9 }} href="#" className="p-4 border-4 border-white rounded-full md:hover:bg-white md:hover:text-black transition-colors active:bg-white active:text-black"><Instagram size={24} className="md:w-8 md:h-8" /></motion.a>
           <motion.a whileTap={{ scale: 0.9 }} href="#" className="p-4 border-4 border-white rounded-full md:hover:bg-white md:hover:text-black transition-colors active:bg-white active:text-black"><Twitter size={24} className="md:w-8 md:h-8" /></motion.a>
         </div>
       </footer>
     </div>
+    </DemoLayout>
   )
 }

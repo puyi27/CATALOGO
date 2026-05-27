@@ -9,6 +9,7 @@ import {
 } from 'framer-motion';
 import { Camera, BookOpen, ArrowUpRight, ChevronRight } from 'lucide-react';
 import Link from 'next/link';
+import DemoLayout from '@/components/DemoLayout';
 
 /* ─────────────────────────── CONSTANTS ─────────────────────────── */
 
@@ -53,7 +54,7 @@ export default function VogueEssencePage() {
   );
 
   return (
-    <>
+    <DemoLayout title="Revista Editorial">
       {/* ── Global Styles ── */}
       <style>{`
         @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400;1,700&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Inter:wght@300;400&display=swap');
@@ -188,8 +189,6 @@ export default function VogueEssencePage() {
               style={{
                 fontFamily: 'Playfair Display, serif',
                 fontWeight: 900,
-                fontSize: 'clamp(5rem, 14vw, 18rem)',
-                lineHeight: 0.85,
                 color: 'transparent',
                 WebkitTextStroke: '1.5px rgba(255,255,255,0.85)',
                 textAlign: 'center',
@@ -197,6 +196,7 @@ export default function VogueEssencePage() {
                 mixBlendMode: 'difference',
                 userSelect: 'none',
               }}
+              className="text-7xl md:text-9xl tracking-tighter"
             >
               {'VOGUE\nESSENCE.'}
             </motion.h1>
@@ -800,13 +800,6 @@ export default function VogueEssencePage() {
             — The Guardian
           </cite>
         </motion.div>
-
-        {/* Decorative gold line */}
-        <motion.div
-          initial={{ scaleX: 0 }}
-          whileInView={{ scaleX: 1 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1.2, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
           style={{
             width: '80px',
             height: '1px',
@@ -1178,6 +1171,6 @@ export default function VogueEssencePage() {
           </div>
         </div>
       </footer>
-    </>
+    </DemoLayout>
   );
 }

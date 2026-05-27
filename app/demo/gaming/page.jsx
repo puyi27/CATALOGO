@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { Terminal, Crosshair, Cpu, Shield, Zap, RefreshCw, ChevronLeft, Menu, X } from 'lucide-react';
+import DemoLayout from '@/components/DemoLayout';
 
 export default function GamingDemo() {
   const [leaderboard, setLeaderboard] = useState([
@@ -42,7 +43,8 @@ export default function GamingDemo() {
   ];
 
   return (
-    <div className="min-h-screen bg-zinc-950 text-zinc-300 font-mono selection:bg-cyan-500 selection:text-zinc-950 overflow-x-hidden relative md:cursor-none">
+    <DemoLayout title="Gaming eSports">
+      <div className="text-zinc-300 font-mono selection:bg-cyan-500 selection:text-zinc-950 overflow-x-hidden relative md:cursor-none">
       <motion.div
         className="fixed top-0 left-0 w-8 h-8 border border-cyan-500 rounded-none pointer-events-none z-50 mix-blend-difference items-center justify-center hidden md:flex"
         animate={{ x: mousePosition.x - 16, y: mousePosition.y - 16 }}
@@ -103,7 +105,7 @@ export default function GamingDemo() {
         )}
       </AnimatePresence>
 
-      <main className="relative z-10 pt-24 sm:pt-32 pb-24 max-w-7xl mx-auto px-4 sm:px-6">
+      <main className="relative z-10 pb-24 max-w-7xl mx-auto px-4 sm:px-6">
         <section className="min-h-[60vh] sm:min-h-[70vh] flex flex-col justify-center items-start border-l border-cyan-500/30 pl-6 sm:pl-16 relative">
           <div className="absolute top-0 -left-[1px] w-[2px] h-20 sm:h-32 bg-gradient-to-b from-cyan-500 to-transparent" />
           <motion.div
@@ -115,7 +117,7 @@ export default function GamingDemo() {
               <span className="inline-block w-2 h-2 sm:w-3 sm:h-3 bg-red-500 animate-pulse rounded-none" />
               <span className="text-xs sm:text-sm tracking-[0.3em] text-cyan-500 font-bold">STATUS: ACTIVE</span>
             </div>
-            <h1 className="text-[clamp(3rem,12vw,6rem)] font-black text-white uppercase tracking-tighter leading-[0.85] mb-6 relative group">
+            <h1 className="text-6xl md:text-9xl font-black text-white uppercase tracking-tighter leading-[0.85] mb-6 relative group">
               <span className="relative z-10 block">SYSTEM ONLINE.</span>
               <span className="absolute top-0 left-[2px] -z-10 text-cyan-500 opacity-50 md:group-hover:translate-x-2 md:group-hover:-translate-y-1 transition-transform duration-200 block hidden md:block">SYSTEM ONLINE.</span>
               <span className="absolute top-0 -left-[2px] -z-10 text-red-500 opacity-50 md:group-hover:-translate-x-2 md:group-hover:translate-y-1 transition-transform duration-200 block hidden md:block">SYSTEM ONLINE.</span>
@@ -273,5 +275,6 @@ export default function GamingDemo() {
         </div>
       </footer>
     </div>
+    </DemoLayout>
   );
 }

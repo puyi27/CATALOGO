@@ -6,6 +6,7 @@ import { motion, useInView } from "framer-motion";
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Leaf, Wind, Droplets, Sun, MapPin, ArrowRight, Menu, X } from "lucide-react";
+import DemoLayout from "@/components/DemoLayout";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -68,7 +69,7 @@ export default function SostenibilidadDemo() {
           trigger: heroRef.current,
           start: "top top",
           end: "bottom top",
-          scrub: true,
+          scrub: 1,
         },
       });
 
@@ -79,12 +80,12 @@ export default function SostenibilidadDemo() {
           {
             y: 0,
             opacity: 1,
-            duration: 1.2,
             ease: "power4.out",
             scrollTrigger: {
               trigger: el,
               start: "top 85%",
               end: "bottom 80%",
+              scrub: 1,
               toggleActions: "play none none reverse",
             }
           }
@@ -96,8 +97,9 @@ export default function SostenibilidadDemo() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#F5F0E8] text-[#3E3A32] font-sans selection:bg-[#4A5D23] selection:text-[#F5F0E8] overflow-hidden md:cursor-none">
-      <CustomCursor />
+    <DemoLayout title="Slow Travel">
+      <div className="text-[#3E3A32] font-sans selection:bg-[#4A5D23] selection:text-[#F5F0E8] overflow-hidden md:cursor-none">
+        <CustomCursor />
 
       <nav className="fixed top-0 left-0 w-full p-6 md:p-10 z-50 mix-blend-difference text-[#F5F0E8] flex justify-between items-center">
         <Link 
@@ -153,7 +155,7 @@ export default function SostenibilidadDemo() {
           >
             <motion.h1 
               variants={fadeUpVariant}
-              className="text-[clamp(4rem,15vw,10rem)] font-serif text-[#F5F0E8] tracking-tighter leading-[0.85] w-full break-words"
+              className="text-6xl md:text-9xl font-serif text-[#F5F0E8] tracking-tighter leading-[0.85] w-full break-words"
             >
               Slow Travel
             </motion.h1>
@@ -193,7 +195,7 @@ export default function SostenibilidadDemo() {
           </div>
           <div className="md:col-span-8 flex flex-col gap-8 md:gap-10">
             <div className="overflow-hidden">
-              <p className="reveal-text text-[clamp(1.5rem,5vw,3rem)] leading-[1.2] md:leading-[1.15] font-serif text-[#2C2923]">
+              <p className="reveal-text text-4xl md:text-6xl tracking-tighter leading-[1.2] md:leading-[1.15] font-serif text-[#2C2923]">
                 We believe travel should not be a race, but a meaningful dialogue with the places we visit. By slowing down, we reduce our footprint and deepen our connection to local cultures and ecosystems.
               </p>
             </div>
@@ -225,7 +227,7 @@ export default function SostenibilidadDemo() {
                 </span>
              </div>
              <div className="overflow-hidden">
-                <h3 className="reveal-text text-[clamp(2.5rem,6vw,4rem)] font-serif text-[#3E3A32] mb-6 md:mb-8 leading-tight">
+                <h3 className="reveal-text text-5xl md:text-7xl tracking-tighter font-serif text-[#3E3A32] mb-6 md:mb-8 leading-tight">
                   Leaving nothing <br /> but footprints.
                 </h3>
              </div>
@@ -242,7 +244,7 @@ export default function SostenibilidadDemo() {
 
       <section className="py-24 md:py-32 px-6 bg-[#3E3A32] text-[#F5F0E8] flex flex-col items-center justify-center">
         <div className="max-w-5xl mx-auto text-center flex flex-col items-center w-full">
-          <h2 className="text-[clamp(2.5rem,8vw,5rem)] font-serif mb-10 md:mb-12 leading-[1.1]">
+          <h2 className="text-6xl md:text-8xl tracking-tighter font-serif mb-10 md:mb-12 leading-[1.1]">
             Ready to change <br/> the way you travel?
           </h2>
           <button className="group relative flex items-center justify-center gap-4 px-8 py-4 bg-[#F5F0E8] text-[#3E3A32] rounded-full overflow-hidden transition-transform active:scale-95 duration-300 w-full md:w-auto">
@@ -268,7 +270,8 @@ export default function SostenibilidadDemo() {
           <span className="hover:text-[#4A5D23] cursor-pointer transition-colors">Contact</span>
         </div>
       </footer>
-    </div>
+      </div>
+    </DemoLayout>
   );
 }
 
@@ -286,7 +289,7 @@ function ImpactSection() {
   return (
     <section ref={sectionRef} className="py-24 md:py-32 overflow-hidden md:overflow-visible">
       <div className="px-6 md:px-20 max-w-7xl mx-auto mb-12 md:mb-20 text-left">
-        <h2 className="text-[clamp(2rem,5vw,3.5rem)] font-serif text-[#2C2923] mb-4 md:mb-6 leading-tight">
+        <h2 className="text-4xl md:text-6xl tracking-tighter font-serif text-[#2C2923] mb-4 md:mb-6 leading-tight">
           Our Environmental Impact
         </h2>
         <p className="text-base md:text-lg text-[#5A554A] font-light max-w-2xl">

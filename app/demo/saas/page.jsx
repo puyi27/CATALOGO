@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { LazyMotion, domAnimation, m, useSpring, useMotionValue, useTransform } from 'framer-motion';
 import Link from 'next/link';
+import DemoLayout from '@/components/DemoLayout';
 import { Zap, Cpu, Server, Users, Activity, Database, Globe, ArrowUpRight, ArrowLeft } from 'lucide-react';
 
 function CustomCursor() {
@@ -179,9 +180,9 @@ export default function SaasDemo() {
           />
         </svg>
         <div className="absolute inset-0 pointer-events-none border-t border-b border-white/5 flex flex-col justify-between py-2">
-          <span className="text-[10px] text-neutral-600 font-mono">120ms</span>
-          <span className="text-[10px] text-neutral-600 font-mono">60ms</span>
-          <span className="text-[10px] text-neutral-600 font-mono">0ms</span>
+          <span className="text-xs md:text-sm text-neutral-600 font-mono">120ms</span>
+          <span className="text-xs md:text-sm text-neutral-600 font-mono">60ms</span>
+          <span className="text-xs md:text-sm text-neutral-600 font-mono">0ms</span>
         </div>
       </div>
     </BentoBox>
@@ -191,7 +192,7 @@ export default function SaasDemo() {
     <BentoBox className="col-span-1 row-span-1 h-full w-full" delay={0.2}>
       <div className="flex justify-between items-start">
         <Cpu size={20} className="text-blue-500" />
-        <span className="text-[10px] text-blue-500 bg-blue-500/10 px-2 py-1 rounded-full font-mono border border-blue-500/20">us-east-1</span>
+        <span className="text-xs md:text-sm text-blue-500 bg-blue-500/10 px-2 py-1 rounded-full font-mono border border-blue-500/20">us-east-1</span>
       </div>
       <div className="mt-auto">
         <div className="text-4xl font-bold font-mono text-white">{cpuUsage}%</div>
@@ -223,10 +224,10 @@ export default function SaasDemo() {
         {nodes.map((node, i) => (
           <div key={i} className="flex items-center justify-between p-2 md:p-3 rounded-xl bg-white/[0.03] border border-white/5">
             <div className="flex items-center gap-3">
-              <div className={`w-2 h-2 rounded-full ${node.status === 'ok' ? 'bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]' : 'bg-rose-500 shadow-[0_0_8px_rgba(244,63,94,0.5)]'}`} />
+              <div className={`w-2 h-2 rounded-full ${node.status === 'ok' ? 'bg-emerald-500' : 'bg-rose-500'}`} />
               <div>
                 <div className="text-sm font-medium text-neutral-200">{node.name}</div>
-                <div className="text-[10px] text-neutral-500 font-mono">{node.ip}</div>
+                <div className="text-xs md:text-sm text-neutral-500 font-mono">{node.ip}</div>
               </div>
             </div>
             <div className={`text-xs font-mono ${node.status === 'ok' ? 'text-emerald-500' : 'text-rose-500'}`}>
@@ -242,7 +243,7 @@ export default function SaasDemo() {
     <BentoBox className="col-span-1 row-span-1 h-full w-full" delay={0.4}>
       <div className="flex justify-between items-start">
         <Users size={20} className="text-emerald-500" />
-        <div className="flex items-center text-[10px] text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded-full font-mono border border-emerald-500/20 gap-1">
+        <div className="flex items-center text-xs md:text-sm text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded-full font-mono border border-emerald-500/20 gap-1">
           <ArrowUpRight size={12} />
           12%
         </div>
@@ -285,11 +286,11 @@ export default function SaasDemo() {
         <div className="flex items-center gap-2">
           <Database size={20} className="text-indigo-500" />
         </div>
-        <span className="text-[10px] text-neutral-500 bg-white/5 px-2 py-1 rounded-md border border-white/5">Primary DB</span>
+        <span className="text-xs md:text-sm text-neutral-500 bg-white/5 px-2 py-1 rounded-md border border-white/5">Primary DB</span>
       </div>
       <div className="grid grid-cols-2 gap-3 mt-auto">
         <div className="bg-white/[0.03] p-3 rounded-xl border border-white/5">
-          <div className="text-[10px] text-neutral-500 mb-1">Reads/s</div>
+          <div className="text-xs md:text-sm text-neutral-500 mb-1">Reads/s</div>
           <m.div 
             className="text-lg font-bold font-mono text-indigo-400"
             key={reqs}
@@ -300,7 +301,7 @@ export default function SaasDemo() {
           </m.div>
         </div>
         <div className="bg-white/[0.03] p-3 rounded-xl border border-white/5">
-          <div className="text-[10px] text-neutral-500 mb-1">Writes/s</div>
+          <div className="text-xs md:text-sm text-neutral-500 mb-1">Writes/s</div>
           <m.div 
             className="text-lg font-bold font-mono text-indigo-400"
             key={activeUsers}
@@ -336,16 +337,17 @@ export default function SaasDemo() {
             12.4
             <span className="text-xs md:text-sm text-cyan-500/50 ml-1">TB/s</span>
           </div>
-          <div className="text-[10px] md:text-xs text-neutral-500 mt-1 md:mt-2">Total Bandwidth</div>
+          <div className="text-xs md:text-sm text-neutral-500 mt-1 md:mt-2">Total Bandwidth</div>
         </div>
       </div>
     </BentoBox>
   );
 
   return (
+    <DemoLayout title="SaaS Telemetry">
     <LazyMotion features={domAnimation}>
       <style dangerouslySetInnerHTML={{__html: `@media (pointer: fine) { body { cursor: none !important; } }`}} />
-      <div className="min-h-screen bg-black text-neutral-100 p-4 md:p-8 font-sans selection:bg-amber-500/30 overflow-x-hidden">
+      <div className="text-neutral-100 font-sans selection:bg-amber-500/30 overflow-x-hidden">
         
         <CustomCursor />
 
@@ -401,5 +403,6 @@ export default function SaasDemo() {
         </main>
       </div>
     </LazyMotion>
+    </DemoLayout>
   );
 }

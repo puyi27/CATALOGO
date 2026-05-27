@@ -1,5 +1,5 @@
 import HeroKinetic from "@/components/HeroKinetic";
-import PortfolioGrid from "@/components/PortfolioGrid";
+import PortfolioBook from "@/components/PortfolioBook";
 import CursorMagnetico from "@/components/CursorMagnetico";
 
 export default function Home() {
@@ -7,7 +7,7 @@ export default function Home() {
     <main className="flex flex-col relative w-full overflow-hidden md:cursor-none">
       <CursorMagnetico />
       <HeroKinetic />
-      <PortfolioGrid />
+      <PortfolioBook />
     </main>
   );
 }

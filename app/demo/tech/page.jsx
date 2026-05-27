@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, useCallback } from "react";
 import { motion, AnimatePresence, useScroll, useTransform, useInView, useMotionValue, useSpring } from "framer-motion";
 import { Cpu, Layers, Monitor, Smartphone, Sparkles, ArrowUpRight, ChevronRight, Mail, Menu, X } from "lucide-react";
 import Link from "next/link";
+import DemoLayout from "@/components/DemoLayout";
 
 const CHARS = "!<>-_\\/[]{}—=+*^?#ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
 
@@ -321,12 +322,11 @@ export default function AxiomStudioPage() {
   };
 
   return (
+    <DemoLayout title="Estudio de Tecnología">
     <div
       style={{
-        background: "#020617",
         color: "#e2e8f0",
         fontFamily: "'Inter', 'SF Pro Display', system-ui, sans-serif",
-        minHeight: "100vh",
         overflowX: "hidden",
       }}
     >
@@ -476,7 +476,6 @@ export default function AxiomStudioPage() {
           pointer-events: auto;
         }
         .hero-title {
-          font-size: clamp(2.5rem, 10vw, 7rem);
           font-weight: 900;
           line-height: 1.05;
           letter-spacing: -0.03em;
@@ -720,7 +719,7 @@ export default function AxiomStudioPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.5 }}
-            className="hero-title"
+            className="hero-title text-6xl md:text-9xl tracking-tighter"
           >
             <ScrambleText text={"DIGITAL PRODUCTS\nTHAT MATTER."} trigger={heroReady} delay={200} />
           </motion.h1>
@@ -833,10 +832,10 @@ export default function AxiomStudioPage() {
           viewport={{ once: true, margin: "-80px" }}
         >
           <motion.div variants={fadeUp} style={{ marginBottom: "3rem" }}>
-            <p style={{ color: "#00d4ff", fontSize: "0.72rem", letterSpacing: "0.15em", fontWeight: 600, marginBottom: "0.8rem" }}>
+            <p style={{ color: "#00d4ff", fontSize: "1rem", letterSpacing: "0.15em", fontWeight: 600, marginBottom: "0.8rem" }}>
               SERVICIOS
             </p>
-            <h2 style={{ fontSize: "clamp(2rem, 8vw, 3.5rem)", fontWeight: 800, letterSpacing: "-0.03em", lineHeight: 1.1 }}>
+            <h2 className="text-6xl md:text-8xl tracking-tighter" style={{ fontWeight: 800, lineHeight: 1.1 }}>
               Lo que construimos
             </h2>
           </motion.div>
@@ -946,10 +945,10 @@ export default function AxiomStudioPage() {
           >
             <motion.div variants={fadeUp} style={{ marginBottom: "2.5rem", display: "flex", justifyContent: "space-between", alignItems: "flex-end", flexWrap: "wrap", gap: "1rem" }}>
               <div>
-                <p style={{ color: "#7c3aed", fontSize: "0.72rem", letterSpacing: "0.15em", fontWeight: 600, marginBottom: "0.8rem" }}>
+                <p style={{ color: "#7c3aed", fontSize: "1rem", letterSpacing: "0.15em", fontWeight: 600, marginBottom: "0.8rem" }}>
                   PORTFOLIO
                 </p>
-                <h2 style={{ fontSize: "clamp(2rem, 8vw, 3rem)", fontWeight: 800, letterSpacing: "-0.03em" }}>
+                <h2 className="text-6xl md:text-8xl tracking-tighter" style={{ fontWeight: 800 }}>
                   Casos de estudio
                 </h2>
               </div>
@@ -1038,10 +1037,10 @@ export default function AxiomStudioPage() {
           viewport={{ once: true }}
         >
           <motion.div variants={fadeUp} style={{ marginBottom: "4rem", textAlign: "center" }}>
-            <p style={{ color: "#00d4ff", fontSize: "0.72rem", letterSpacing: "0.15em", fontWeight: 600, marginBottom: "0.8rem" }}>
+            <p style={{ color: "#00d4ff", fontSize: "1rem", letterSpacing: "0.15em", fontWeight: 600, marginBottom: "0.8rem" }}>
               PROCESO
             </p>
-            <h2 style={{ fontSize: "clamp(2rem, 8vw, 3rem)", fontWeight: 800, letterSpacing: "-0.03em" }}>
+            <h2 className="text-6xl md:text-8xl tracking-tighter" style={{ fontWeight: 800 }}>
               Cómo trabajamos
             </h2>
           </motion.div>
@@ -1127,13 +1126,13 @@ export default function AxiomStudioPage() {
             viewport={{ once: true }}
           >
             <motion.div variants={fadeUp} style={{ marginBottom: "3rem", textAlign: "center" }}>
-              <p style={{ color: "#7c3aed", fontSize: "0.72rem", letterSpacing: "0.15em", fontWeight: 600, marginBottom: "0.8rem" }}>
+              <p style={{ color: "#7c3aed", fontSize: "1rem", letterSpacing: "0.15em", fontWeight: 600, marginBottom: "0.8rem" }}>
                 EQUIPO
               </p>
-              <h2 style={{ fontSize: "clamp(2rem, 8vw, 3rem)", fontWeight: 800, letterSpacing: "-0.03em" }}>
+              <h2 className="text-6xl md:text-8xl tracking-tighter" style={{ fontWeight: 800 }}>
                 Las personas detrás
               </h2>
-              <p style={{ color: "#64748b", marginTop: "1rem", fontSize: "0.95rem" }}>
+              <p style={{ color: "#64748b", marginTop: "1rem", fontSize: "1rem" }}>
                 Un equipo pequeño, comprometido y con criterio.
               </p>
             </motion.div>
@@ -1249,15 +1248,14 @@ export default function AxiomStudioPage() {
             whileInView="visible"
             viewport={{ once: true }}
           >
-            <motion.p variants={fadeUp} style={{ color: "#00d4ff", fontSize: "0.72rem", letterSpacing: "0.15em", fontWeight: 600, marginBottom: "1rem" }}>
+            <motion.p variants={fadeUp} style={{ color: "#00d4ff", fontSize: "1rem", letterSpacing: "0.15em", fontWeight: 600, marginBottom: "1rem" }}>
               CONTACTO
             </motion.p>
             <motion.h2
               variants={fadeUp}
+              className="text-6xl md:text-8xl tracking-tighter"
               style={{
-                fontSize: "clamp(2rem, 8vw, 5rem)",
                 fontWeight: 900,
-                letterSpacing: "-0.03em",
                 lineHeight: 1.05,
                 marginBottom: "1.5rem",
                 background: "linear-gradient(135deg, #f1f5f9, #00d4ff)",
@@ -1533,5 +1531,6 @@ export default function AxiomStudioPage() {
         </div>
       </footer>
     </div>
+    </DemoLayout>
   );
 }

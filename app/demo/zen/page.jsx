@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, Check, Leaf, Wind, Sun } from "lucide-react";
+import DemoLayout from "@/components/DemoLayout";
 
 export default function SatoriRetreat() {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -53,7 +54,8 @@ export default function SatoriRetreat() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#F5EFEB] text-[#2C302E] font-sans selection:bg-[#E3E8E3] selection:text-[#2C302E] overflow-x-hidden md:cursor-none">
+    <DemoLayout title="Retiro Zen">
+    <div className="text-[#2C302E] font-sans selection:bg-[#E3E8E3] selection:text-[#2C302E] overflow-x-hidden md:cursor-none">
       <motion.div
         className="hidden md:flex fixed top-0 left-0 w-6 h-6 rounded-full bg-[#E3E8E3] mix-blend-difference pointer-events-none z-50 items-center justify-center"
         animate={{
@@ -170,7 +172,7 @@ export default function SatoriRetreat() {
             </div>
           </div>
 
-          <div className="relative min-h-[420px] bg-white p-6 md:p-16 rounded-3xl shadow-sm flex flex-col justify-between">
+          <div className="relative min-h-[420px] bg-white p-6 md:p-16 rounded-3xl border border-stone-200 flex flex-col justify-between">
             <AnimatePresence mode="wait">
               {step === 1 && (
                 <motion.div
@@ -305,5 +307,6 @@ export default function SatoriRetreat() {
         </div>
       </footer>
     </div>
+    </DemoLayout>
   );
 }

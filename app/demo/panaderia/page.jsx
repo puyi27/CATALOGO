@@ -2,6 +2,7 @@
 
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
+import DemoLayout from '@/components/DemoLayout'
 import { ShoppingBag, ArrowLeft, MapPin, Clock, Phone, Menu, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
@@ -36,7 +37,8 @@ export default function Panaderia() {
   ]
 
   return (
-    <div className="bg-[#FAF9F6] text-[#2C2C2C] min-h-screen font-serif overflow-hidden md:cursor-none">
+    <DemoLayout title="L'Atelier du Pain">
+    <div className="text-[#2C2C2C] font-serif overflow-hidden md:cursor-none">
       <motion.div
         className="hidden md:flex fixed top-0 left-0 w-6 h-6 rounded-full border-2 border-[#E6C280] pointer-events-none z-50 mix-blend-difference"
         animate={{
@@ -51,7 +53,7 @@ export default function Panaderia() {
       <nav className="fixed top-0 left-0 w-full z-40 bg-[#FAF9F6]/90 backdrop-blur-md border-b border-[#E6C280]/20 px-4 md:px-6 py-4 flex justify-between items-center">
         <Link 
           href="/"
-          className="flex items-center gap-2 text-[#6A3E1E] md:hover:text-[#E6C280] transition-colors uppercase tracking-widest text-xs active:scale-95"
+          className="flex items-center gap-2 text-[#6A3E1E] md:hover:text-[#E6C280] transition-colors uppercase tracking-widest text-sm md:text-base active:scale-95"
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={() => setIsHovering(false)}
         >
@@ -123,8 +125,7 @@ export default function Panaderia() {
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-            className="font-medium italic mb-6 tracking-tight leading-[0.9]"
-            style={{ fontSize: 'clamp(4rem, 12vw, 9rem)' }}
+            className="text-6xl md:text-9xl font-medium italic mb-6 tracking-tighter leading-[0.9]"
           >
             L'art de la patience.
           </motion.h1>
@@ -144,7 +145,7 @@ export default function Panaderia() {
           animate={{ opacity: 1 }}
           transition={{ delay: 1, duration: 1 }}
         >
-          <span className="uppercase tracking-widest text-[10px] md:text-xs text-[#FAF9F6]">Scroll</span>
+          <span className="uppercase tracking-widest text-sm md:text-base text-[#FAF9F6]">Scroll</span>
           <motion.div 
             className="w-[1px] h-12 md:h-16 bg-[#E6C280]"
             animate={{ scaleY: [0, 1, 0], originY: [0, 0, 1] }}
@@ -161,8 +162,8 @@ export default function Panaderia() {
             viewport={{ once: true, margin: "-100px" }}
             className="text-center mb-16 md:mb-24 px-6 md:px-0"
           >
-            <h2 className="text-xs uppercase tracking-[0.4em] text-[#E6C280] mb-4">Nuestro Proceso</h2>
-            <p className="text-3xl md:text-5xl text-[#6A3E1E] italic px-4">El ritual de cada madrugada</p>
+            <h2 className="text-sm md:text-base uppercase tracking-[0.4em] text-[#E6C280] mb-4">Nuestro Proceso</h2>
+            <p className="text-5xl md:text-7xl tracking-tighter text-[#6A3E1E] italic px-4">El ritual de cada madrugada</p>
           </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-6 md:px-20">
@@ -204,14 +205,14 @@ export default function Panaderia() {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-xs uppercase tracking-[0.4em] text-[#E6C280] mb-4">Clásicos</h2>
-              <p className="text-4xl md:text-5xl italic">Recién Salidos</p>
+              <h2 className="text-sm md:text-base uppercase tracking-[0.4em] text-[#E6C280] mb-4">Clásicos</h2>
+              <p className="text-5xl md:text-7xl tracking-tighter italic">Recién Salidos</p>
             </motion.div>
             <motion.button
               initial={{ opacity: 0, x: 50 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="uppercase tracking-widest text-[10px] md:text-xs border-b border-[#E6C280] pb-1 hover:text-[#E6C280] transition-colors active:scale-95"
+              className="uppercase tracking-widest text-sm md:text-base border-b border-[#E6C280] pb-1 hover:text-[#E6C280] transition-colors active:scale-95"
               onMouseEnter={() => setIsHovering(true)}
               onMouseLeave={() => setIsHovering(false)}
             >
@@ -262,15 +263,14 @@ export default function Panaderia() {
           className="max-w-4xl mx-auto relative z-10 w-full"
         >
           <p 
-            className="text-[#E6C280] font-serif italic leading-tight mb-10 md:mb-12"
-            style={{ fontSize: 'clamp(1.75rem, 5vw, 3.75rem)' }}
+            className="text-4xl md:text-6xl text-[#E6C280] font-serif italic leading-tight mb-10 md:mb-12 tracking-tighter"
           >
             "El buen pan no es producto del tiempo, sino de la paciencia. Cada hogaza cuenta una historia de harina, agua y manos que saben esperar."
           </p>
           <div className="flex flex-col items-center">
             <div className="w-12 md:w-16 h-[1px] bg-[#FAF9F6]/30 mb-6" />
-            <span className="uppercase tracking-[0.3em] text-[10px] md:text-sm text-[#FAF9F6]">Jean-Paul Dubois</span>
-            <span className="text-[#FAF9F6]/50 text-[10px] md:text-xs mt-2 italic">Maître Boulanger</span>
+            <span className="uppercase tracking-[0.3em] text-sm md:text-base text-[#FAF9F6]">Jean-Paul Dubois</span>
+            <span className="text-[#FAF9F6]/50 text-sm md:text-base mt-2 italic">Maître Boulanger</span>
           </div>
         </motion.div>
       </section>
@@ -291,7 +291,7 @@ export default function Panaderia() {
             transition={{ duration: 0.8 }}
             className="w-full max-w-md"
           >
-            <h2 className="text-3xl md:text-5xl text-[#6A3E1E] italic mb-10 md:mb-12 text-center md:text-left">Nuestra Casa</h2>
+            <h2 className="text-5xl md:text-7xl tracking-tighter text-[#6A3E1E] italic mb-10 md:mb-12 text-center md:text-left">Nuestra Casa</h2>
             
             <div className="space-y-8 text-[#2C2C2C]">
               <div className="flex items-start gap-4 md:gap-6">
@@ -320,7 +320,7 @@ export default function Panaderia() {
             </div>
 
             <button 
-              className="mt-12 md:mt-16 w-full py-4 border border-[#6A3E1E] text-[#6A3E1E] uppercase tracking-widest text-[10px] md:text-sm md:hover:bg-[#6A3E1E] md:hover:text-[#FAF9F6] transition-colors duration-300 active:scale-[0.98] active:bg-[#6A3E1E] active:text-[#FAF9F6]"
+              className="mt-12 md:mt-16 w-full py-4 border border-[#6A3E1E] text-[#6A3E1E] uppercase tracking-widest text-sm md:text-base md:hover:bg-[#6A3E1E] md:hover:text-[#FAF9F6] transition-colors duration-300 active:scale-[0.98] active:bg-[#6A3E1E] active:text-[#FAF9F6]"
               onMouseEnter={() => setIsHovering(true)}
               onMouseLeave={() => setIsHovering(false)}
             >
@@ -336,13 +336,13 @@ export default function Panaderia() {
             L'Atelier du Pain
           </div>
           
-          <div className="flex flex-wrap justify-center gap-6 md:gap-8 mb-12 md:mb-16 text-[10px] md:text-sm uppercase tracking-widest text-[#2C2C2C]/60">
+          <div className="flex flex-wrap justify-center gap-6 md:gap-8 mb-12 md:mb-16 text-sm md:text-base uppercase tracking-widest text-[#2C2C2C]/60">
             <a href="#" className="md:hover:text-[#6A3E1E] active:text-[#6A3E1E] transition-colors">Instagram</a>
             <a href="#" className="md:hover:text-[#6A3E1E] active:text-[#6A3E1E] transition-colors">Facebook</a>
             <a href="#" className="md:hover:text-[#6A3E1E] active:text-[#6A3E1E] transition-colors">Prensa</a>
           </div>
 
-          <div className="w-full flex flex-col md:flex-row justify-between items-center text-[10px] md:text-xs text-[#2C2C2C]/40 uppercase tracking-widest pt-8 border-t border-[#6A3E1E]/10 gap-4 md:gap-0">
+          <div className="w-full flex flex-col md:flex-row justify-between items-center text-sm md:text-base text-[#2C2C2C]/40 uppercase tracking-widest pt-8 border-t border-[#6A3E1E]/10 gap-4 md:gap-0">
             <p>© 2026 L'Atelier du Pain</p>
             <div className="flex gap-4">
               <a href="#" className="md:hover:text-[#6A3E1E] active:text-[#6A3E1E] transition-colors">Privacidad</a>
@@ -352,5 +352,6 @@ export default function Panaderia() {
         </div>
       </footer>
     </div>
+    </DemoLayout>
   )
 }

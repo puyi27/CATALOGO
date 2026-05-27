@@ -3,6 +3,7 @@ import React, { useState, useRef, useEffect } from 'react'
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
 import Link from 'next/link'
 import { Plus, ArrowUpRight, Menu, X } from 'lucide-react'
+import DemoLayout from '@/components/DemoLayout'
 
 const Cursor = () => {
   const [mousePosition, setMousePosition] = useState({ x: -100, y: -100 })
@@ -109,7 +110,7 @@ const Hero = ({ mouseX, mouseY }) => {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-          className="font-serif text-[clamp(4rem,20vw,12rem)] font-light tracking-tighter leading-[0.85] md:leading-none"
+          className="font-serif text-6xl md:text-9xl font-light tracking-tighter leading-[0.85] md:leading-none"
         >
           Designing
           <br />
@@ -251,7 +252,7 @@ const Footer = () => {
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 1 }}
         viewport={{ once: true }}
-        className="font-serif text-[clamp(5rem,25vw,15rem)] font-light text-center mb-16 md:mb-24 tracking-tighter leading-none"
+        className="font-serif text-6xl md:text-9xl font-light text-center mb-16 md:mb-24 tracking-tighter leading-none"
       >
         Aura
       </motion.h2>
@@ -284,7 +285,8 @@ export default function Page() {
   }, [])
 
   return (
-    <main className="bg-[#F5F5F0] text-zinc-900 min-h-screen font-sans selection:bg-zinc-900 selection:text-[#F5F5F0]">
+    <DemoLayout title="Estudio de Interiorismo">
+    <main className="text-zinc-900 font-sans selection:bg-zinc-900 selection:text-[#F5F5F0]">
       <Cursor />
       <Nav />
       <Hero mouseX={mousePosition.x} mouseY={mousePosition.y} />
@@ -292,5 +294,6 @@ export default function Page() {
       <AccordionSection />
       <Footer />
     </main>
+    </DemoLayout>
   )
 }

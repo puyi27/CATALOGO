@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react"
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion"
 import Link from "next/link"
 import { ArrowLeft, Menu, X } from "lucide-react"
+import DemoLayout from "@/components/DemoLayout"
 
 const Nav = () => {
   const [show, setShow] = useState(true)
@@ -39,12 +40,12 @@ const Nav = () => {
         transition={{ duration: 0.3 }}
         className="fixed top-0 left-0 w-full z-50 flex justify-between items-center p-6 md:px-12 bg-black/30 backdrop-blur-md text-white"
       >
-        <Link href="/" className="hidden md:flex items-center gap-2 uppercase tracking-widest text-xs hover:opacity-70 transition-opacity active:scale-95">
+        <Link href="/" className="hidden md:flex items-center gap-2 uppercase tracking-widest text-sm md:text-base hover:opacity-70 transition-opacity active:scale-95">
           <ArrowLeft size={16} /> Catálogo
         </Link>
         <div className="text-2xl font-serif tracking-[0.3em] uppercase">Aura</div>
         
-        <button className="hidden md:block uppercase tracking-widest text-xs border border-white px-4 py-2 hover:bg-white hover:text-black transition-colors active:scale-95">
+        <button className="hidden md:block uppercase tracking-widest text-sm md:text-base border border-white px-4 py-2 hover:bg-white hover:text-black transition-colors active:scale-95">
           Reservar
         </button>
 
@@ -135,7 +136,7 @@ const Hero = () => {
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black" />
       </div>
       <div className="z-10 text-center flex flex-col items-center w-full px-4">
-        <h1 className="text-white text-[clamp(4rem,15vw,9rem)] font-serif tracking-[0.3em] md:tracking-[0.8em] uppercase ml-[0.3em] md:ml-[0.8em] overflow-hidden flex justify-center w-full">
+        <h1 className="text-white text-7xl md:text-9xl font-serif tracking-tighter uppercase overflow-hidden flex justify-center w-full">
           {title.split("").map((char, index) => (
             <motion.span
               key={index}
@@ -151,7 +152,7 @@ const Hero = () => {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 1, delay: 1.5 }}
-          className="text-gray-400 mt-8 tracking-[0.2em] md:tracking-[0.3em] uppercase text-xs md:text-sm text-center"
+          className="text-gray-400 mt-8 tracking-[0.2em] md:tracking-[0.3em] uppercase text-sm md:text-base text-center"
         >
           Gastronomía sensorial
         </motion.p>
@@ -192,7 +193,7 @@ const Experience = () => {
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-gray-500 uppercase tracking-[0.4em] text-xs mb-12 md:mb-24 px-6 text-center"
+          className="text-gray-500 uppercase tracking-[0.4em] text-sm md:text-base mb-12 md:mb-24 px-6 text-center"
         >
           La Experiencia
         </motion.h2>
@@ -243,7 +244,7 @@ const Chef = () => {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 1 }}
-          className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl font-serif text-white leading-tight"
+          className="text-5xl md:text-7xl tracking-tighter font-serif text-white leading-tight"
         >
           "No cocinamos comida, esculpimos recuerdos."
         </motion.p>
@@ -252,7 +253,7 @@ const Chef = () => {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 1, delay: 0.3 }}
-          className="mt-8 md:mt-12 text-gray-500 uppercase tracking-[0.2em] text-xs md:text-sm"
+          className="mt-8 md:mt-12 text-gray-500 uppercase tracking-[0.2em] text-sm md:text-base"
         >
           — Alejandro Valdés, Head Chef
         </motion.p>
@@ -280,7 +281,7 @@ const Cellar = () => {
     <section ref={targetRef} className="relative h-[300vh] bg-black">
       <div className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden">
         <div className="absolute top-24 md:top-32 left-6 md:left-24 z-10">
-          <h2 className="text-gray-500 uppercase tracking-[0.4em] text-xs">La Bodega</h2>
+          <h2 className="text-gray-500 uppercase tracking-[0.4em] text-sm md:text-base">La Bodega</h2>
         </div>
         <motion.div style={{ x }} className="flex w-max gap-12 md:gap-24 px-6 md:px-24 mt-20">
           {wines.map((wine, idx) => (
@@ -310,7 +311,7 @@ const Reservation = () => {
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="text-gray-400 uppercase tracking-[0.2em] md:tracking-[0.4em] text-xs md:text-sm mb-12 md:mb-16"
+        className="text-gray-400 uppercase tracking-[0.2em] md:tracking-[0.4em] text-sm md:text-base mb-12 md:mb-16"
       >
         Solo 12 comensales por noche.
       </motion.p>
@@ -329,7 +330,7 @@ const Footer = () => {
       <div className="font-serif text-3xl tracking-[0.3em] uppercase text-white/80">
         Aura
       </div>
-      <div className="flex flex-col items-center md:items-end text-xs uppercase tracking-widest text-gray-500 gap-3">
+      <div className="flex flex-col items-center md:items-end text-sm md:text-base uppercase tracking-widest text-gray-500 gap-3">
         <p>Calle Falsa 123, Ciudad</p>
         <p>reservas@aura.com</p>
         <p>+34 900 000 000</p>
@@ -352,7 +353,8 @@ export default function RestauranteDemo() {
   }, [])
 
   return (
-    <main className="bg-black min-h-screen text-white font-sans selection:bg-white selection:text-black md:cursor-none">
+    <DemoLayout title="Aura">
+    <div className="text-white font-sans selection:bg-white selection:text-black md:cursor-none">
       {isClient && (
         <motion.div
           className="fixed top-0 left-0 w-6 h-6 bg-white rounded-full pointer-events-none z-[100] mix-blend-difference -translate-x-1/2 -translate-y-1/2 hidden md:block"
@@ -367,6 +369,7 @@ export default function RestauranteDemo() {
       <Cellar />
       <Reservation />
       <Footer />
-    </main>
+    </div>
+    </DemoLayout>
   )
 }

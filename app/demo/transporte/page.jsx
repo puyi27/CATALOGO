@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react"
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion"
 import Link from "next/link"
 import { ArrowLeft, Truck, Navigation, Clock, ShieldCheck, Gauge, Menu, X, ChevronRight, MapPin } from "lucide-react"
+import DemoLayout from "@/components/DemoLayout"
 
 export default function TransporteDemo() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
@@ -44,7 +45,8 @@ export default function TransporteDemo() {
   ]
 
   return (
-    <div ref={containerRef} className="relative min-h-screen bg-[#0F172A] text-white font-sans overflow-hidden md:cursor-none">
+    <DemoLayout title="Gestión de Transporte">
+    <div ref={containerRef} className="relative text-white font-sans overflow-hidden md:cursor-none">
       <motion.div
         className="fixed top-0 left-0 w-6 h-6 border border-[#38BDF8] rounded-full pointer-events-none z-50 hidden md:block"
         animate={{ x: mousePos.x - 12, y: mousePos.y - 12 }}
@@ -102,7 +104,7 @@ export default function TransporteDemo() {
         <div className="relative z-10 text-center max-w-4xl">
           <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1 }}>
             <span className="text-[#38BDF8] text-xs tracking-[0.3em] uppercase mb-4 block">Logística Industrial en Tiempo Real</span>
-            <h1 className="text-[clamp(3.5rem,12vw,8rem)] font-black uppercase tracking-tighter leading-[0.85] mb-6">
+            <h1 className="text-6xl md:text-9xl font-black uppercase tracking-tighter leading-[0.85] mb-6">
               Tu Flota.<br />Tu Control.
             </h1>
             <p className="text-sm md:text-lg text-white/60 max-w-xl mx-auto tracking-wide">
@@ -125,7 +127,7 @@ export default function TransporteDemo() {
         <div className="max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-4">
             <div>
-              <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter">Flota Activa</h2>
+              <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter">Flota Activa</h2>
               <p className="text-sm text-white/40 tracking-widest uppercase mt-2 font-mono">Selecciona un vehículo para ver su estado</p>
             </div>
             <div className="flex items-center gap-3 text-xs font-mono">
@@ -207,7 +209,7 @@ export default function TransporteDemo() {
 
       <section className="py-24 md:py-32 px-6 border-t border-white/10 bg-[#0A0F1E]">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter mb-12">Rutas Estratégicas</h2>
+          <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter mb-12">Rutas Estratégicas</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {routes.map((route, i) => (
               <motion.div
@@ -239,7 +241,7 @@ export default function TransporteDemo() {
 
       <section className="py-24 md:py-32 px-6 border-t border-white/10">
         <div className="max-w-7xl mx-auto">
-          <h2 className="text-3xl md:text-5xl font-black uppercase tracking-tighter mb-4">Métrica Operativa</h2>
+          <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter mb-4">Métrica Operativa</h2>
           <p className="text-sm text-white/40 tracking-widest uppercase font-mono mb-12">Datos agregados de la flota</p>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {stats.map((s, i) => (
@@ -268,7 +270,7 @@ export default function TransporteDemo() {
           className="max-w-2xl"
         >
           <span className="text-[#38BDF8] text-xs tracking-[0.3em] uppercase mb-4 block">¿Listo para digitalizar tu flota?</span>
-          <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter mb-6">Solicita una Demo</h2>
+          <h2 className="text-6xl md:text-8xl font-black uppercase tracking-tighter mb-6">Solicita una Demo</h2>
           <p className="text-white/40 text-sm md:text-base mb-10 max-w-lg mx-auto">
             Te mostramos cómo nuestra plataforma puede reducir tus costes operativos y mejorar la eficiencia de tu flota.
           </p>
@@ -292,5 +294,6 @@ export default function TransporteDemo() {
         </div>
       </footer>
     </div>
+    </DemoLayout>
   )
 }

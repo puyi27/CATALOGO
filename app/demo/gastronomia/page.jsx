@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useMotionValue, useSpring } from 'framer-motion';
 import { Flame, Calendar, Clock, Star, MapPin, Phone, ChevronRight, X, Check, Wine, UtensilsCrossed } from 'lucide-react';
 import Link from 'next/link';
+import DemoLayout from '@/components/DemoLayout';
 
 const menuSections = [
   {
@@ -65,7 +66,8 @@ export default function GastronomiaDemo() {
   const currentSection = menuSections.find(s => s.id === activeSection);
 
   return (
-    <div className="min-h-screen bg-[#0f0d0b] text-[#e8dac1] font-sans selection:bg-[#8b2615] overflow-x-hidden cursor-none">
+    <DemoLayout title="Restaurante Gastronómico">
+    <div className="text-[#e8dac1] font-sans selection:bg-[#8b2615] overflow-x-hidden cursor-none">
 
       {/* Custom cursor — x/y via MotionValue, size via hoveredItem */}
       <motion.div
@@ -117,7 +119,7 @@ export default function GastronomiaDemo() {
             initial={{ y: 60, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 1.5, ease: [0.76, 0, 0.24, 1] }}
-            className="text-7xl md:text-[11rem] font-serif font-black uppercase tracking-tighter text-[#d4af37] leading-[0.8] mb-8"
+            className="text-6xl md:text-9xl font-serif font-black uppercase tracking-tighter text-[#d4af37] leading-[0.8] mb-8"
           >
             Fuego &<br />Tradición
           </motion.h2>
@@ -165,7 +167,7 @@ export default function GastronomiaDemo() {
           <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-16">
             <div>
               <span className="font-mono text-[#8b2615] text-xs tracking-widest uppercase block mb-3">Temporada 2024</span>
-              <h2 className="text-5xl md:text-7xl font-serif font-light text-[#d4af37] tracking-tighter">Nuestra Carta</h2>
+              <h2 className="text-6xl md:text-8xl font-serif font-light text-[#d4af37] tracking-tighter">Nuestra Carta</h2>
             </div>
             <div className="flex gap-3">
               {menuSections.map(s => (
@@ -281,7 +283,7 @@ export default function GastronomiaDemo() {
 
       {/* CTA RESERVA */}
       <section className="py-32 px-6 bg-[#d4af37] text-black text-center">
-        <h2 className="text-5xl md:text-8xl font-serif font-black uppercase tracking-tighter mb-8">Reserva tu<br />Mesa.</h2>
+        <h2 className="text-6xl md:text-9xl font-serif font-black uppercase tracking-tighter mb-8">Reserva tu<br />Mesa.</h2>
         <p className="text-lg font-light mb-12 max-w-md mx-auto text-black/60">Garantiza tu experiencia. Aceptamos reservas con hasta 30 días de antelación.</p>
         <button
           onClick={() => setReservaOpen(true)}
@@ -341,5 +343,6 @@ export default function GastronomiaDemo() {
         </div>
       </footer>
     </div>
+    </DemoLayout>
   );
 }

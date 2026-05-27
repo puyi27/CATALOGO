@@ -5,6 +5,7 @@ import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import Link from 'next/link';
 import { ArrowLeft, ArrowUpRight } from 'lucide-react';
+import DemoLayout from '@/components/DemoLayout';
 
 export default function AgenciaDemo() {
   const containerRef = useRef(null);
@@ -42,7 +43,7 @@ export default function AgenciaDemo() {
               trigger: nextProject,
               start: "top bottom",
               end: "top top",
-              scrub: true,
+              scrub: 1.5,
             }
           });
 
@@ -105,41 +106,26 @@ export default function AgenciaDemo() {
   ];
 
   return (
-    <main className="bg-[#f2f2ef] text-[#1a1a1a] min-h-screen selection:bg-black selection:text-[#f2f2ef] md:cursor-none overflow-x-hidden" ref={containerRef}>
-      
-      <div 
-        ref={cursorRef} 
-        className="hidden md:flex fixed top-0 left-0 w-4 h-4 bg-white rounded-full pointer-events-none z-50 items-center justify-center mix-blend-difference"
-      />
+    <DemoLayout title="Agencia Creativa">
+      <div className="text-[#1a1a1a] md:cursor-none w-full" ref={containerRef}>
+        
+        <div 
+          ref={cursorRef} 
+          className="hidden md:flex fixed top-0 left-0 w-4 h-4 bg-white rounded-full pointer-events-none z-50 items-center justify-center mix-blend-difference"
+        />
 
-      <nav className="fixed top-0 w-full p-6 md:p-8 flex justify-between items-center z-40 mix-blend-difference text-white pointer-events-none">
-        <div className="pointer-events-auto">
-          <Link href="/" className="flex items-center gap-2 font-mono text-xs md:text-sm uppercase tracking-widest active:scale-95 md:hover:opacity-70 transition-all origin-left">
-            <ArrowLeft size={16} />
-            Catálogo
-          </Link>
-        </div>
-        <div className="font-mono text-xs md:text-sm uppercase tracking-widest pointer-events-auto">
-          Agencia Studio
-        </div>
-      </nav>
+        <section className="flex flex-col justify-center py-12">
+          <div className="w-full">
+            <p className="font-mono text-xs md:text-sm max-w-sm mb-8 md:mb-12 uppercase tracking-widest leading-relaxed">
+              We craft digital experiences that transcend the ordinary. Independent design boutique based in Nowhere.
+            </p>
+          </div>
+        </section>
 
-      <section className="min-h-screen flex flex-col justify-center p-6 md:p-12 pt-32">
-        <div className="max-w-7xl mx-auto w-full">
-          <p className="font-mono text-xs md:text-sm max-w-sm mb-8 md:mb-12 uppercase tracking-widest leading-relaxed">
-            We craft digital experiences that transcend the ordinary. Independent design boutique based in Nowhere.
-          </p>
-          <h1 className="font-serif text-[clamp(4rem,15vw,12rem)] leading-[0.85] tracking-tighter w-full uppercase">
-            DIGITAL<br />
-            <span className="italic font-light ml-[10vw]">ARTISANS</span>
-          </h1>
-        </div>
-      </section>
-
-      <div className="projects-container relative z-10 w-full">
-        {projects.map((project, i) => (
-          <div key={project.id} className="project-card h-screen w-full relative will-change-transform">
-            <div className="project-inner w-full h-full p-4 md:p-8 bg-[#f2f2ef] flex items-center justify-center will-change-transform">
+        <div className="projects-container relative z-10 w-full">
+          {projects.map((project, i) => (
+            <div key={project.id} className="project-card h-screen w-full relative will-change-transform">
+              <div className="project-inner w-full h-full p-2 md:p-4 flex items-center justify-center will-change-transform">
               <div className="w-full h-full relative overflow-hidden rounded-[2rem] group hover-image">
                 <img 
                   src={project.img} 
@@ -156,10 +142,10 @@ export default function AgenciaDemo() {
                     </span>
                   </div>
                   <div className="flex justify-between items-end overflow-hidden">
-                    <h2 className="font-serif text-[clamp(2.5rem,8vw,8vw)] uppercase leading-none tracking-tighter md:translate-y-8 md:group-hover:translate-y-0 transition-transform duration-700 ease-out max-w-[70%] md:max-w-none">
+                    <h2 className="font-serif text-6xl md:text-9xl uppercase leading-none tracking-tighter md:translate-y-8 md:group-hover:translate-y-0 transition-transform duration-700 ease-out max-w-[70%] md:max-w-none">
                       {project.title}
                     </h2>
-                    <div className="bg-white text-black p-4 md:p-6 rounded-full md:translate-y-24 md:group-hover:translate-y-0 transition-transform duration-700 ease-out md:delay-100 active:scale-90 md:active:scale-100 shadow-lg md:shadow-none">
+                    <div className="bg-white text-black p-4 md:p-6 rounded-full md:translate-y-24 md:group-hover:translate-y-0 transition-transform duration-700 ease-out md:delay-100 active:scale-90 shadow-none border border-stone-200">
                       <ArrowUpRight className="w-6 h-6 md:w-12 md:h-12" />
                     </div>
                   </div>
@@ -170,34 +156,32 @@ export default function AgenciaDemo() {
         ))}
       </div>
 
-      <footer className="min-h-screen bg-[#111] text-[#f2f2ef] flex flex-col justify-between p-6 md:p-12 z-20 relative rounded-t-[2rem] md:rounded-none mt-[-2rem] md:mt-0">
-        <div className="flex flex-col md:flex-row justify-between items-start font-mono text-sm tracking-widest uppercase gap-12 pt-16 md:pt-24">
-          <div className="space-y-4">
-            <p className="text-white/50">Location</p>
-            <p>Based in Nowhere</p>
-            <p>Available Worldwide</p>
+        <footer className="bg-[#111] text-[#f2f2ef] flex flex-col justify-between p-6 md:p-12 z-20 relative rounded-[2rem] mt-12 mb-8">
+          <div className="flex flex-col md:flex-row justify-between items-start font-mono text-sm tracking-widest uppercase gap-12 pt-12 md:pt-16">
+            <div className="space-y-4">
+              <p className="text-white/50">Location</p>
+              <p>Based in Nowhere</p>
+              <p>Available Worldwide</p>
+            </div>
+            <div className="space-y-4">
+              <p className="text-white/50">Socials</p>
+              <a href="#" className="block active:scale-95 md:hover:opacity-70 transition-all origin-left">Instagram</a>
+              <a href="#" className="block active:scale-95 md:hover:opacity-70 transition-all origin-left">Twitter</a>
+              <a href="#" className="block active:scale-95 md:hover:opacity-70 transition-all origin-left">LinkedIn</a>
+            </div>
           </div>
-          <div className="space-y-4">
-            <p className="text-white/50">Socials</p>
-            <a href="#" className="block active:scale-95 md:hover:opacity-70 transition-all origin-left">Instagram</a>
-            <a href="#" className="block active:scale-95 md:hover:opacity-70 transition-all origin-left">Twitter</a>
-            <a href="#" className="block active:scale-95 md:hover:opacity-70 transition-all origin-left">LinkedIn</a>
+          
+          <div className="w-full text-center py-24 md:py-32">
+            <h1 className="font-serif text-6xl md:text-9xl leading-none tracking-tighter uppercase whitespace-nowrap active:scale-[0.98] transition-transform">
+              Let's Talk
+            </h1>
           </div>
-        </div>
-        
-        <div className="w-full text-center py-24 md:py-32">
-          <h1 className="font-serif text-[clamp(4rem,18vw,20rem)] leading-none tracking-tighter uppercase whitespace-nowrap active:scale-[0.98] transition-transform">
-            Let's Talk
-          </h1>
-        </div>
-        
-        <div className="flex flex-col md:flex-row justify-between items-start md:items-center font-mono text-xs md:text-sm tracking-widest uppercase gap-8">
-          <p className="text-white/50">© {new Date().getFullYear()} Agencia</p>
-          <Link href="/" className="active:scale-95 md:hover:text-white/70 transition-all underline underline-offset-4 decoration-white/30">
-            Back to Catalog
-          </Link>
-        </div>
-      </footer>
-    </main>
+          
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center font-mono text-xs md:text-sm tracking-widest uppercase gap-8">
+            <p className="text-white/50">© {new Date().getFullYear()} Agencia</p>
+          </div>
+        </footer>
+      </div>
+    </DemoLayout>
   );
 }

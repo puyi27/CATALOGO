@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react"
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion"
 import Link from "next/link"
 import { Menu, ArrowLeft, Droplet, Sun, Sprout, X } from "lucide-react"
+import DemoLayout from "@/components/DemoLayout"
 
 export default function FincaLaAlmazara() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
@@ -63,28 +64,13 @@ export default function FincaLaAlmazara() {
   const menuItems = ["La Finca", "Nuestros Aceites", "Sostenibilidad", "Contacto"]
 
   return (
-    <div ref={containerRef} className="relative min-h-screen bg-[#F5F5E1] text-[#3B4F2D] font-serif overflow-hidden selection:bg-[#3B4F2D] selection:text-[#F5F5E1] md:cursor-none">
-      <motion.div 
-        className="fixed top-0 left-0 w-6 h-6 border border-[#3B4F2D] rounded-full pointer-events-none z-50 mix-blend-difference hidden md:block"
-        animate={{ x: mousePos.x - 12, y: mousePos.y - 12 }}
-        transition={{ type: "spring", stiffness: 150, damping: 15, mass: 0.1 }}
-      />
-
-      <motion.nav 
-        variants={navVariants}
-        initial="hidden"
-        animate="visible"
-        className="fixed top-0 left-0 w-full p-4 md:p-6 flex justify-between items-center z-40 mix-blend-difference text-[#F5F5E1]"
-      >
-        <Link href="/" className="flex items-center gap-2 text-[clamp(0.75rem,2vw,0.875rem)] uppercase tracking-widest active:scale-95 md:active:scale-100 hover:opacity-70 transition-all">
-          <ArrowLeft size={16} />
-          <span className="hidden md:inline">Catálogo</span>
-        </Link>
-        <div className="text-[clamp(1.125rem,3vw,1.25rem)] tracking-[0.2em] md:tracking-[0.3em] font-light">LA ALMAZARA</div>
-        <button onClick={() => setIsMenuOpen(true)} className="active:scale-90 md:active:scale-100 hover:opacity-70 transition-all p-2">
-          <Menu size={24} />
-        </button>
-      </motion.nav>
+    <DemoLayout title="La Almazara">
+      <div ref={containerRef} className="relative text-[#3B4F2D] font-serif overflow-hidden md:cursor-none">
+        <motion.div 
+          className="fixed top-0 left-0 w-6 h-6 border border-[#3B4F2D] rounded-full pointer-events-none z-50 mix-blend-difference hidden md:block"
+          animate={{ x: mousePos.x - 12, y: mousePos.y - 12 }}
+          transition={{ type: "spring", stiffness: 150, damping: 15, mass: 0.1 }}
+        />
 
       <AnimatePresence>
         {isMenuOpen && (
@@ -139,7 +125,7 @@ export default function FincaLaAlmazara() {
               variants={textReveal}
               initial="hidden"
               animate="visible"
-              className="text-[clamp(4rem,15vw,9rem)] leading-[0.9] font-light tracking-tighter"
+              className="text-6xl md:text-9xl leading-[0.9] font-light tracking-tighter"
             >
               Oro líquido.
             </motion.h1>
@@ -166,8 +152,8 @@ export default function FincaLaAlmazara() {
             viewport={{ once: true, margin: "-100px" }}
             transition={{ duration: 1 }}
           >
-            <h2 className="text-[clamp(3rem,8vw,4rem)] font-light mb-6 md:mb-8 leading-tight">La Cosecha<br/>Manual.</h2>
-            <p className="text-[clamp(1rem,3vw,1.25rem)] font-sans font-light leading-relaxed max-w-md opacity-80">
+            <h2 className="text-6xl md:text-8xl font-light mb-6 md:mb-8 leading-tight tracking-tighter">La Cosecha<br/>Manual.</h2>
+            <p className="text-lg md:text-xl font-sans font-light leading-relaxed max-w-md opacity-80">
               Respetamos los tiempos de la naturaleza. Cada oliva es seleccionada a mano en su punto óptimo de maduración, garantizando la máxima expresión de sabor y pureza en cada gota de nuestro aceite.
             </p>
           </motion.div>
@@ -193,7 +179,7 @@ export default function FincaLaAlmazara() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: 1 }}
-            className="text-[clamp(2.5rem,6vw,4.5rem)] font-light text-center mb-16 md:mb-24 px-6"
+            className="text-5xl md:text-7xl tracking-tighter font-light text-center mb-16 md:mb-24 px-6"
           >
             Nuestros Aceites
           </motion.h2>
@@ -233,8 +219,8 @@ export default function FincaLaAlmazara() {
             transition={{ duration: 1 }}
             className="text-center mb-16 md:mb-20"
           >
-            <h2 className="text-[clamp(2.5rem,6vw,4rem)] font-light mb-6">Compromiso Vital</h2>
-            <p className="font-sans font-light max-w-2xl mx-auto opacity-80 text-[clamp(1rem,3vw,1.125rem)]">
+            <h2 className="text-5xl md:text-7xl tracking-tighter font-light mb-6">Compromiso Vital</h2>
+            <p className="font-sans font-light max-w-2xl mx-auto opacity-80 text-lg md:text-xl">
               La tierra nos da todo. Nuestra responsabilidad es devolverle el favor mediante prácticas que aseguran el futuro de nuestro entorno.
             </p>
           </motion.div>
@@ -266,8 +252,8 @@ export default function FincaLaAlmazara() {
           transition={{ duration: 1 }}
           className="w-full max-w-2xl"
         >
-          <h2 className="text-[clamp(3rem,8vw,5.5rem)] font-light mb-6 md:mb-8 leading-none">Vive la Finca</h2>
-          <p className="font-sans font-light text-[clamp(1rem,3vw,1.25rem)] mx-auto mb-12 md:mb-16 opacity-80">
+          <h2 className="text-6xl md:text-9xl tracking-tighter font-light mb-6 md:mb-8 leading-none">Vive la Finca</h2>
+          <p className="font-sans font-light text-lg md:text-xl mx-auto mb-12 md:mb-16 opacity-80">
             Pasea entre olivos centenarios, conoce la almazara desde dentro y degusta nuestra historia.
           </p>
           
@@ -288,6 +274,7 @@ export default function FincaLaAlmazara() {
           <span className="active:opacity-50 md:hover:opacity-100 cursor-pointer transition-opacity">LEGAL</span>
         </div>
       </footer>
-    </div>
+      </div>
+    </DemoLayout>
   )
 }

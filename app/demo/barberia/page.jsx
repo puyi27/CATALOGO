@@ -2,8 +2,8 @@
 
 import { useState, useEffect } from "react"
 import Link from "next/link"
-import { motion, AnimatePresence } from "framer-motion"
 import { ShoppingCart, X, ArrowLeft, Menu, Instagram, Twitter } from "lucide-react"
+import DemoLayout from "@/components/DemoLayout"
 
 export default function BarberShop() {
   const [isCartOpen, setIsCartOpen] = useState(false)
@@ -28,22 +28,15 @@ export default function BarberShop() {
   ]
 
   return (
-    <div className="min-h-screen bg-[#09090b] text-white selection:bg-white selection:text-black font-sans uppercase md:cursor-none overflow-x-hidden">
-      <motion.div
-        className="hidden md:flex fixed top-0 left-0 w-6 h-6 bg-white mix-blend-difference rounded-full pointer-events-none z-[100] items-center justify-center"
-        animate={{ x: mousePosition.x - 12, y: mousePosition.y - 12 }}
-        transition={{ type: "spring", stiffness: 500, damping: 28, mass: 0.5 }}
-      />
-
-      <nav className="fixed top-0 left-0 right-0 z-40 mix-blend-difference flex items-center justify-between p-6 md:p-12 pointer-events-auto">
-        <div className="flex items-center gap-8">
-          <Link href="/" className="flex items-center gap-2 text-sm font-bold tracking-widest active:scale-95 md:hover:opacity-50 transition-all">
-            <ArrowLeft className="w-4 h-4" />
-            <span className="hidden md:block">CATÁLOGO</span>
-          </Link>
-          <span className="text-xl md:text-2xl font-black tracking-tighter">FADE & CO.</span>
-        </div>
-        <div className="flex items-center gap-6">
+    <DemoLayout title="Fade & Co.">
+      <div className="text-stone-900 selection:bg-black selection:text-white font-sans uppercase md:cursor-none overflow-x-hidden">
+        <motion.div
+          className="hidden md:flex fixed top-0 left-0 w-6 h-6 bg-black mix-blend-difference rounded-full pointer-events-none z-[100] items-center justify-center"
+          animate={{ x: mousePosition.x - 12, y: mousePosition.y - 12 }}
+          transition={{ type: "spring", stiffness: 500, damping: 28, mass: 0.5 }}
+        />
+        
+        <div className="fixed top-6 right-6 z-40 mix-blend-difference flex gap-6 text-white pointer-events-auto">
           <button className="hidden md:block text-sm font-bold tracking-widest hover:opacity-50 transition-opacity">
             BOOK NOW
           </button>
@@ -55,7 +48,6 @@ export default function BarberShop() {
             <Menu className="w-6 h-6" />
           </button>
         </div>
-      </nav>
 
       <AnimatePresence>
         {isMenuOpen && (
@@ -110,7 +102,7 @@ export default function BarberShop() {
             initial={{ y: 50, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="text-[clamp(4rem,15vw,10rem)] font-black leading-[0.85] tracking-tighter break-words hyphens-none w-full"
+            className="text-7xl md:text-9xl font-black leading-[0.85] tracking-tighter break-words hyphens-none w-full text-white"
           >
             NO<br />COMPROMISE.
           </motion.h1>
@@ -127,7 +119,7 @@ export default function BarberShop() {
 
       <section className="w-full py-16 md:py-24 max-w-[1400px] mx-auto overflow-hidden">
         <div className="px-6 md:px-12 flex flex-col md:flex-row justify-between items-start md:items-end mb-8 md:mb-16 gap-6 md:gap-8">
-          <h2 className="text-[clamp(3rem,8vw,5rem)] font-black tracking-tighter leading-none">
+          <h2 className="text-6xl md:text-8xl font-black tracking-tighter leading-none">
             THE<br />MENU.
           </h2>
           <div className="flex gap-4 text-xs md:text-sm font-bold tracking-widest border-b border-white/20 pb-4 w-full md:w-auto overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] whitespace-nowrap">
@@ -158,12 +150,12 @@ export default function BarberShop() {
           initial={{ x: "-100%" }}
           whileInView={{ x: "100%" }}
           transition={{ repeat: Infinity, duration: 15, ease: "linear" }}
-          className="absolute whitespace-nowrap text-[clamp(6rem,20vw,15rem)] font-black tracking-tighter opacity-10"
+          className="absolute whitespace-nowrap text-8xl md:text-9xl font-black tracking-tighter opacity-10"
         >
           STREETWEAR EST 2026 BARBER SHOP
         </motion.div>
         <div className="relative z-10 text-center px-6 max-w-4xl mx-auto">
-          <h2 className="text-[clamp(3rem,8vw,6rem)] font-black tracking-tighter leading-[0.9] mb-6 md:mb-8">
+          <h2 className="text-6xl md:text-9xl font-black tracking-tighter leading-[0.9] mb-6 md:mb-8">
             MORE THAN<br />A HAIRCUT.
           </h2>
           <p className="text-base md:text-3xl font-bold tracking-tight text-gray-800">
@@ -172,10 +164,10 @@ export default function BarberShop() {
         </div>
       </section>
 
-      <footer className="bg-[#09090b] pt-20 md:pt-32 pb-8 md:pb-12 px-6 md:px-12 border-t border-white/10">
+      <footer className="bg-[#09090b] text-white pt-20 md:pt-32 pb-8 md:pb-12 px-6 md:px-12 border-t border-stone-200 mt-12 rounded-[2rem]">
         <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row justify-between items-start md:items-end gap-12 md:gap-16 mb-16 md:mb-24">
           <div className="w-full md:w-auto">
-            <h2 className="text-[clamp(4rem,12vw,8rem)] font-black tracking-tighter leading-[0.8] mb-8">
+            <h2 className="text-7xl md:text-9xl font-black tracking-tighter leading-[0.8] mb-8">
               FADE<br />& CO.
             </h2>
             <div className="flex gap-6">
@@ -259,7 +251,8 @@ export default function BarberShop() {
           </>
         )}
       </AnimatePresence>
-    </div>
+      </div>
+    </DemoLayout>
   )
 }
 

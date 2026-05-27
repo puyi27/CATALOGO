@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { ArrowLeft, ArrowRight, Check, Calendar, Clock, MapPin, Menu } from "lucide-react";
+import DemoLayout from "@/components/DemoLayout";
 
 export default function LuminaAesthetics() {
   const [step, setStep] = useState(1);
@@ -52,7 +53,8 @@ export default function LuminaAesthetics() {
   const prevStep = () => setStep((prev) => Math.max(prev - 1, 1));
 
   return (
-    <div className="min-h-screen bg-[#FAFAFA] text-zinc-900 font-sans selection:bg-zinc-200 md:cursor-none overflow-x-hidden">
+    <DemoLayout title="Lumina Aesthetics">
+      <div className="text-zinc-900 font-sans selection:bg-zinc-200 md:cursor-none overflow-x-hidden">
       <motion.div
         className="hidden md:flex fixed top-0 left-0 w-6 h-6 rounded-full bg-zinc-900 pointer-events-none z-50 mix-blend-difference"
         animate={{
@@ -86,7 +88,7 @@ export default function LuminaAesthetics() {
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.2 + i * 0.1 }}
-                  className="text-[clamp(2.5rem,8vw,5rem)] font-light tracking-tighter active:scale-95 transition-transform"
+                  className="text-6xl md:text-8xl font-light tracking-tighter active:scale-95 transition-transform"
                   onClick={() => setIsMenuOpen(false)}
                 >
                   {item}
@@ -97,26 +99,14 @@ export default function LuminaAesthetics() {
         )}
       </AnimatePresence>
 
-      <nav className="fixed top-0 left-0 w-full px-6 md:px-8 py-6 md:py-8 flex justify-between items-center z-40 bg-[#FAFAFA]/80 backdrop-blur-md">
-        <Link
-          href="/"
-          className="text-sm font-medium tracking-widest uppercase flex items-center gap-2 hover:opacity-50 active:scale-95 transition-all"
-          onMouseEnter={() => setIsHovering(true)}
-          onMouseLeave={() => setIsHovering(false)}
-        >
-          <ArrowLeft size={16} />
-          <span className="hidden md:inline">Catálogo</span>
-        </Link>
-        <div className="text-xl md:text-2xl font-light tracking-[0.2em] ml-6 md:ml-0">LUMINA</div>
         <button
-          className="hover:opacity-50 active:scale-90 transition-all p-2"
+          className="fixed top-8 right-8 z-40 bg-zinc-900 text-white rounded-full p-3 hover:opacity-80 transition-opacity"
           onClick={() => setIsMenuOpen(true)}
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={() => setIsHovering(false)}
         >
-          <Menu size={24} strokeWidth={1.5} />
+          <Menu size={20} strokeWidth={1.5} />
         </button>
-      </nav>
 
       <section className="relative w-full min-h-[90vh] md:h-screen flex flex-col justify-center items-center px-6 md:px-8 pt-32 md:pt-20">
         <motion.div
@@ -140,7 +130,7 @@ export default function LuminaAesthetics() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 1, delay: 0.2 }}
-            className="text-[clamp(4rem,12vw,8rem)] leading-[0.9] md:leading-none font-light tracking-tighter"
+            className="text-7xl md:text-9xl leading-[0.9] md:leading-none font-light tracking-tighter"
           >
             The Science
             <br />
@@ -456,6 +446,7 @@ export default function LuminaAesthetics() {
           <a href="#" className="md:hover:text-zinc-900 active:scale-95 transition-all" onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}>Privacy</a>
         </div>
       </footer>
-    </div>
+      </div>
+    </DemoLayout>
   );
 }

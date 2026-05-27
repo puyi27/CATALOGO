@@ -6,6 +6,7 @@ import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { ArrowLeft, ArrowUpRight, Eye, Menu, X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import DemoLayout from "@/components/DemoLayout";
 
 export default function CreativoDemo() {
   const cursorRef = useRef(null);
@@ -38,7 +39,7 @@ export default function CreativoDemo() {
             trigger: containerRef.current,
             start: "top top",
             end: `+=${cards.length * 100}vh`,
-            scrub: true,
+            scrub: 1.5,
             pin: true,
           },
         });
@@ -52,7 +53,6 @@ export default function CreativoDemo() {
               scale: 0.9,
               opacity: 0.3,
               y: -50,
-              duration: 1,
               ease: "none",
             },
             index
@@ -62,7 +62,6 @@ export default function CreativoDemo() {
               y: 0,
               scale: 1,
               opacity: 1,
-              duration: 1,
               ease: "none",
             },
             index
@@ -109,7 +108,8 @@ export default function CreativoDemo() {
   ];
 
   return (
-    <div className="bg-[#0f0f0f] text-[#f4f4f0] min-h-screen selection:bg-white selection:text-black font-sans md:cursor-none overflow-x-hidden">
+    <DemoLayout title="Studio Creativo">
+      <div className="text-[#f4f4f0] selection:bg-white selection:text-black font-sans md:cursor-none overflow-x-hidden">
       <div
         ref={cursorRef}
         className="fixed top-0 left-0 w-8 h-8 -ml-4 -mt-4 rounded-full pointer-events-none z-[9999] mix-blend-difference hidden md:flex items-center justify-center transition-all duration-300"
@@ -152,7 +152,7 @@ export default function CreativoDemo() {
       </AnimatePresence>
 
       <nav className="fixed top-0 left-0 w-full p-4 md:p-10 flex justify-between items-center md:items-start z-[100] pointer-events-none mix-blend-difference">
-        <div className="pointer-events-auto">
+        <div className="pointer-events-auto opacity-0">
           <Link
             href="/"
             className="group flex items-center gap-2 md:gap-3 text-[10px] md:text-sm font-mono uppercase tracking-widest active:scale-95 md:active:scale-100 transition-transform md:hover:opacity-70"
@@ -244,6 +244,7 @@ export default function CreativoDemo() {
           Initiate Sequence
         </button>
       </footer>
-    </div>
+      </div>
+    </DemoLayout>
   );
 }

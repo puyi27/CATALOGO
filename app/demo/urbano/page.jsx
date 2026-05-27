@@ -2,8 +2,10 @@
 
 import { useState, useEffect, useRef } from "react";
 import { LazyMotion, domAnimation, m, AnimatePresence, useInView } from "framer-motion";
+import { LazyMotion, domAnimation, m, AnimatePresence, useInView } from "framer-motion";
 import { ShoppingBag, Clock, Zap, ArrowUpRight, Mail, Menu, X } from "lucide-react";
 import Link from "next/link";
+import DemoLayout from "@/components/DemoLayout";
 
 const SIZES = [
   { label: "XS", soldOut: false },
@@ -155,7 +157,8 @@ export default function DeadstockPage() {
 
   return (
     <LazyMotion features={domAnimation}>
-      <div className="bg-[#F5F0E8] text-[#111] font-sans overflow-x-hidden md:cursor-none w-full min-h-screen relative">
+      <DemoLayout title="DEADSTOCK">
+      <div className="text-[#111] font-sans overflow-x-hidden md:cursor-none w-full relative">
         <Cursor />
 
         <AnimatePresence>
@@ -238,7 +241,7 @@ export default function DeadstockPage() {
             initial={{ opacity: 0, y: 40 }}
             animate={heroInView ? { opacity: 1, y: 0 } : {}}
             transition={{ duration: 0.7, delay: 0.1 }}
-            className="font-black text-[clamp(3.5rem,15vw,11rem)] leading-[0.85] tracking-tighter uppercase m-0"
+            className="font-black text-6xl md:text-9xl leading-[0.85] tracking-tighter uppercase m-0"
           >
             THE DROP<br />
             <span className="text-[#FFE500] style-stroke">IS LIVE</span>
@@ -307,7 +310,7 @@ export default function DeadstockPage() {
               <div className="font-mono text-[10px] md:text-[11px] tracking-[3px] text-[#888] mb-3">
                 SS25 COLLECTION · OUTERWEAR
               </div>
-              <h2 className="font-black text-[clamp(2.2rem,6vw,4rem)] leading-[0.9] m-0 tracking-tighter uppercase">
+              <h2 className="font-black text-6xl md:text-8xl leading-[0.9] m-0 tracking-tighter uppercase">
                 IRON CURTAIN<br />JACKET SS25
               </h2>
             </div>
@@ -524,7 +527,7 @@ export default function DeadstockPage() {
                     <div className="w-5" />
                   )}
                   <div>
-                    <div className="font-black text-[clamp(1rem,3vw,1.4rem)] tracking-tighter uppercase leading-none mb-2">
+                    <div className="font-black text-2xl md:text-4xl tracking-tighter uppercase leading-none mb-2">
                       {drop.name}
                     </div>
                     <div className="font-mono text-[9px] md:text-[10px] text-[#666] tracking-[2px]">
@@ -553,7 +556,7 @@ export default function DeadstockPage() {
               <div className="font-mono text-[9px] md:text-[11px] tracking-[4px] text-[#666] mb-6">
                 ABOUT THE BRAND
               </div>
-              <h2 className="font-black text-[clamp(2.5rem,8vw,7rem)] leading-[0.85] tracking-tighter mb-8 md:mb-12 uppercase">
+              <h2 className="font-black text-6xl md:text-9xl leading-[0.85] tracking-tighter mb-8 md:mb-12 uppercase">
                 We don't<br />
                 <span className="text-[#FFE500]">restock.</span>
               </h2>
@@ -605,7 +608,7 @@ export default function DeadstockPage() {
               viewport={{ once: true }}
             >
               <Mail size={32} strokeWidth={1.5} className="mb-6 md:mb-8 mx-auto text-[#111]" />
-              <h2 className="font-black text-[clamp(2rem,6vw,4rem)] leading-[0.9] tracking-tighter uppercase m-0 mb-4 md:mb-5">
+              <h2 className="font-black text-5xl md:text-8xl leading-[0.9] tracking-tighter uppercase m-0 mb-4 md:mb-5">
                 Get notified<br />before the drop.
               </h2>
               <p className="font-mono text-[9px] md:text-[11px] text-[#666] tracking-[2px] md:tracking-[3px] mb-8 md:mb-10">
@@ -659,7 +662,7 @@ export default function DeadstockPage() {
           <div className="flex flex-col gap-10 md:gap-12 max-w-[1200px] mx-auto">
             <div className="flex flex-col lg:flex-row justify-between items-start border-b border-[#333] pb-10 md:pb-12 gap-8 lg:gap-0">
               <div>
-                <div className="font-mono text-[clamp(1.4rem,3vw,2rem)] font-black tracking-tighter mb-3 md:mb-4">
+                <div className="font-mono text-3xl md:text-5xl font-black tracking-tighter mb-3 md:mb-4">
                   DEADSTOCK
                 </div>
                 <div className="font-mono text-[9px] md:text-[10px] text-[#666] tracking-[2px] leading-[1.8]">
@@ -713,6 +716,7 @@ export default function DeadstockPage() {
           }
         `}</style>
       </div>
+      </DemoLayout>
     </LazyMotion>
   );
 }

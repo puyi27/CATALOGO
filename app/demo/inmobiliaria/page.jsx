@@ -4,6 +4,7 @@ import React, { useState, useRef, useEffect } from "react";
 import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
 import { ArrowLeft, ChevronDown, MapPin, Bed, Bath, Square, Instagram, Twitter, Linkedin, Menu, X } from "lucide-react";
+import DemoLayout from '@/components/DemoLayout';
 
 const MagneticButton = ({ children, className }) => {
     const ref = useRef(null);
@@ -128,7 +129,8 @@ export default function VantageRealEstate() {
     ];
 
     return (
-        <div className="bg-[#0A1128] min-h-screen text-white font-sans selection:bg-[#D4AF37] selection:text-[#0A1128] overflow-x-hidden">
+        <DemoLayout title="Agencia Inmobiliaria">
+        <div className="text-white font-sans selection:bg-[#D4AF37] selection:text-[#0A1128] overflow-x-hidden">
             <nav className="fixed top-0 left-0 w-full z-50 px-6 py-6 md:py-8 md:px-12 flex justify-between items-center mix-blend-difference">
                 <div className="pointer-events-auto flex items-center gap-4">
                     <Link href="/" className="group flex items-center gap-2 text-white/80 md:hover:text-[#D4AF37] active:text-[#D4AF37] transition-colors duration-300">
@@ -173,7 +175,7 @@ export default function VantageRealEstate() {
                         initial={{ y: 100, opacity: 0 }}
                         animate={{ y: 0, opacity: 1 }}
                         transition={{ duration: 1.2, ease: [0.76, 0, 0.24, 1], delay: 0.2 }}
-                        className="text-[clamp(3.5rem,12vw,9rem)] leading-[0.9] font-serif text-white tracking-tighter mb-4 md:mb-6"
+                        className="text-6xl md:text-9xl leading-[0.9] font-serif text-white tracking-tighter mb-4 md:mb-6"
                     >
                         Beyond Living
                     </motion.h1>
@@ -369,5 +371,6 @@ export default function VantageRealEstate() {
                 </div>
             </footer>
         </div>
+        </DemoLayout>
     );
 }

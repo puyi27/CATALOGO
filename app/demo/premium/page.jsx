@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence, useScroll, useTransform, useSpring } from 'framer-motion'
 import { Clock, ArrowUpRight, ChevronRight, Mail, Phone, MapPin, Menu, X } from 'lucide-react'
 import Link from 'next/link'
+import DemoLayout from '@/components/DemoLayout'
 
 const PALETTE = {
   ivory:     '#FBF9F6',
@@ -105,7 +106,7 @@ function Nav() {
   return (
     <>
       <nav className="fixed top-0 left-0 right-0 z-[100] flex items-center justify-between px-6 md:px-12 h-16 bg-[#FBF9F6] border-b border-[#1C2A39]/10">
-        <span className="font-serif text-[11px] md:text-[13px] tracking-[0.08em] text-[#1C2A39]">
+        <span className="font-serif text-sm md:text-base tracking-[0.08em] text-[#1C2A39]">
           VALMONT &amp; CO
           <span className="hidden md:inline"> — HORLOGERIE SUISSE EST. 1884</span>
         </span>
@@ -116,14 +117,14 @@ function Nav() {
               key={item}
               href="#"
               whileHover={{ color: PALETTE.gold }}
-              className="font-sans text-[11px] tracking-[0.16em] uppercase text-[#1C2A39] transition-colors"
+              className="font-sans text-sm tracking-[0.16em] uppercase text-[#1C2A39] transition-colors"
             >
               {item}
             </motion.a>
           ))}
           <Link
             href="/"
-            className="font-sans text-[11px] tracking-[0.14em] uppercase text-[#C3A370] border-l border-[#C3A370]/30 pl-6"
+            className="font-sans text-sm tracking-[0.14em] uppercase text-[#C3A370] border-l border-[#C3A370]/30 pl-6"
           >
             ← Catálogo
           </Link>
@@ -167,7 +168,7 @@ function Nav() {
               <div className="w-12 h-px bg-[#C3A370] my-4" />
               <Link
                 href="/"
-                className="font-sans text-[12px] tracking-[0.2em] uppercase text-[#C3A370]"
+                className="font-sans text-sm tracking-[0.2em] uppercase text-[#C3A370]"
               >
                 ← Volver al Catálogo
               </Link>
@@ -195,17 +196,17 @@ function Hero() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, ease: [0.25, 0.1, 0.25, 1] }}
         >
-          <p className="font-sans text-[9px] md:text-[10px] tracking-[0.24em] uppercase text-[#C3A370] mb-6 md:mb-8">
+          <p className="font-sans text-sm tracking-[0.24em] uppercase text-[#C3A370] mb-6 md:mb-8">
             Nouvelle Collection 2024
           </p>
 
-          <h1 className="font-serif text-[clamp(42px,10vw,84px)] leading-[1.05] text-[#1C2A39] mb-6 md:mb-8">
+          <h1 className="font-serif text-6xl md:text-8xl tracking-tighter leading-[1.05] text-[#1C2A39] mb-6 md:mb-8">
             The Art of<br />
             Measuring<br />
             <em className="italic text-[#C3A370]">Time.</em>
           </h1>
 
-          <p className="font-serif text-[15px] md:text-[17px] leading-relaxed text-[#8C8578] max-w-[400px] mb-10 md:mb-14 italic">
+          <p className="font-serif text-lg md:text-xl leading-relaxed text-[#8C8578] max-w-[400px] mb-10 md:mb-14 italic">
             Desde 1884, cada pieza que abandona nuestros talleres en Le Brassus
             lleva consigo cuatro generaciones de maestría ininterrumpida.
           </p>
@@ -214,7 +215,7 @@ function Hero() {
             href="#collections"
             whileHover={{ gap: 16 }}
             whileTap={{ scale: 0.95 }}
-            className="inline-flex items-center gap-[10px] font-sans text-[10px] tracking-[0.2em] uppercase text-[#1C2A39] border-b border-[#1C2A39] pb-1 transition-all"
+            className="inline-flex items-center gap-[10px] font-sans text-sm tracking-[0.2em] uppercase text-[#1C2A39] border-b border-[#1C2A39] pb-1 transition-all"
           >
             Explorar Colecciones <ChevronRight size={12} />
           </motion.a>
@@ -232,10 +233,10 @@ function Hero() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.6 + i * 0.15, duration: 0.8 }}
             >
-              <p className="font-serif text-[18px] md:text-[20px] text-[#1C2A39] mb-1">
+              <p className="font-serif text-xl md:text-2xl text-[#1C2A39] mb-1">
                 {s.value}
               </p>
-              <p className="font-sans text-[9px] md:text-[10px] tracking-[0.16em] uppercase text-[#8C8578]">
+              <p className="font-sans text-sm tracking-[0.16em] uppercase text-[#8C8578]">
                 {s.label}
               </p>
             </motion.div>
@@ -274,10 +275,10 @@ function Collections() {
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
         >
-          <p className="font-sans text-[10px] tracking-[0.24em] uppercase text-[#C3A370] mb-4">
+          <p className="font-sans text-sm tracking-[0.24em] uppercase text-[#C3A370] mb-4">
             Manufacture 2024
           </p>
-          <h2 className="font-serif text-[clamp(32px,8vw,52px)] text-[#1C2A39]">
+          <h2 className="font-serif text-5xl md:text-7xl tracking-tighter text-[#1C2A39]">
             Nuestras Colecciones
           </h2>
         </motion.div>
@@ -309,26 +310,26 @@ function CollectionCard({ c, i }) {
           className="w-full h-full object-cover block transition-all duration-[600ms] ease-[cubic-bezier(0.25,0.1,0.25,1)] grayscale-0 md:grayscale md:group-hover:grayscale-0 md:group-hover:scale-[1.04]"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-[#1C2A39]/80 via-transparent to-transparent flex items-end p-6 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300">
-          <span className="inline-flex items-center gap-2 font-sans text-[10px] tracking-[0.18em] uppercase text-[#FBF9F6]">
+          <span className="inline-flex items-center gap-2 font-sans text-sm tracking-[0.18em] uppercase text-[#FBF9F6]">
             Solicitar Información <ArrowUpRight size={12} />
           </span>
         </div>
 
         <div className="absolute top-4 right-4 md:top-5 md:right-5 bg-[#FBF9F6]/90 backdrop-blur-sm px-[10px] py-1">
-          <span className="font-sans text-[9px] tracking-[0.14em] text-[#1C2A39]">
+          <span className="font-sans text-sm tracking-[0.14em] text-[#1C2A39]">
             {c.ref}
           </span>
         </div>
       </div>
 
       <div className="py-6 md:py-7 border-t border-[#1C2A39]/10">
-        <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-[#C3A370] mb-2">
+        <p className="font-sans text-sm tracking-[0.2em] uppercase text-[#C3A370] mb-2">
           {c.name}
         </p>
-        <p className="font-serif text-[14px] md:text-[15px] leading-relaxed text-[#8C8578] mb-4 italic">
+        <p className="font-serif text-base leading-relaxed text-[#8C8578] mb-4 italic">
           {c.desc}
         </p>
-        <p className="font-serif text-[16px] md:text-[18px] text-[#1C2A39]">
+        <p className="font-serif text-lg md:text-xl text-[#1C2A39]">
           {c.price}
         </p>
       </div>
@@ -346,10 +347,10 @@ function Patrimonio() {
         transition={{ duration: 0.8 }}
         className="mb-16 md:mb-20"
       >
-        <p className="font-sans text-[10px] tracking-[0.24em] uppercase text-[#C3A370] mb-4">
+        <p className="font-sans text-sm tracking-[0.24em] uppercase text-[#C3A370] mb-4">
           Depuis 1884
         </p>
-        <h2 className="font-serif text-[clamp(32px,8vw,52px)] text-[#1C2A39] max-w-[520px]">
+        <h2 className="font-serif text-5xl md:text-7xl tracking-tighter text-[#1C2A39] max-w-[520px]">
           Patrimonio de Excelencia
         </h2>
       </motion.div>
@@ -367,12 +368,12 @@ function Patrimonio() {
             className="flex gap-6 md:gap-10 mb-10 md:mb-14 items-start relative z-10"
           >
             <div className="w-[54px] md:w-[72px] shrink-0 text-right">
-              <span className="font-serif text-[18px] md:text-[20px] text-[#C3A370]">
+              <span className="font-serif text-xl md:text-2xl text-[#C3A370]">
                 {t.year}
               </span>
             </div>
             <div className="w-[10px] h-[10px] rounded-full bg-[#C3A370] shrink-0 mt-1.5 shadow-[0_0_0_4px_rgba(195,163,112,0.15)]" />
-            <p className="font-serif text-[15px] md:text-[17px] leading-[1.7] text-[#8C8578] italic">
+            <p className="font-serif text-lg md:text-xl leading-[1.7] text-[#8C8578] italic">
               {t.event}
             </p>
           </motion.div>
@@ -392,10 +393,10 @@ function SavoirFaire() {
         transition={{ duration: 0.8 }}
         className="mb-12 md:mb-20"
       >
-        <p className="font-sans text-[10px] tracking-[0.24em] uppercase text-[#C3A370] mb-4">
+        <p className="font-sans text-sm tracking-[0.24em] uppercase text-[#C3A370] mb-4">
           Artisanat Suisse
         </p>
-        <h2 className="font-serif text-[clamp(32px,8vw,52px)] text-[#FBF9F6]">
+        <h2 className="font-serif text-5xl md:text-7xl tracking-tighter text-[#FBF9F6]">
           Savoir-Faire
         </h2>
       </motion.div>
@@ -421,10 +422,10 @@ function SavoirFaire() {
               />
             </div>
             <div className="p-6 md:p-8">
-              <p className="font-sans text-[10px] tracking-[0.2em] uppercase text-[#C3A370] mb-3">
+              <p className="font-sans text-sm tracking-[0.2em] uppercase text-[#C3A370] mb-3">
                 {s.title}
               </p>
-              <p className="font-serif text-[14px] md:text-[15px] leading-[1.7] text-[#FBF9F6]/60 italic">
+              <p className="font-serif text-base leading-[1.7] text-[#FBF9F6]/60 italic">
                 {s.desc}
               </p>
             </div>
@@ -440,7 +441,7 @@ function SavoirFaire() {
         className="flex items-center justify-center mt-16 md:mt-20 gap-4"
       >
         <Clock size={16} className="text-[#C3A370]" />
-        <span className="font-sans text-[9px] md:text-[10px] tracking-[0.22em] uppercase text-[#FBF9F6]/30 text-center">
+        <span className="font-sans text-sm tracking-[0.22em] uppercase text-[#FBF9F6]/30 text-center">
           Le Brassus, Vallée de Joux, Suisse
         </span>
       </motion.div>
@@ -460,13 +461,13 @@ function PrivateClient() {
           viewport={{ once: true }}
           transition={{ duration: 0.8 }}
         >
-          <p className="font-sans text-[10px] tracking-[0.24em] uppercase text-[#C3A370] mb-4">
+          <p className="font-sans text-sm tracking-[0.24em] uppercase text-[#C3A370] mb-4">
             Service Privé
           </p>
-          <h2 className="font-serif text-[clamp(28px,7vw,44px)] text-[#1C2A39] leading-[1.2] mb-6 md:mb-7">
+          <h2 className="font-serif text-5xl md:text-7xl tracking-tighter text-[#1C2A39] leading-[1.2] mb-6 md:mb-7">
             Consulta<br />Privada
           </h2>
-          <p className="font-serif text-[15px] md:text-[16px] leading-[1.75] text-[#8C8578] italic mb-10 md:mb-12">
+          <p className="font-serif text-lg md:text-xl leading-[1.75] text-[#8C8578] italic mb-10 md:mb-12">
             Nuestro equipo de especialistas le acompañará personalmente en la
             selección de su pieza, con total discreción y dedicación exclusiva.
           </p>
@@ -479,7 +480,7 @@ function PrivateClient() {
             ].map(({ Icon, text }) => (
               <div key={text} className="flex items-center gap-4">
                 <Icon size={14} className="text-[#C3A370]" />
-                <span className="font-sans text-[11px] md:text-[12px] tracking-[0.06em] text-[#8C8578]">
+                <span className="font-sans text-sm md:text-base tracking-[0.06em] text-[#8C8578]">
                   {text}
                 </span>
               </div>
@@ -503,7 +504,7 @@ function PrivateClient() {
                 className="flex flex-col items-center justify-center h-full text-center gap-4 py-20 md:py-0"
               >
                 <Clock size={32} className="text-[#C3A370]" />
-                <p className="font-serif text-[20px] md:text-[22px] text-[#1C2A39] italic">
+                <p className="font-serif text-xl md:text-2xl text-[#1C2A39] italic">
                   Merci. Le contactaremos pronto.
                 </p>
               </motion.div>
@@ -519,23 +520,23 @@ function PrivateClient() {
                   { label: 'Teléfono', type: 'tel', placeholder: '+34 600 000 000' },
                 ].map((f) => (
                   <div key={f.label}>
-                    <label className="block font-sans text-[9px] tracking-[0.2em] uppercase text-[#8C8578] mb-1.5">
+                    <label className="block font-sans text-sm tracking-[0.2em] uppercase text-[#8C8578] mb-1.5">
                       {f.label}
                     </label>
                     <input
                       type={f.type}
                       placeholder={f.placeholder}
                       required
-                      className="w-full py-3 border-b border-[#1C2A39]/30 bg-transparent font-serif text-[15px] text-[#1C2A39] outline-none focus:border-[#C3A370] transition-colors rounded-none placeholder:text-[#8C8578]/60"
+                      className="w-full py-3 border-b border-[#1C2A39]/30 bg-transparent font-serif text-lg text-[#1C2A39] outline-none focus:border-[#C3A370] transition-colors rounded-none placeholder:text-[#8C8578]/60"
                     />
                   </div>
                 ))}
 
                 <div>
-                  <label className="block font-sans text-[9px] tracking-[0.2em] uppercase text-[#8C8578] mb-1.5">
+                  <label className="block font-sans text-sm tracking-[0.2em] uppercase text-[#8C8578] mb-1.5">
                     Referencia de Interés
                   </label>
-                  <select className="w-full py-3 border-b border-[#1C2A39]/30 bg-transparent font-serif text-[15px] text-[#1C2A39] outline-none appearance-none cursor-pointer focus:border-[#C3A370] transition-colors rounded-none">
+                  <select className="w-full py-3 border-b border-[#1C2A39]/30 bg-transparent font-serif text-lg text-[#1C2A39] outline-none appearance-none cursor-pointer focus:border-[#C3A370] transition-colors rounded-none">
                     {COLLECTIONS.map((c) => (
                       <option key={c.name} value={c.name}>{c.name} — {c.ref}</option>
                     ))}
@@ -543,13 +544,13 @@ function PrivateClient() {
                 </div>
 
                 <div>
-                  <label className="block font-sans text-[9px] tracking-[0.2em] uppercase text-[#8C8578] mb-1.5">
+                  <label className="block font-sans text-sm tracking-[0.2em] uppercase text-[#8C8578] mb-1.5">
                     Mensaje
                   </label>
                   <textarea
                     rows={4}
                     placeholder="Cuéntenos sobre sus preferencias…"
-                    className="w-full py-3 border-b border-[#1C2A39]/30 bg-transparent font-serif text-[15px] text-[#1C2A39] outline-none resize-none focus:border-[#C3A370] transition-colors rounded-none placeholder:text-[#8C8578]/60"
+                    className="w-full py-3 border-b border-[#1C2A39]/30 bg-transparent font-serif text-lg text-[#1C2A39] outline-none resize-none focus:border-[#C3A370] transition-colors rounded-none placeholder:text-[#8C8578]/60"
                   />
                 </div>
 
@@ -557,7 +558,7 @@ function PrivateClient() {
                   type="submit"
                   whileHover={{ backgroundColor: '#1C2A39', color: '#FBF9F6' }}
                   whileTap={{ scale: 0.98 }}
-                  className="mt-2 py-4 px-10 border border-[#1C2A39] bg-transparent font-sans text-[10px] tracking-[0.2em] uppercase text-[#1C2A39] cursor-pointer transition-colors self-start w-full md:w-auto"
+                  className="mt-2 py-4 px-10 border border-[#1C2A39] bg-transparent font-sans text-sm tracking-[0.2em] uppercase text-[#1C2A39] cursor-pointer transition-colors self-start w-full md:w-auto"
                 >
                   Enviar Consulta
                 </motion.button>
@@ -580,11 +581,11 @@ function PressQuote() {
         transition={{ duration: 1 }}
       >
         <div className="w-10 h-px bg-[#C3A370] mx-auto mb-8 md:mb-10" />
-        <blockquote className="font-serif text-[clamp(18px,4vw,34px)] italic text-[#FBF9F6] leading-[1.55] max-w-[820px] mx-auto font-normal">
+        <blockquote className="font-serif text-4xl md:text-6xl tracking-tighter italic text-[#FBF9F6] leading-[1.55] max-w-[820px] mx-auto font-normal">
           "A monument of Swiss craft. Valmont &amp; Co has done what we thought
           was impossible."
         </blockquote>
-        <p className="font-sans text-[9px] md:text-[10px] tracking-[0.2em] uppercase text-[#C3A370] mt-8">
+        <p className="font-sans text-sm tracking-[0.2em] uppercase text-[#C3A370] mt-8">
           — Hodinkee, 2024
         </p>
         <div className="w-10 h-px bg-[#C3A370] mx-auto mt-8 md:mt-10" />
@@ -597,7 +598,7 @@ function Footer() {
   return (
     <footer className="bg-[#FBF9F6] border-t border-[#1C2A39]/10 px-6 md:px-12 py-12">
       <div className="flex flex-col md:flex-row items-center justify-between mb-8 md:mb-10 gap-6 text-center md:text-left">
-        <span className="font-serif text-[16px] md:text-[18px] text-[#1C2A39] tracking-[0.04em]">
+        <span className="font-serif text-lg md:text-xl text-[#1C2A39] tracking-[0.04em]">
           VALMONT &amp; CO
         </span>
         <div className="flex flex-wrap justify-center gap-6 md:gap-8">
@@ -605,7 +606,7 @@ function Footer() {
             <a
               key={l}
               href="#"
-              className="font-sans text-[9px] md:text-[10px] tracking-[0.14em] uppercase text-[#8C8578] hover:text-[#1C2A39] transition-colors"
+              className="font-sans text-xs md:text-sm tracking-[0.14em] uppercase text-[#8C8578] hover:text-[#1C2A39] transition-colors"
             >
               {l}
             </a>
@@ -614,10 +615,10 @@ function Footer() {
       </div>
 
       <div className="flex flex-col md:flex-row items-center justify-between pt-6 border-t border-[#1C2A39]/5 gap-4 text-center md:text-left">
-        <p className="font-sans text-[8px] md:text-[10px] tracking-[0.1em] text-[#8C8578]/80">
+        <p className="font-sans text-xs tracking-[0.1em] text-[#8C8578]/80">
           © 2024 Valmont &amp; Co Horlogerie Suisse. Tous droits réservés.
         </p>
-        <p className="font-serif text-[10px] md:text-[11px] italic text-[#C3A370]">
+        <p className="font-serif text-sm italic text-[#C3A370]">
           Le Brassus, Vallée de Joux, Suisse
         </p>
       </div>
@@ -627,27 +628,28 @@ function Footer() {
 
 export default function ValmontPage() {
   return (
-    <>
+    <DemoLayout title="Valmont & Co">
       <style>{`
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
         html { scroll-behavior: smooth; }
-        body { background: #FBF9F6; }
         @media (pointer: fine) {
-          body, a, button { cursor: none !important; }
+          a, button { cursor: none !important; }
         }
       `}</style>
 
-      <CustomCursor />
-      <Nav />
-      <main className="overflow-hidden">
-        <Hero />
-        <Collections />
-        <Patrimonio />
-        <SavoirFaire />
-        <PrivateClient />
-        <PressQuote />
-      </main>
-      <Footer />
-    </>
+      <div className="text-[#1C2A39] md:cursor-none">
+        <CustomCursor />
+        <Nav />
+        <main className="overflow-hidden">
+          <Hero />
+          <Collections />
+          <Patrimonio />
+          <SavoirFaire />
+          <PrivateClient />
+          <PressQuote />
+        </main>
+        <Footer />
+      </div>
+    </DemoLayout>
   )
 }
