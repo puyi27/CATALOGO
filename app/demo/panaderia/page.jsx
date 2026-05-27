@@ -1,357 +1,267 @@
-'use client'
+"use client";
 
-import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
-import Link from 'next/link'
-import DemoLayout from '@/components/DemoLayout'
-import { ShoppingBag, ArrowLeft, MapPin, Clock, Phone, Menu, X } from 'lucide-react'
-import { useEffect, useState } from 'react'
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Phone, MapPin, Clock, Wheat, CakeSlice, Coffee, X, Menu, Instagram, Heart, ShoppingBag, Star, Croissant } from "lucide-react";
+import DemoLayout from "@/components/DemoLayout";
 
-export default function Panaderia() {
-  const { scrollYProgress } = useScroll()
-  const yHero = useTransform(scrollYProgress, [0, 1], [0, 600])
-  const opacityHero = useTransform(scrollYProgress, [0, 0.2], [1, 0])
+const categories = ["Todo", "Panes", "Bollería", "Tartas", "Salado"];
 
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
-  const [isHovering, setIsHovering] = useState(false)
-  const [menuOpen, setMenuOpen] = useState(false)
+const products = [
+  { id: 1, name: "Pan de Masa Madre", desc: "Fermentación 48h. Corteza crujiente, miga alveolada. Harina ecológica de trigo T80.", price: "4.20€", cat: "Panes", bestseller: true, gradient: "from-[#d4a574] to-[#c49464]" },
+  { id: 2, name: "Hogaza de Centeno", desc: "70% centeno integral. Notas ácidas y terrosas. Ideal para quesos y embutidos.", price: "5.50€", cat: "Panes", bestseller: false, gradient: "from-[#8B6F47] to-[#7a5e37]" },
+  { id: 3, name: "Croissant de Mantequilla", desc: "Mantequilla francesa 82% MG. 72 capas. Se hornea cada mañana a las 6:30.", price: "2.80€", cat: "Bollería", bestseller: true, gradient: "from-[#e8c87a] to-[#d4b46a]" },
+  { id: 4, name: "Napolitana de Chocolate", desc: "Chocolate Valrhona 64%. Masa hojaldrada de mantequilla. Crujiente y fundente.", price: "2.90€", cat: "Bollería", bestseller: false, gradient: "from-[#5c3d2e] to-[#4a2e20]" },
+  { id: 5, name: "Tarta de Zanahoria", desc: "Con nueces pecanas, canela de Ceilán y frosting de queso crema. Pieza entera.", price: "22€", cat: "Tartas", bestseller: true, gradient: "from-[#d97706] to-[#b45309]" },
+  { id: 6, name: "Tarta Tatín de Manzana", desc: "Manzana Reineta caramelizada. Hojaldre artesano. Servir tibia con nata montada.", price: "24€", cat: "Tartas", bestseller: false, gradient: "from-[#c4956a] to-[#a8795a]" },
+  { id: 7, name: "Empanada Gallega", desc: "Atún, cebolla pochada, pimiento asado. Masa de pan con aceite de oliva.", price: "3.80€", cat: "Salado", bestseller: false, gradient: "from-[#b8956e] to-[#a8855e]" },
+  { id: 8, name: "Coca de Recapte", desc: "Berenjena asada, pimiento, cebolla, sardina. Masa fina y crujiente.", price: "4.50€", cat: "Salado", bestseller: false, gradient: "from-[#a87a5a] to-[#987050]" },
+];
 
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      setMousePosition({ x: e.clientX, y: e.clientY })
-    }
-    window.addEventListener('mousemove', handleMouseMove)
-    return () => window.removeEventListener('mousemove', handleMouseMove)
-  }, [])
+const dailySchedule = [
+  { time: "5:30", event: "Encendemos el horno de leña", icon: "🔥" },
+  { time: "6:00", event: "Primera masa al horno: panes de masa madre", icon: "🍞" },
+  { time: "6:30", event: "Horneamos bollería: croissants, napolitanas", icon: "🥐" },
+  { time: "7:00", event: "Abrimos puertas. Café recién hecho", icon: "☕" },
+  { time: "10:00", event: "Segunda hornada: panes especiales y empanadas", icon: "🫓" },
+  { time: "13:00", event: "Última hornada del día", icon: "✨" },
+];
 
-  const processSteps = [
-    { title: "La Mezcla", desc: "Agua, harina, sal y nuestra masa madre centenaria.", img: "https://loremflickr.com/800/1000/dough,mixing?lock=21" },
-    { title: "El Reposo", desc: "Fermentación lenta en frío durante 48 horas.", img: "https://loremflickr.com/800/1000/bread,dough?lock=22" },
-    { title: "El Fuego", desc: "Horneado en piedra a 250 grados para una corteza perfecta.", img: "https://loremflickr.com/800/1000/oven,baking?lock=23" }
-  ]
+const reviews = [
+  { name: "Beatriz M.", text: "El mejor croissant de Sevilla, sin discusión. Cada sábado compramos media docena.", rating: 5 },
+  { name: "Fernando R.", text: "El pan de masa madre es adictivo. Desde que lo probamos no compramos en otro sitio.", rating: 5 },
+  { name: "Rocío P.", text: "La tarta de zanahoria nos la encargaron para una boda y fue el centro de atención.", rating: 5 },
+];
 
-  const products = [
-    { name: "Pain de Campagne", price: "4.00€", img: "https://loremflickr.com/600/800/sourdough,bread?lock=31" },
-    { name: "Croissant au Beurre", price: "2.50€", img: "https://loremflickr.com/600/800/croissant,pastry?lock=32" },
-    { name: "Fougasse aux Olives", price: "3.50€", img: "https://loremflickr.com/600/800/focaccia,olive?lock=33" },
-    { name: "Baguette Tradition", price: "1.50€", img: "https://loremflickr.com/600/800/baguette,bread?lock=34" }
-  ]
+export default function PanaderiaDemo() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [activeFilter, setActiveFilter] = useState("Todo");
+  const [hoveredProduct, setHoveredProduct] = useState(null);
+
+  const filtered = activeFilter === "Todo" ? products : products.filter(p => p.cat === activeFilter);
 
   return (
-    <DemoLayout title="L'Atelier du Pain">
-    <div className="text-[#2C2C2C] font-serif overflow-hidden md:cursor-none">
-      <motion.div
-        className="hidden md:flex fixed top-0 left-0 w-6 h-6 rounded-full border-2 border-[#E6C280] pointer-events-none z-50 mix-blend-difference"
-        animate={{
-          x: mousePosition.x - 12,
-          y: mousePosition.y - 12,
-          scale: isHovering ? 2 : 1,
-          backgroundColor: isHovering ? '#E6C280' : 'transparent',
-        }}
-        transition={{ type: 'spring', stiffness: 500, damping: 28, mass: 0.5 }}
-      />
+    <DemoLayout title="Obrador La Espiga" year="2026">
+      <div className="text-[#3d2b1a] selection:bg-[#8B5E3C] selection:text-white overflow-x-hidden bg-[#fdf6e3]" style={{ fontFamily: "'Georgia', serif" }}>
 
-      <nav className="fixed top-0 left-0 w-full z-40 bg-[#FAF9F6]/90 backdrop-blur-md border-b border-[#E6C280]/20 px-4 md:px-6 py-4 flex justify-between items-center">
-        <Link 
-          href="/"
-          className="flex items-center gap-2 text-[#6A3E1E] md:hover:text-[#E6C280] transition-colors uppercase tracking-widest text-sm md:text-base active:scale-95"
-          onMouseEnter={() => setIsHovering(true)}
-          onMouseLeave={() => setIsHovering(false)}
-        >
-          <ArrowLeft size={16} />
-          <span className="hidden md:inline">Catálogo</span>
-        </Link>
-        
-        <div className="text-lg md:text-2xl font-bold tracking-[0.2em] text-[#6A3E1E] text-center absolute left-1/2 -translate-x-1/2 uppercase w-1/2 md:w-auto truncate">
-          L'Atelier du Pain
-        </div>
-
-        <div className="flex items-center gap-4">
-          <button 
-            className="text-[#6A3E1E] md:hover:text-[#E6C280] transition-colors active:scale-95"
-            onMouseEnter={() => setIsHovering(true)}
-            onMouseLeave={() => setIsHovering(false)}
-          >
-            <ShoppingBag size={20} />
-          </button>
-          <button 
-            className="md:hidden text-[#6A3E1E] active:scale-95"
-            onClick={() => setMenuOpen(true)}
-          >
-            <Menu size={24} />
-          </button>
-        </div>
-      </nav>
-
-      <AnimatePresence>
-        {menuOpen && (
-          <motion.div 
-            initial={{ opacity: 0, y: '-100%' }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: '-100%' }}
-            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed inset-0 z-50 bg-[#6A3E1E] text-[#FAF9F6] flex flex-col items-center justify-center"
-          >
-            <button 
-              className="absolute top-6 right-6 active:scale-95 p-2"
-              onClick={() => setMenuOpen(false)}
-            >
-              <X size={32} />
-            </button>
-            <div className="flex flex-col gap-10 text-center text-4xl font-serif italic">
-              <Link href="#" onClick={() => setMenuOpen(false)} className="active:scale-95 active:text-[#E6C280] transition-colors">Inicio</Link>
-              <Link href="#" onClick={() => setMenuOpen(false)} className="active:scale-95 active:text-[#E6C280] transition-colors">Nuestro Proceso</Link>
-              <Link href="#" onClick={() => setMenuOpen(false)} className="active:scale-95 active:text-[#E6C280] transition-colors">Menú</Link>
-              <Link href="#" onClick={() => setMenuOpen(false)} className="active:scale-95 active:text-[#E6C280] transition-colors">Contacto</Link>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <section className="relative h-[100dvh] flex items-center justify-center overflow-hidden">
-        <motion.div 
-          className="absolute inset-0 z-0"
-          style={{ y: yHero, opacity: opacityHero }}
-        >
-          <div className="absolute inset-0 bg-black/40 z-10" />
-          <img 
-            src="https://loremflickr.com/1920/1080/bakery,flour,hands?lock=20" 
-            alt="Bakery" 
-            className="w-full h-full object-cover"
-          />
-        </motion.div>
-
-        <div className="relative z-10 text-center text-[#FAF9F6] flex flex-col items-center px-4 w-full">
-          <motion.h1 
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-            className="text-6xl md:text-9xl font-medium italic mb-6 tracking-tighter leading-[0.9]"
-          >
-            L'art de la patience.
-          </motion.h1>
-          <motion.p 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1, delay: 0.5 }}
-            className="text-lg md:text-2xl uppercase tracking-[0.3em] font-light text-[#E6C280] max-w-sm md:max-w-none mx-auto leading-relaxed"
-          >
-            Masa madre de 142 años.
-          </motion.p>
-        </div>
-
-        <motion.div 
-          className="absolute bottom-8 md:bottom-10 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1, duration: 1 }}
-        >
-          <span className="uppercase tracking-widest text-sm md:text-base text-[#FAF9F6]">Scroll</span>
-          <motion.div 
-            className="w-[1px] h-12 md:h-16 bg-[#E6C280]"
-            animate={{ scaleY: [0, 1, 0], originY: [0, 0, 1] }}
-            transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-          />
-        </motion.div>
-      </section>
-
-      <section className="py-24 md:py-32 bg-[#FAF9F6] relative z-20 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-0 md:px-20">
-          <motion.div 
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            className="text-center mb-16 md:mb-24 px-6 md:px-0"
-          >
-            <h2 className="text-sm md:text-base uppercase tracking-[0.4em] text-[#E6C280] mb-4">Nuestro Proceso</h2>
-            <p className="text-5xl md:text-7xl tracking-tighter text-[#6A3E1E] italic px-4">El ritual de cada madrugada</p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-6 md:px-20">
-            {processSteps.map((step, i) => (
-              <motion.div 
-                key={i}
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ delay: i * 0.2, duration: 0.8 }}
-                className="group cursor-pointer"
-                onMouseEnter={() => setIsHovering(true)}
-                onMouseLeave={() => setIsHovering(false)}
-              >
-                <div className="overflow-hidden mb-6 aspect-[4/5] relative">
-                  <div className="absolute inset-0 bg-[#6A3E1E]/20 z-10 opacity-0 md:group-hover:opacity-100 transition-opacity duration-500" />
-                  <img 
-                    src={step.img} 
-                    alt={step.title}
-                    className="w-full h-full object-cover md:scale-105 md:group-hover:scale-100 transition-transform duration-700 ease-out md:grayscale md:group-hover:grayscale-0"
-                  />
-                  <div className="absolute top-4 left-4 z-20 text-[#FAF9F6] text-xl font-serif italic md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-500">
-                    0{i + 1}.
-                  </div>
-                </div>
-                <h3 className="text-2xl text-[#6A3E1E] mb-3 uppercase tracking-widest">{step.title}</h3>
-                <p className="text-[#2C2C2C]/70 font-light leading-relaxed">{step.desc}</p>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="py-24 md:py-32 bg-[#6A3E1E] text-[#FAF9F6] overflow-hidden">
-        <div className="max-w-7xl mx-auto px-0 md:px-20">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 md:mb-20 px-6 md:px-0 gap-6">
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="text-sm md:text-base uppercase tracking-[0.4em] text-[#E6C280] mb-4">Clásicos</h2>
-              <p className="text-5xl md:text-7xl tracking-tighter italic">Recién Salidos</p>
+        {/* ═══ MOBILE MENU ═══ */}
+        <AnimatePresence>
+          {menuOpen && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-[#fdf6e3] z-[90] flex flex-col justify-center items-center md:hidden">
+              <button onClick={() => setMenuOpen(false)} className="absolute top-6 right-6"><X className="w-6 h-6" /></button>
+              <nav className="flex flex-col gap-6 text-center">
+                {["Productos", "Nuestro Día", "Nosotros", "Visítanos"].map((item, i) => (
+                  <motion.a key={item} initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: i * 0.1 }}
+                    className="text-3xl tracking-wide" onClick={() => setMenuOpen(false)} href={`#${item.toLowerCase().replace(' ', '-')}`}>{item}</motion.a>
+                ))}
+              </nav>
             </motion.div>
-            <motion.button
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              className="uppercase tracking-widest text-sm md:text-base border-b border-[#E6C280] pb-1 hover:text-[#E6C280] transition-colors active:scale-95"
-              onMouseEnter={() => setIsHovering(true)}
-              onMouseLeave={() => setIsHovering(false)}
-            >
-              Ver menú completo
-            </motion.button>
-          </div>
+          )}
+        </AnimatePresence>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 px-6 md:px-20">
-            {products.map((product, i) => (
-              <motion.div 
-                key={i}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1, duration: 0.6 }}
-                className="group relative"
-                onMouseEnter={() => setIsHovering(true)}
-                onMouseLeave={() => setIsHovering(false)}
-              >
-                <div className="aspect-[3/4] overflow-hidden mb-4 border border-transparent md:group-hover:border-[#E6C280] transition-colors duration-500 p-2">
-                  <div className="w-full h-full overflow-hidden">
-                    <img 
-                      src={product.img} 
-                      alt={product.name}
-                      className="w-full h-full object-cover scale-100 md:group-hover:scale-110 transition-transform duration-700"
-                    />
-                  </div>
-                </div>
-                <div className="flex justify-between items-start pt-2">
-                  <h3 className="text-lg uppercase tracking-wide w-2/3">{product.name}</h3>
-                  <span className="text-[#E6C280] font-medium">{product.price}</span>
-                </div>
-              </motion.div>
+        {/* ═══ NAV ═══ */}
+        <nav className="fixed top-0 left-0 w-full px-6 md:px-16 py-5 flex justify-between items-center z-[80] bg-[#fdf6e3]/90 backdrop-blur-lg border-b border-[#8B5E3C]/5">
+          <div className="flex items-center gap-2">
+            <Wheat className="w-5 h-5 text-[#8B5E3C]" />
+            <span className="text-xs tracking-[0.3em] uppercase text-[#8B5E3C]">La Espiga</span>
+          </div>
+          <div className="hidden md:flex items-center gap-8">
+            {["Productos", "Nuestro Día", "Visítanos"].map(item => (
+              <a key={item} href={`#${item.toLowerCase().replace(' ', '-')}`} className="text-[11px] tracking-[0.15em] uppercase text-[#3d2b1a]/40 hover:text-[#8B5E3C] transition-colors" style={{ fontFamily: "system-ui" }}>{item}</a>
             ))}
           </div>
-        </div>
-      </section>
+          <button onClick={() => setMenuOpen(true)} className="md:hidden"><Menu className="w-5 h-5 text-[#8B5E3C]" /></button>
+        </nav>
 
-      <section className="py-32 md:py-40 px-6 bg-[#2C2C2C] text-center relative overflow-hidden flex items-center justify-center min-h-[60vh] md:min-h-[70vh]">
-        <div className="absolute inset-0 opacity-10 pointer-events-none">
-          <img src="https://loremflickr.com/1920/1080/texture,paper?lock=50" alt="texture" className="w-full h-full object-cover" />
-        </div>
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 1 }}
-          className="max-w-4xl mx-auto relative z-10 w-full"
-        >
-          <p 
-            className="text-4xl md:text-6xl text-[#E6C280] font-serif italic leading-tight mb-10 md:mb-12 tracking-tighter"
-          >
-            "El buen pan no es producto del tiempo, sino de la paciencia. Cada hogaza cuenta una historia de harina, agua y manos que saben esperar."
-          </p>
-          <div className="flex flex-col items-center">
-            <div className="w-12 md:w-16 h-[1px] bg-[#FAF9F6]/30 mb-6" />
-            <span className="uppercase tracking-[0.3em] text-sm md:text-base text-[#FAF9F6]">Jean-Paul Dubois</span>
-            <span className="text-[#FAF9F6]/50 text-sm md:text-base mt-2 italic">Maître Boulanger</span>
-          </div>
-        </motion.div>
-      </section>
+        {/* ═══════════════════════════════════
+            1. HERO — ARTESANAL Y CÁLIDA
+        ═══════════════════════════════════ */}
+        <section className="min-h-[85vh] flex flex-col justify-center items-center text-center px-6 pt-20 relative">
+          <div className="absolute inset-0 bg-gradient-to-b from-[#fdf6e3] via-[#faf0d7] to-[#f5e8c8]" />
 
-      <section className="flex flex-col md:flex-row min-h-[100dvh] md:min-h-screen bg-[#FAF9F6]">
-        <div className="w-full md:w-1/2 relative h-[40vh] md:h-screen">
-          <img 
-            src="https://loremflickr.com/1000/1500/storefront,bakery?lock=41" 
-            alt="Storefront"
-            className="w-full h-full object-cover"
-          />
-        </div>
-        <div className="w-full md:w-1/2 flex items-center justify-center p-8 md:p-24 py-16 md:py-0">
-          <motion.div 
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="w-full max-w-md"
-          >
-            <h2 className="text-5xl md:text-7xl tracking-tighter text-[#6A3E1E] italic mb-10 md:mb-12 text-center md:text-left">Nuestra Casa</h2>
-            
-            <div className="space-y-8 text-[#2C2C2C]">
-              <div className="flex items-start gap-4 md:gap-6">
-                <MapPin className="text-[#E6C280] shrink-0 mt-1" size={20} />
-                <div>
-                  <h4 className="uppercase tracking-widest text-xs md:text-sm font-bold mb-1 md:mb-2">Visítanos</h4>
-                  <p className="font-light leading-relaxed text-sm md:text-base">Rue de l'Artisan, 12<br />75003 Paris, France</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4 md:gap-6">
-                <Clock className="text-[#E6C280] shrink-0 mt-1" size={20} />
-                <div>
-                  <h4 className="uppercase tracking-widest text-xs md:text-sm font-bold mb-1 md:mb-2">Horario</h4>
-                  <p className="font-light leading-relaxed text-sm md:text-base">Martes a Domingo<br />06:30 - 19:00</p>
-                </div>
-              </div>
-
-              <div className="flex items-start gap-4 md:gap-6">
-                <Phone className="text-[#E6C280] shrink-0 mt-1" size={20} />
-                <div>
-                  <h4 className="uppercase tracking-widest text-xs md:text-sm font-bold mb-1 md:mb-2">Contacto</h4>
-                  <p className="font-light leading-relaxed text-sm md:text-base">+33 1 23 45 67 89<br />bonjour@atelierdupain.fr</p>
-                </div>
-              </div>
+          <motion.div className="relative z-10 max-w-3xl" initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1 }}>
+            <span className="text-6xl mb-6 block">🥖</span>
+            <p className="text-[10px] tracking-[0.5em] uppercase text-[#8B5E3C]/50 mb-8" style={{ fontFamily: "system-ui" }}>Obrador artesanal · Alcalá de Guadaíra · Desde 2018</p>
+            <h1 className="text-[clamp(2.5rem,8vw,5rem)] leading-[1.1] tracking-tight mb-6">
+              Horneado con<br/><span className="italic text-[#8B5E3C]">las manos.</span>
+            </h1>
+            <p className="text-base text-[#3d2b1a]/40 max-w-md mx-auto leading-relaxed mb-10" style={{ fontFamily: "system-ui" }}>
+              Pan de masa madre, bollería de mantequilla real y tartas hechas con cariño. Sin atajos. Sin prisas. Sin aditivos.
+            </p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-3" style={{ fontFamily: "system-ui" }}>
+              <a href="#productos" className="px-8 py-3.5 bg-[#8B5E3C] text-white text-xs tracking-[0.15em] uppercase rounded-full hover:bg-[#7a4e2c] transition-colors">Ver Productos</a>
+              <a href="#visítanos" className="px-8 py-3.5 border border-[#8B5E3C]/20 text-[#8B5E3C] text-xs tracking-[0.15em] uppercase rounded-full hover:border-[#8B5E3C]/40 transition-colors">Dónde estamos</a>
             </div>
-
-            <button 
-              className="mt-12 md:mt-16 w-full py-4 border border-[#6A3E1E] text-[#6A3E1E] uppercase tracking-widest text-sm md:text-base md:hover:bg-[#6A3E1E] md:hover:text-[#FAF9F6] transition-colors duration-300 active:scale-[0.98] active:bg-[#6A3E1E] active:text-[#FAF9F6]"
-              onMouseEnter={() => setIsHovering(true)}
-              onMouseLeave={() => setIsHovering(false)}
-            >
-              Hacer un encargo
-            </button>
           </motion.div>
-        </div>
-      </section>
+        </section>
 
-      <footer className="bg-[#FAF9F6] pt-16 md:pt-20 pb-8 md:pb-10 px-6 border-t border-[#6A3E1E]/10">
-        <div className="max-w-7xl mx-auto flex flex-col items-center">
-          <div className="text-xl md:text-3xl font-bold tracking-[0.2em] text-[#6A3E1E] uppercase mb-10 md:mb-12 text-center w-full truncate">
-            L'Atelier du Pain
-          </div>
-          
-          <div className="flex flex-wrap justify-center gap-6 md:gap-8 mb-12 md:mb-16 text-sm md:text-base uppercase tracking-widest text-[#2C2C2C]/60">
-            <a href="#" className="md:hover:text-[#6A3E1E] active:text-[#6A3E1E] transition-colors">Instagram</a>
-            <a href="#" className="md:hover:text-[#6A3E1E] active:text-[#6A3E1E] transition-colors">Facebook</a>
-            <a href="#" className="md:hover:text-[#6A3E1E] active:text-[#6A3E1E] transition-colors">Prensa</a>
-          </div>
+        {/* ═══════════════════════════════════
+            2. PRODUCTOS — GRID CON FILTROS
+        ═══════════════════════════════════ */}
+        <section id="productos" className="py-20 md:py-32 px-6 md:px-16">
+          <div className="max-w-6xl mx-auto">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
+              <div>
+                <span className="text-[10px] tracking-[0.4em] uppercase text-[#8B5E3C] block mb-3" style={{ fontFamily: "system-ui" }}>Del horno a tu mesa</span>
+                <h2 className="text-4xl tracking-tight font-light">Nuestros productos</h2>
+              </div>
+              <div className="flex gap-2 overflow-x-auto pb-2" style={{ fontFamily: "system-ui" }}>
+                {categories.map(c => (
+                  <button key={c} onClick={() => setActiveFilter(c)}
+                    className={`px-4 py-2 text-[10px] tracking-[0.15em] uppercase rounded-full border transition-all whitespace-nowrap ${activeFilter === c ? 'bg-[#8B5E3C] text-white border-[#8B5E3C]' : 'border-[#8B5E3C]/15 text-[#8B5E3C]/50 hover:border-[#8B5E3C]/30'}`}>
+                    {c}
+                  </button>
+                ))}
+              </div>
+            </div>
 
-          <div className="w-full flex flex-col md:flex-row justify-between items-center text-sm md:text-base text-[#2C2C2C]/40 uppercase tracking-widest pt-8 border-t border-[#6A3E1E]/10 gap-4 md:gap-0">
-            <p>© 2026 L'Atelier du Pain</p>
-            <div className="flex gap-4">
-              <a href="#" className="md:hover:text-[#6A3E1E] active:text-[#6A3E1E] transition-colors">Privacidad</a>
-              <a href="#" className="md:hover:text-[#6A3E1E] active:text-[#6A3E1E] transition-colors">Términos</a>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
+              <AnimatePresence mode="popLayout">
+                {filtered.map((p, i) => (
+                  <motion.div key={p.id} layout initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ delay: i * 0.05 }}
+                    className="group cursor-pointer"
+                    onMouseEnter={() => setHoveredProduct(p.id)} onMouseLeave={() => setHoveredProduct(null)}>
+                    <div className={`aspect-square rounded-2xl bg-gradient-to-br ${p.gradient} relative overflow-hidden mb-3`}>
+                      {p.bestseller && (
+                        <span className="absolute top-3 left-3 px-2 py-1 text-[8px] tracking-[0.15em] uppercase bg-[#d97706] text-white rounded-full" style={{ fontFamily: "system-ui" }}>Bestseller</span>
+                      )}
+                      <motion.div animate={{ opacity: hoveredProduct === p.id ? 1 : 0 }}
+                        className="absolute inset-0 flex items-center justify-center bg-black/10 backdrop-blur-[1px]">
+                        <Heart className="w-6 h-6 text-white" />
+                      </motion.div>
+                    </div>
+                    <h3 className="text-sm font-medium tracking-tight group-hover:text-[#8B5E3C] transition-colors" style={{ fontFamily: "Georgia" }}>{p.name}</h3>
+                    <p className="text-[10px] text-[#3d2b1a]/30 mt-0.5 line-clamp-1" style={{ fontFamily: "system-ui" }}>{p.desc}</p>
+                    <span className="text-sm text-[#8B5E3C] mt-1 block" style={{ fontFamily: "system-ui" }}>{p.price}</span>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
             </div>
           </div>
-        </div>
-      </footer>
-    </div>
+        </section>
+
+        {/* ═══════════════════════════════════
+            3. NUESTRO DÍA — TIMELINE
+        ═══════════════════════════════════ */}
+        <section id="nuestro-día" className="py-20 md:py-32 px-6 md:px-16 bg-[#8B5E3C] text-[#fdf6e3]">
+          <div className="max-w-3xl mx-auto">
+            <div className="text-center mb-16">
+              <span className="text-[10px] tracking-[0.4em] uppercase text-[#fdf6e3]/40 block mb-4" style={{ fontFamily: "system-ui" }}>Un día en el obrador</span>
+              <h2 className="text-4xl tracking-tight font-light">Así empieza todo</h2>
+            </div>
+
+            <div className="space-y-0 relative">
+              <div className="absolute left-[2.75rem] md:left-[3.25rem] top-4 bottom-4 w-[1px] bg-[#fdf6e3]/10" />
+              {dailySchedule.map((s, i) => (
+                <motion.div key={i} initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.1 }} viewport={{ once: true }}
+                  className="flex items-start gap-4 md:gap-6 py-4 relative">
+                  <div className="w-12 md:w-14 text-right shrink-0">
+                    <span className="text-lg md:text-xl font-light">{s.time}</span>
+                  </div>
+                  <div className="w-3 h-3 rounded-full bg-[#d97706] border-2 border-[#8B5E3C] shrink-0 mt-2 relative z-10" />
+                  <div className="flex items-center gap-3">
+                    <span className="text-xl">{s.icon}</span>
+                    <p className="text-sm text-[#fdf6e3]/70" style={{ fontFamily: "system-ui" }}>{s.event}</p>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ═══════════════════════════════════
+            4. FILOSOFÍA
+        ═══════════════════════════════════ */}
+        <section className="py-20 md:py-32 px-6 md:px-16 bg-[#fdf6e3]">
+          <div className="max-w-4xl mx-auto text-center">
+            <span className="text-[10px] tracking-[0.4em] uppercase text-[#8B5E3C] block mb-6" style={{ fontFamily: "system-ui" }}>Nuestros valores</span>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-16">
+              {[
+                { emoji: "🌾", title: "Sin Aditivos", desc: "Harina, agua, sal y tiempo. No usamos mejorantes, conservantes ni aceleradores de fermentación." },
+                { emoji: "🫶", title: "100% Artesanal", desc: "Cada pieza se forma a mano. No usamos maquinaria de moldeo industrial. Se nota en cada bocado." },
+                { emoji: "🌍", title: "Km 0", desc: "Harina de trigo de Antequera. Mantequilla de Asturias. Huevos camperos de la Sierra Norte." },
+              ].map((v, i) => (
+                <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.15 }} viewport={{ once: true }}>
+                  <span className="text-4xl block mb-4">{v.emoji}</span>
+                  <h3 className="text-lg tracking-wide mb-3">{v.title}</h3>
+                  <p className="text-xs text-[#3d2b1a]/40 leading-relaxed" style={{ fontFamily: "system-ui" }}>{v.desc}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ═══════════════════════════════════
+            5. RESEÑAS
+        ═══════════════════════════════════ */}
+        <section className="py-20 md:py-32 px-6 md:px-16 bg-[#f5e8c8]">
+          <div className="max-w-4xl mx-auto">
+            <div className="text-center mb-16">
+              <span className="text-[10px] tracking-[0.4em] uppercase text-[#8B5E3C] block mb-4" style={{ fontFamily: "system-ui" }}>Opiniones</span>
+              <h2 className="text-4xl tracking-tight font-light">Lo que dicen nuestros vecinos</h2>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {reviews.map((r, i) => (
+                <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.1 }} viewport={{ once: true }}
+                  className="p-6 rounded-2xl bg-[#fdf6e3] border border-[#8B5E3C]/5">
+                  <div className="flex mb-3">
+                    {Array.from({ length: r.rating }).map((_, s) => <Star key={s} className="w-3 h-3 fill-[#d97706] text-[#d97706]" />)}
+                  </div>
+                  <p className="text-sm text-[#3d2b1a]/60 italic leading-relaxed mb-4">"{r.text}"</p>
+                  <p className="text-xs font-medium" style={{ fontFamily: "system-ui" }}>{r.name}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ═══════════════════════════════════
+            6. VISÍTANOS
+        ═══════════════════════════════════ */}
+        <section id="visítanos" className="py-20 md:py-32 px-6 md:px-16 bg-[#fdf6e3]">
+          <div className="max-w-3xl mx-auto text-center">
+            <span className="text-[10px] tracking-[0.4em] uppercase text-[#8B5E3C] block mb-6" style={{ fontFamily: "system-ui" }}>Encuéntranos</span>
+            <h2 className="text-4xl md:text-5xl tracking-tight font-light mb-4 leading-[1.1]">
+              Te esperamos<br/><span className="italic text-[#8B5E3C]">con café recién hecho.</span>
+            </h2>
+            <p className="text-sm text-[#3d2b1a]/40 max-w-md mx-auto mb-12" style={{ fontFamily: "system-ui" }}>
+              También hacemos encargos especiales: tartas de cumpleaños, panes para eventos y cestas regalo.
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8" style={{ fontFamily: "system-ui" }}>
+              <div>
+                <MapPin className="w-5 h-5 text-[#8B5E3C]/30 mx-auto mb-3" />
+                <p className="text-sm text-[#3d2b1a]/60">C/ Mairena 8<br/>Alcalá de Guadaíra</p>
+              </div>
+              <div>
+                <Clock className="w-5 h-5 text-[#8B5E3C]/30 mx-auto mb-3" />
+                <p className="text-sm text-[#3d2b1a]/60">Lun-Sáb 7:00-14:00<br/>Dom 8:00-13:00</p>
+              </div>
+              <div>
+                <Phone className="w-5 h-5 text-[#8B5E3C]/30 mx-auto mb-3" />
+                <p className="text-sm text-[#3d2b1a]/60">955 789 012<br/>Encargos: 654 321 987</p>
+              </div>
+            </div>
+            <div className="mt-12 flex items-center justify-center gap-2 text-[#8B5E3C]/40 hover:text-[#8B5E3C] transition-colors cursor-pointer">
+              <Instagram className="w-4 h-4" />
+              <span className="text-xs tracking-[0.15em] uppercase">@obradorlaespiga</span>
+            </div>
+          </div>
+        </section>
+
+        {/* ═══ FOOTER ═══ */}
+        <footer className="py-8 px-6 md:px-16 border-t border-[#8B5E3C]/5 bg-[#fdf6e3]">
+          <div className="max-w-4xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4" style={{ fontFamily: "system-ui" }}>
+            <div className="flex items-center gap-2"><Wheat className="w-4 h-4 text-[#8B5E3C]/20" /><p className="text-[10px] text-[#8B5E3C]/20">© 2026 Obrador La Espiga</p></div>
+            <p className="text-[10px] text-[#8B5E3C]/20">Hecho con harina, agua, sal y mucho cariño.</p>
+          </div>
+        </footer>
+
+      </div>
     </DemoLayout>
-  )
+  );
 }
