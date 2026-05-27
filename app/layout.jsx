@@ -12,13 +12,11 @@ export const metadata = {
 
 import SmoothScroll from "@/components/SmoothScroll";
 import Preloader from "@/components/Preloader";
-import CursorMagnetico from "@/components/CursorMagnetico";
 
 export default function RootLayout({ children }) {
   return (
     <html lang="es" className={`dark ${inter.variable}`}>
       <body className="font-sans antialiased bg-black text-white min-h-screen">
-        <CursorMagnetico />
         <Preloader />
         <SmoothScroll>
           {children}
