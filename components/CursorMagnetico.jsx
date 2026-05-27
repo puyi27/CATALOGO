@@ -47,8 +47,8 @@ export default function CursorMagnetico() {
           scale: isHovering ? 2.5 : 1,
         }}
         transition={{
-          x: { type: "tween", duration: 0 },
-          y: { type: "tween", duration: 0 },
+          x: { type: "spring", stiffness: 800, damping: 40, mass: 0.5 },
+          y: { type: "spring", stiffness: 800, damping: 40, mass: 0.5 },
           scale: { type: "spring", stiffness: 400, damping: 25, mass: 0.1 }
         }}
       />

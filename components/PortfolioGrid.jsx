@@ -53,8 +53,8 @@ export default function PortfolioGrid() {
             </div>
             <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
               <h2 className="text-4xl md:text-7xl font-black uppercase tracking-tighter leading-[0.85]">
-                <span className="block text-white">Prototipos</span>
-                <span className="block text-white/60">Listos para desplegar.</span>
+                <span className="block text-white drop-shadow-[0_0_15px_rgba(255,255,255,0.2)]">Prototipos</span>
+                <span className="block text-transparent bg-clip-text bg-gradient-to-r from-white/80 to-white/20">Listos para desplegar.</span>
               </h2>
               <p className="text-zinc-500 font-mono text-xs md:text-sm max-w-xs uppercase tracking-widest leading-relaxed">
                 Sin coste de alta. Sin compromiso. Elegir, desplegar, vender.
@@ -65,10 +65,10 @@ export default function PortfolioGrid() {
           <div className="flex flex-wrap gap-2 mb-10">
             <button
               onClick={() => setActiveTag(null)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full text-[10px] font-mono uppercase tracking-widest border transition-all ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-full text-[10px] font-mono uppercase tracking-widest border transition-all duration-300 ${
                 !activeTag
-                  ? 'bg-white text-black border-white'
-                  : 'text-zinc-500 border-white/10 hover:border-white/30'
+                  ? 'bg-white/10 text-white border-white/20 shadow-[0_0_15px_rgba(255,255,255,0.1)] backdrop-blur-md'
+                  : 'text-zinc-500 border-white/5 hover:border-white/20 hover:bg-white/5 backdrop-blur-sm'
               }`}
             >
               <Filter className="w-3 h-3" />
@@ -78,10 +78,10 @@ export default function PortfolioGrid() {
               <button
                 key={tag}
                 onClick={() => setActiveTag(tag)}
-                className={`px-4 py-2 rounded-full text-[10px] font-mono uppercase tracking-widest border transition-all ${
+                className={`px-4 py-2 rounded-full text-[10px] font-mono uppercase tracking-widest border transition-all duration-300 ${
                   activeTag === tag
-                    ? 'bg-white text-black border-white'
-                    : 'text-zinc-500 border-white/10 hover:border-white/30'
+                    ? 'bg-white/10 text-white border-white/20 shadow-[0_0_15px_rgba(255,255,255,0.1)] backdrop-blur-md'
+                    : 'text-zinc-500 border-white/5 hover:border-white/20 hover:bg-white/5 backdrop-blur-sm'
                 }`}
               >
                 {tag}
@@ -105,7 +105,10 @@ export default function PortfolioGrid() {
                 >
                   <Link
                     href={demo.path}
-                    className="group block relative aspect-[4/5] overflow-hidden rounded-lg border border-white/5 hover:border-white/20 transition-colors"
+                    className="group block relative aspect-[4/5] overflow-hidden rounded-lg border border-white/5 hover:border-white/20 transition-all duration-500"
+                    style={{ boxShadow: `0 0 0px ${demo.color}00` }}
+                    onMouseEnter={(e) => e.currentTarget.style.boxShadow = `0 20px 40px -10px ${demo.color}40, inset 0 0 20px ${demo.color}10`}
+                    onMouseLeave={(e) => e.currentTarget.style.boxShadow = `0 0 0px ${demo.color}00`}
                   >
                     <img
                       src={demo.img}
