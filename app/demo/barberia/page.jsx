@@ -1,342 +1,248 @@
-"use client"
+"use client";
 
-import { useState, useEffect } from "react"
-import Link from "next/link"
-import { motion, AnimatePresence } from "framer-motion"
-import { ShoppingCart, X, ArrowLeft, Menu, Instagram, Twitter } from "lucide-react"
-import DemoLayout from "@/components/DemoLayout"
+import React, { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Scissors, Clock, Phone, MapPin, Instagram, Star, X, Menu, ChevronRight, Calendar, Users } from "lucide-react";
+import DemoLayout from "@/components/DemoLayout";
 
-export default function BarberShop() {
-  const [isCartOpen, setIsCartOpen] = useState(false)
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+const services = [
+  { name: "CLASSIC FADE", price: "18€", time: "30 min", desc: "Degradado clásico americano. Perfilado de nuca y sienes incluido." },
+  { name: "SKIN FADE", price: "22€", time: "40 min", desc: "Degradado a cero con navaja. Acabado quirúrgico." },
+  { name: "CORTE + BARBA", price: "30€", time: "50 min", desc: "Corte completo más perfilado de barba con navaja caliente." },
+  { name: "AFEITADO CLÁSICO", price: "15€", time: "25 min", desc: "Navaja barbera, toallas calientes, bálsamo aftershave." },
+  { name: "BARBA COMPLETA", price: "14€", time: "20 min", desc: "Recorte, perfilado con navaja y aceite nutritivo." },
+  { name: "TRATAMIENTO CAPILAR", price: "25€", time: "30 min", desc: "Diagnóstico + masaje craneal + mascarilla revitalizante." },
+];
+
+const team = [
+  { name: "Rafa Moreno", role: "Fundador & Master Barber", exp: "15 años", desc: "Formado en Londres y Brooklyn. Especialista en fades y razor work." },
+  { name: "Dani Cruz", role: "Senior Barber", exp: "8 años", desc: "Campeón regional de barbería 2024. Experto en barbas." },
+  { name: "Álex Romero", role: "Barber", exp: "4 años", desc: "La nueva generación. Cortes texturizados y tendencia." },
+];
+
+const reviews = [
+  { name: "Carlos M.", text: "El mejor fade de Sevilla. Rafa es un artista con la máquina. Imposible salir sin sentirte otro.", rating: 5 },
+  { name: "Pablo G.", text: "El afeitado clásico con navaja y toallas calientes es una experiencia. Puro relax.", rating: 5 },
+  { name: "Adrián L.", text: "Llevo 3 años viniendo. No cambio. El ambiente, los tíos, la música... todo cuadra.", rating: 5 },
+];
+
+const gallery = [
+  { gradient: "from-[#1a1a1a] to-[#333]", label: "Skin Fade" },
+  { gradient: "from-[#2a2a2a] to-[#444]", label: "Buzz Cut" },
+  { gradient: "from-[#111] to-[#222]", label: "Afeitado Clásico" },
+  { gradient: "from-[#1a1a1a] to-[#3a3a3a]", label: "Barba Perfilada" },
+  { gradient: "from-[#222] to-[#111]", label: "Mullet Moderno" },
+  { gradient: "from-[#333] to-[#1a1a1a]", label: "Crop Top" },
+];
+
+export default function BarberiaDemo() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
 
   useEffect(() => {
-    const updateMousePosition = (e) => {
-      setMousePosition({ x: e.clientX, y: e.clientY })
-    }
-    window.addEventListener("mousemove", updateMousePosition)
-    return () => window.removeEventListener("mousemove", updateMousePosition)
-  }, [])
-
-  const products = [
-    { id: 1, name: "CLASSIC FADE", price: 30, image: "https://loremflickr.com/600/800/barber,fade", soldOut: false, category: "SERVICE" },
-    { id: 2, name: "BEARD TRIM", price: 20, image: "https://loremflickr.com/600/800/beard,trim", soldOut: false, category: "SERVICE" },
-    { id: 3, name: "MATTE CLAY", price: 25, image: "https://loremflickr.com/600/800/pomade", soldOut: false, category: "PRODUCT" },
-    { id: 4, name: "HEAVY HOODIE", price: 60, image: "https://loremflickr.com/600/800/hoodie,black", soldOut: true, category: "MERCH" },
-    { id: 5, name: "BUZZ CUT", price: 20, image: "https://loremflickr.com/600/800/buzzcut", soldOut: false, category: "SERVICE" },
-    { id: 6, name: "SIGNATURE CAP", price: 35, image: "https://loremflickr.com/600/800/snapback,cap", soldOut: false, category: "MERCH" }
-  ]
+    const handleMove = (e) => setMousePos({ x: e.clientX, y: e.clientY });
+    window.addEventListener("mousemove", handleMove);
+    return () => window.removeEventListener("mousemove", handleMove);
+  }, []);
 
   return (
-    <DemoLayout title="Fade & Co.">
-      <div className="text-stone-900 selection:bg-black selection:text-white font-sans uppercase md:cursor-none overflow-x-hidden">
-        <motion.div
-          className="hidden md:flex fixed top-0 left-0 w-6 h-6 bg-black mix-blend-difference rounded-full pointer-events-none z-[100] items-center justify-center"
-          animate={{ x: mousePosition.x - 12, y: mousePosition.y - 12 }}
-          transition={{ type: "spring", stiffness: 500, damping: 28, mass: 0.5 }}
-        />
-        
-        <div className="fixed top-6 right-6 z-40 mix-blend-difference flex gap-6 text-white pointer-events-auto">
-          <button className="hidden md:block text-sm font-bold tracking-widest hover:opacity-50 transition-opacity">
-            BOOK NOW
-          </button>
-          <button onClick={() => setIsCartOpen(true)} className="relative active:scale-95 md:hover:opacity-50 transition-all">
-            <ShoppingCart className="w-6 h-6" />
-            <span className="absolute -top-2 -right-2 bg-white text-black text-[10px] font-black w-4 h-4 flex items-center justify-center rounded-full">2</span>
-          </button>
-          <button onClick={() => setIsMenuOpen(true)} className="md:hidden active:scale-95 transition-transform">
-            <Menu className="w-6 h-6" />
-          </button>
-        </div>
+    <DemoLayout title="Fade & Co." year="2026">
+      <div className="text-white selection:bg-[#dc2626] selection:text-white overflow-x-hidden bg-[#09090b] uppercase" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
 
-      <AnimatePresence>
-        {isMenuOpen && (
-          <motion.div
-            initial={{ y: "-100%" }}
-            animate={{ y: 0 }}
-            exit={{ y: "-100%" }}
-            transition={{ type: "tween", duration: 0.5, ease: [0.7, 0, 0.3, 1] }}
-            className="fixed inset-0 bg-[#09090b] z-50 flex flex-col p-6"
-          >
-            <div className="flex justify-end pt-2">
-              <button onClick={() => setIsMenuOpen(false)} className="active:scale-90 transition-transform">
-                <X className="w-8 h-8" />
-              </button>
-            </div>
-            <div className="flex flex-col gap-6 mt-16 px-4">
-              {["SERVICES", "PRODUCTS", "MERCH", "BOOK NOW"].map((item, i) => (
-                <motion.a
-                  key={item}
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: i * 0.1 + 0.3 }}
-                  className="text-5xl font-black tracking-tighter active:scale-95 transition-transform origin-left"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {item}
-                </motion.a>
+        {/* Custom cursor */}
+        <motion.div className="fixed top-0 left-0 w-5 h-5 bg-white mix-blend-difference rounded-full pointer-events-none z-[200] hidden md:block"
+          animate={{ x: mousePos.x - 10, y: mousePos.y - 10 }} transition={{ type: "spring", stiffness: 500, damping: 28 }} />
+
+        {/* ═══ MOBILE MENU ═══ */}
+        <AnimatePresence>
+          {menuOpen && (
+            <motion.div initial={{ y: "-100%" }} animate={{ y: 0 }} exit={{ y: "-100%" }}
+              transition={{ type: "tween", duration: 0.5, ease: [0.7, 0, 0.3, 1] }}
+              className="fixed inset-0 bg-[#09090b] z-[90] flex flex-col justify-center p-8 md:hidden">
+              <button onClick={() => setMenuOpen(false)} className="absolute top-6 right-6"><X className="w-8 h-8" /></button>
+              <nav className="flex flex-col gap-4">
+                {["Servicios", "Equipo", "Galería", "Reservar"].map((item, i) => (
+                  <motion.a key={item} initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: i * 0.08 }}
+                    className="text-5xl font-black tracking-tighter" onClick={() => setMenuOpen(false)} href={`#${item.toLowerCase()}`}>{item}</motion.a>
+                ))}
+              </nav>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* ═══ NAV ═══ */}
+        <nav className="fixed top-0 left-0 w-full px-6 md:px-12 py-5 flex justify-between items-center z-[80] mix-blend-difference">
+          <span className="text-xs font-black tracking-[0.3em]">FADE&CO.</span>
+          <div className="flex items-center gap-6">
+            <a href="#reservar" className="hidden md:block text-xs font-bold tracking-widest hover:opacity-50 transition-opacity">BOOK NOW</a>
+            <button onClick={() => setMenuOpen(true)} className="md:hidden"><Menu className="w-6 h-6" /></button>
+          </div>
+        </nav>
+
+        {/* ═══════════════════════════════════
+            1. HERO — B&W BOLD
+        ═══════════════════════════════════ */}
+        <section className="h-screen flex flex-col justify-end px-6 md:px-12 pb-16 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-b from-[#09090b] via-[#09090b] to-[#111]" />
+          <div className="absolute top-0 right-0 w-1/2 h-full bg-gradient-to-l from-[#dc2626]/5 to-transparent" />
+
+          <div className="relative z-10 max-w-6xl mx-auto w-full">
+            <motion.div initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}>
+              <h1 className="text-[clamp(4rem,18vw,12rem)] font-black leading-[0.82] tracking-tighter">
+                NO<br/><span className="text-[#dc2626]">COMPRO</span><br/>MISE.
+              </h1>
+            </motion.div>
+            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
+              className="text-sm md:text-lg font-bold tracking-[0.3em] text-white/30 mt-8 max-w-xl normal-case">
+              Precision cuts. Raw aesthetics. Street culture.
+            </motion.p>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }}
+              className="flex items-center gap-6 mt-8">
+              <a href="#servicios" className="px-8 py-4 bg-white text-black text-xs font-black tracking-widest hover:bg-[#dc2626] hover:text-white transition-colors">SERVICIOS</a>
+              <a href="#reservar" className="text-xs font-bold tracking-widest text-white/40 border-b border-white/20 pb-1 hover:text-white hover:border-white transition-all">RESERVAR →</a>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* ═══════════════════════════════════
+            2. SERVICIOS — LISTA HARDCORE
+        ═══════════════════════════════════ */}
+        <section id="servicios" className="py-20 md:py-32 px-6 md:px-12">
+          <div className="max-w-5xl mx-auto">
+            <h2 className="text-6xl md:text-8xl font-black tracking-tighter mb-16">THE<br/>MENU.</h2>
+
+            <div className="space-y-0">
+              {services.map((s, i) => (
+                <motion.div key={i} initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }}
+                  transition={{ delay: i * 0.05 }} viewport={{ once: true }}
+                  className="flex flex-col md:flex-row md:items-center justify-between py-6 border-b border-white/5 group hover:border-[#dc2626]/30 transition-colors">
+                  <div className="flex items-start gap-4 mb-2 md:mb-0">
+                    <span className="text-xs font-bold text-white/10 mt-1">{String(i + 1).padStart(2, '0')}</span>
+                    <div>
+                      <h3 className="text-xl md:text-2xl font-black tracking-tighter group-hover:text-[#dc2626] transition-colors">{s.name}</h3>
+                      <p className="text-[10px] text-white/20 normal-case mt-1 tracking-wide max-w-sm">{s.desc}</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-6 ml-8 md:ml-0">
+                    <span className="text-xs text-white/20 font-bold tracking-widest">{s.time}</span>
+                    <span className="text-2xl font-black text-[#dc2626]">{s.price}</span>
+                  </div>
+                </motion.div>
               ))}
             </div>
-            <div className="mt-auto px-4 pb-8 flex gap-6">
-              <Instagram className="w-6 h-6" />
-              <Twitter className="w-6 h-6" />
+          </div>
+        </section>
+
+        {/* ═══════════════════════════════════
+            3. GALERÍA — GRID B&W
+        ═══════════════════════════════════ */}
+        <section id="galería" className="py-20 md:py-32 px-6 md:px-12 bg-white text-black">
+          <div className="max-w-6xl mx-auto">
+            <h2 className="text-6xl md:text-8xl font-black tracking-tighter mb-16">THE<br/>WORK.</h2>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              {gallery.map((g, i) => (
+                <motion.div key={i} initial={{ opacity: 0, scale: 0.95 }} whileInView={{ opacity: 1, scale: 1 }}
+                  transition={{ delay: i * 0.08 }} viewport={{ once: true }}
+                  className="aspect-square relative overflow-hidden group cursor-pointer">
+                  <div className={`absolute inset-0 bg-gradient-to-br ${g.gradient}`} />
+                  <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity bg-[#dc2626]/80">
+                    <span className="text-white text-xs font-black tracking-widest">{g.label}</span>
+                  </div>
+                </motion.div>
+              ))}
             </div>
+          </div>
+        </section>
+
+        {/* ═══════════════════════════════════
+            4. EQUIPO
+        ═══════════════════════════════════ */}
+        <section id="equipo" className="py-20 md:py-32 px-6 md:px-12">
+          <div className="max-w-5xl mx-auto">
+            <h2 className="text-6xl md:text-8xl font-black tracking-tighter mb-16">THE<br/>CREW.</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {team.map((m, i) => (
+                <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.15 }} viewport={{ once: true }}>
+                  <div className="aspect-[3/4] bg-gradient-to-br from-[#1a1a1a] to-[#2a2a2a] mb-4 relative overflow-hidden group">
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="text-8xl font-black text-white/[0.03]">{m.name.split(' ').map(n => n[0]).join('')}</span>
+                    </div>
+                    <div className="absolute bottom-0 left-0 right-0 h-1 bg-[#dc2626] scale-x-0 group-hover:scale-x-100 transition-transform origin-left" />
+                  </div>
+                  <h3 className="text-xl font-black tracking-tighter">{m.name}</h3>
+                  <p className="text-[10px] text-[#dc2626] font-bold tracking-widest mt-1">{m.role}</p>
+                  <p className="text-[10px] text-white/20 normal-case mt-2 tracking-wide">{m.desc}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ═══════════════════════════════════
+            5. RESEÑAS
+        ═══════════════════════════════════ */}
+        <section className="py-20 md:py-32 px-6 md:px-12 bg-white text-black">
+          <div className="max-w-5xl mx-auto">
+            <h2 className="text-6xl md:text-8xl font-black tracking-tighter mb-16">THE<br/>WORD.</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {reviews.map((r, i) => (
+                <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.1 }} viewport={{ once: true }}
+                  className="border-l-4 border-[#dc2626] pl-6 py-4">
+                  <div className="flex mb-3">
+                    {Array.from({ length: r.rating }).map((_, s) => <Star key={s} className="w-3 h-3 fill-[#dc2626] text-[#dc2626]" />)}
+                  </div>
+                  <p className="text-sm text-black/60 normal-case leading-relaxed mb-4">"{r.text}"</p>
+                  <p className="text-xs font-black tracking-widest">{r.name}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ═══════════════════════════════════
+            6. MARQUEE
+        ═══════════════════════════════════ */}
+        <section className="py-16 md:py-24 overflow-hidden relative">
+          <motion.div animate={{ x: [0, -1000] }} transition={{ repeat: Infinity, duration: 20, ease: "linear" }}
+            className="whitespace-nowrap text-7xl md:text-9xl font-black tracking-tighter opacity-5">
+            FADE & CO. ✂ BARBERÍA URBANA ✂ EST. 2019 ✂ SEVILLA ✂ FADE & CO. ✂ BARBERÍA URBANA ✂ EST. 2019 ✂
           </motion.div>
-        )}
-      </AnimatePresence>
+        </section>
 
-      <section className="relative h-[100svh] w-full flex flex-col justify-end p-6 md:p-12 overflow-hidden">
-        <div className="absolute inset-0 z-0">
-          <motion.img 
-            initial={{ scale: 1.1 }}
-            animate={{ scale: 1 }}
-            transition={{ duration: 1.5, ease: "easeOut" }}
-            src="https://loremflickr.com/1920/1080/barber,gritty" 
-            alt="Barber Shop" 
-            className="w-full h-full object-cover opacity-60 grayscale"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#09090b] via-transparent to-transparent"></div>
-        </div>
-        <div className="relative z-10 w-full max-w-7xl mx-auto flex flex-col items-start gap-4 pb-12 md:pb-0">
-          <motion.h1 
-            initial={{ y: 50, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="text-7xl md:text-9xl font-black leading-[0.85] tracking-tighter break-words hyphens-none w-full text-white"
-          >
-            NO<br />COMPROMISE.
-          </motion.h1>
-          <motion.p 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.4, duration: 0.8 }}
-            className="text-sm md:text-2xl font-bold tracking-widest max-w-xl text-gray-400 mt-2 md:mt-4"
-          >
-            PRECISION CUTS. RAW AESTHETICS. STREET CULTURE.
-          </motion.p>
-        </div>
-      </section>
-
-      <section className="w-full py-16 md:py-24 max-w-[1400px] mx-auto overflow-hidden">
-        <div className="px-6 md:px-12 flex flex-col md:flex-row justify-between items-start md:items-end mb-8 md:mb-16 gap-6 md:gap-8">
-          <h2 className="text-6xl md:text-8xl font-black tracking-tighter leading-none">
-            THE<br />MENU.
-          </h2>
-          <div className="flex gap-4 text-xs md:text-sm font-bold tracking-widest border-b border-white/20 pb-4 w-full md:w-auto overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] whitespace-nowrap">
-            <button className="text-white active:scale-95 transition-transform">ALL</button>
-            <button className="text-gray-600 md:hover:text-white active:scale-95 transition-all">SERVICES</button>
-            <button className="text-gray-600 md:hover:text-white active:scale-95 transition-all">PRODUCTS</button>
-            <button className="text-gray-600 md:hover:text-white active:scale-95 transition-all">MERCH</button>
-          </div>
-        </div>
-
-        <div className="hidden md:grid grid-cols-2 lg:grid-cols-3 gap-8 px-12">
-          {products.map((product) => (
-            <DesktopProductCard key={product.id} product={product} />
-          ))}
-        </div>
-
-        <div className="md:hidden w-full pl-6 overflow-x-auto snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] pb-8">
-          <div className="flex gap-4 pr-6 w-max">
-            {products.map((product) => (
-              <MobileProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="py-24 md:py-32 bg-white text-black flex items-center justify-center overflow-hidden relative">
-        <motion.div 
-          initial={{ x: "-100%" }}
-          whileInView={{ x: "100%" }}
-          transition={{ repeat: Infinity, duration: 15, ease: "linear" }}
-          className="absolute whitespace-nowrap text-8xl md:text-9xl font-black tracking-tighter opacity-10"
-        >
-          STREETWEAR EST 2026 BARBER SHOP
-        </motion.div>
-        <div className="relative z-10 text-center px-6 max-w-4xl mx-auto">
-          <h2 className="text-6xl md:text-9xl font-black tracking-tighter leading-[0.9] mb-6 md:mb-8">
-            MORE THAN<br />A HAIRCUT.
-          </h2>
-          <p className="text-base md:text-3xl font-bold tracking-tight text-gray-800">
-            WE BLEND CLASSIC BARBERING TECHNIQUES WITH CONTEMPORARY STREET CULTURE.
-          </p>
-        </div>
-      </section>
-
-      <footer className="bg-[#09090b] text-white pt-20 md:pt-32 pb-8 md:pb-12 px-6 md:px-12 border-t border-stone-200 mt-12 rounded-[2rem]">
-        <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row justify-between items-start md:items-end gap-12 md:gap-16 mb-16 md:mb-24">
-          <div className="w-full md:w-auto">
-            <h2 className="text-7xl md:text-9xl font-black tracking-tighter leading-[0.8] mb-8">
-              FADE<br />& CO.
-            </h2>
-            <div className="flex gap-6">
-              <Instagram className="w-8 h-8 active:scale-90 md:hover:opacity-50 md:cursor-pointer transition-all" />
-              <Twitter className="w-8 h-8 active:scale-90 md:hover:opacity-50 md:cursor-pointer transition-all" />
+        {/* ═══════════════════════════════════
+            7. RESERVAR
+        ═══════════════════════════════════ */}
+        <section id="reservar" className="py-20 md:py-32 px-6 md:px-12">
+          <div className="max-w-3xl mx-auto text-center">
+            <h2 className="text-6xl md:text-8xl font-black tracking-tighter mb-6">BOOK<br/>NOW.</h2>
+            <p className="text-sm text-white/30 normal-case mb-12 max-w-md mx-auto">Reserva por teléfono o WhatsApp. Walk-ins bienvenidos si hay hueco.</p>
+            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
+              <a href="tel:+34955111222" className="px-8 py-4 bg-[#dc2626] text-white text-sm font-black tracking-widest hover:bg-[#b91c1c] transition-colors flex items-center gap-2">
+                <Phone className="w-4 h-4" /> 955 111 222
+              </a>
+              <a href="https://wa.me/34600111222" className="px-8 py-4 border-2 border-white/10 text-sm font-bold tracking-widest hover:border-white/30 transition-colors">WHATSAPP</a>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8 text-xs font-bold tracking-widest text-white/20 normal-case">
+              <div><MapPin className="w-4 h-4 mx-auto mb-3 text-[#dc2626]/30" /><p>C/ Feria 96<br/>Sevilla Centro</p></div>
+              <div><Clock className="w-4 h-4 mx-auto mb-3 text-[#dc2626]/30" /><p>Lun-Vie 10:00-21:00<br/>Sáb 9:00-15:00</p></div>
+              <div><Instagram className="w-4 h-4 mx-auto mb-3 text-[#dc2626]/30" /><p>@fadeandco.sevilla<br/>Walk-ins en Stories</p></div>
             </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-8 md:gap-12 text-sm font-bold tracking-widest w-full md:w-auto">
-            <div className="flex flex-col gap-2 md:gap-4">
-              <span className="text-gray-500 mb-1 md:mb-2">LOCATION</span>
-              <p>128 URBAN STREET</p>
-              <p>DOWNTOWN, DISTRICT 9</p>
-              <p>CITY, CP 10001</p>
-            </div>
-            <div className="flex flex-col gap-2 md:gap-4">
-              <span className="text-gray-500 mb-1 md:mb-2">HOURS</span>
-              <p>MON - FRI: 10AM - 8PM</p>
-              <p>SAT: 10AM - 6PM</p>
-              <p>SUN: CLOSED</p>
+        </section>
+
+        {/* ═══ FOOTER ═══ */}
+        <footer className="py-8 px-6 md:px-12 border-t border-white/5">
+          <div className="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <p className="text-[10px] font-bold tracking-widest text-white/10">© 2026 FADE & CO. ALL RIGHTS RESERVED.</p>
+            <div className="flex gap-6 text-[10px] font-bold tracking-widest text-white/10">
+              <span>TERMS</span><span>PRIVACY</span>
             </div>
           </div>
-        </div>
-        <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row justify-between items-start md:items-center text-[10px] md:text-xs font-bold tracking-widest text-gray-600 border-t border-white/10 pt-8 gap-6 md:gap-0">
-          <p>© 2026 FADE & CO. ALL RIGHTS RESERVED.</p>
-          <div className="flex gap-6">
-            <span className="active:text-white md:hover:text-white md:cursor-pointer transition-colors">TERMS</span>
-            <span className="active:text-white md:hover:text-white md:cursor-pointer transition-colors">PRIVACY</span>
-          </div>
-        </div>
-      </footer>
+        </footer>
 
-      <AnimatePresence>
-        {isCartOpen && (
-          <>
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              exit={{ opacity: 0 }}
-              onClick={() => setIsCartOpen(false)}
-              className="fixed inset-0 bg-black/60 backdrop-blur-md z-50"
-            />
-            <motion.div
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed top-0 right-0 bottom-0 w-full max-w-md bg-[#111] z-50 flex flex-col border-l border-white/10"
-            >
-              <div className="p-6 md:p-8 border-b border-white/10 flex justify-between items-center bg-[#111] sticky top-0 z-10">
-                <h3 className="text-2xl md:text-3xl font-black tracking-tighter">CART</h3>
-                <button onClick={() => setIsCartOpen(false)} className="active:scale-90 md:hover:rotate-90 transition-transform">
-                  <X className="w-6 h-6 md:w-8 md:h-8" />
-                </button>
-              </div>
-              
-              <div className="flex-1 overflow-y-auto p-6 md:p-8 flex flex-col gap-6 md:gap-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-                <CartItem 
-                  image="https://loremflickr.com/600/800/pomade" 
-                  name="MATTE CLAY" 
-                  details="QTY: 1" 
-                  price="€25" 
-                />
-                <CartItem 
-                  image="https://loremflickr.com/600/800/beard,trim" 
-                  name="BEARD TRIM" 
-                  details="NOV 24, 2:30 PM" 
-                  price="€20" 
-                />
-              </div>
-
-              <div className="p-6 md:p-8 bg-[#1a1a1a] border-t border-white/10 sticky bottom-0">
-                <div className="flex justify-between items-center mb-4 md:mb-6">
-                  <span className="text-sm md:text-lg font-bold tracking-widest text-gray-400">SUBTOTAL</span>
-                  <span className="text-xl md:text-2xl font-black">€45</span>
-                </div>
-                <button className="w-full bg-white text-black py-4 md:py-6 text-lg md:text-xl font-black tracking-tighter active:scale-[0.98] md:hover:bg-gray-200 transition-all">
-                  CHECKOUT
-                </button>
-              </div>
-            </motion.div>
-          </>
-        )}
-      </AnimatePresence>
       </div>
     </DemoLayout>
-  )
-}
-
-function DesktopProductCard({ product }) {
-  return (
-    <motion.div 
-      whileInView={{ y: [50, 0], opacity: [0, 1] }}
-      viewport={{ once: true, margin: "-100px" }}
-      transition={{ duration: 0.6, ease: "easeOut" }}
-      className="group relative cursor-none"
-    >
-      <div className="relative aspect-[3/4] overflow-hidden bg-[#111] mb-6">
-        <img 
-          src={product.image} 
-          alt={product.name}
-          className={`w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 ${product.soldOut ? "grayscale opacity-50" : "grayscale hover:grayscale-0"}`}
-        />
-        <div className={`absolute inset-0 border-[0px] border-white transition-all duration-300 ease-out pointer-events-none ${!product.soldOut ? "group-hover:border-[8px]" : ""}`}></div>
-        {product.soldOut && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm pointer-events-none">
-            <span className="bg-white text-black px-6 py-2 text-xl font-black tracking-tighter transform -rotate-12">SOLD OUT</span>
-          </div>
-        )}
-        <div className="absolute top-4 left-4 bg-black/80 px-3 py-1 text-xs font-bold tracking-widest pointer-events-none">
-          {product.category}
-        </div>
-      </div>
-      <div className="flex justify-between items-start pointer-events-none">
-        <div>
-          <h3 className="text-2xl font-black tracking-tighter group-hover:text-gray-300 transition-colors">{product.name}</h3>
-          <p className="text-gray-500 font-bold tracking-widest text-sm mt-1">FADE & CO. STANDARD</p>
-        </div>
-        <span className="text-xl font-bold">€{product.price}</span>
-      </div>
-    </motion.div>
-  )
-}
-
-function MobileProductCard({ product }) {
-  return (
-    <div className="min-w-[260px] w-[260px] flex flex-col snap-center active:scale-[0.98] transition-transform">
-      <div className="relative aspect-[3/4] overflow-hidden bg-[#111] mb-4">
-        <img 
-          src={product.image} 
-          alt={product.name}
-          className={`w-full h-full object-cover pointer-events-none ${product.soldOut ? "grayscale opacity-50" : "grayscale"}`}
-        />
-        {product.soldOut && (
-          <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm pointer-events-none">
-            <span className="bg-white text-black px-4 py-1.5 text-lg font-black tracking-tighter transform -rotate-12">SOLD OUT</span>
-          </div>
-        )}
-        <div className="absolute top-4 left-4 bg-black/80 px-3 py-1 text-[10px] font-bold tracking-widest pointer-events-none">
-          {product.category}
-        </div>
-      </div>
-      <div className="flex justify-between items-start px-1">
-        <div className="flex-1 pr-2">
-          <h3 className="text-xl font-black tracking-tighter leading-tight">{product.name}</h3>
-          <p className="text-gray-500 font-bold tracking-widest text-[10px] mt-1">FADE & CO.</p>
-        </div>
-        <span className="text-lg font-bold">€{product.price}</span>
-      </div>
-    </div>
-  )
-}
-
-function CartItem({ image, name, details, price }) {
-  return (
-    <div className="flex gap-4 border-b border-white/10 pb-6 md:pb-8">
-      <div className="w-20 md:w-24 h-28 md:h-32 bg-[#222] shrink-0">
-        <img src={image} alt={name} className="w-full h-full object-cover grayscale" />
-      </div>
-      <div className="flex-1 flex flex-col justify-between py-1 md:py-2">
-        <div>
-          <h4 className="text-lg md:text-xl font-black tracking-tighter">{name}</h4>
-          <p className="text-xs md:text-sm font-bold tracking-widest text-gray-500 mt-1">{details}</p>
-        </div>
-        <div className="flex justify-between items-end">
-          <span className="text-base md:text-lg font-bold">{price}</span>
-          <button className="text-[10px] md:text-xs font-bold tracking-widest underline underline-offset-4 active:text-gray-400 md:hover:text-gray-400 transition-colors">REMOVE</button>
-        </div>
-      </div>
-    </div>
-  )
+  );
 }

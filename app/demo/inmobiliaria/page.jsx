@@ -1,376 +1,286 @@
 "use client";
 
-import React, { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion";
-import Link from "next/link";
-import { ArrowLeft, ChevronDown, MapPin, Bed, Bath, Square, Instagram, Twitter, Linkedin, Menu, X } from "lucide-react";
-import DemoLayout from '@/components/DemoLayout';
+import React, { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { Phone, Mail, MapPin, Home, Bed, Bath, Maximize, ArrowRight, X, Menu, Search, Heart, Building, Star, ChevronDown } from "lucide-react";
+import DemoLayout from "@/components/DemoLayout";
 
-const MagneticButton = ({ children, className }) => {
-    const ref = useRef(null);
-    const [position, setPosition] = useState({ x: 0, y: 0 });
+const properties = [
+  { id: 1, title: "Ático con Terraza Panorámica", location: "Nervión, Sevilla", price: "520.000€", beds: 3, baths: 2, area: "165m²", type: "Ático", gradient: "from-[#1a2744] to-[#2a3a5a]", featured: true },
+  { id: 2, title: "Villa con Piscina Infinity", location: "Aljarafe, Sevilla", price: "890.000€", beds: 5, baths: 3, area: "340m²", type: "Villa", gradient: "from-[#2a3a5a] to-[#1a2744]", featured: true },
+  { id: 3, title: "Piso Reformado Centro Histórico", location: "Santa Cruz, Sevilla", price: "385.000€", beds: 2, baths: 1, area: "95m²", type: "Piso", gradient: "from-[#b8960c]/20 to-[#b8960c]/10", featured: false },
+  { id: 4, title: "Cortijo Restaurado con Olivar", location: "Carmona, Sevilla", price: "1.250.000€", beds: 6, baths: 4, area: "520m²", type: "Finca", gradient: "from-[#3a4a6a] to-[#2a3a5a]", featured: false },
+  { id: 5, title: "Loft Industrial Reconvertido", location: "Triana, Sevilla", price: "295.000€", beds: 1, baths: 1, area: "85m²", type: "Loft", gradient: "from-[#1a2744] to-[#0f172a]", featured: false },
+  { id: 6, title: "Chalet Pareado con Jardín", location: "Dos Hermanas", price: "425.000€", beds: 4, baths: 2, area: "210m²", type: "Chalet", gradient: "from-[#2a3a5a] to-[#3a4a6a]", featured: true },
+];
 
-    const mouseMove = (e) => {
-        if (window.innerWidth < 768) return;
-        const { clientX, clientY } = e;
-        const { width, height, left, top } = ref.current.getBoundingClientRect();
-        const x = clientX - (left + width / 2);
-        const y = clientY - (top + height / 2);
-        setPosition({ x: x * 0.2, y: y * 0.2 });
-    };
+const services = [
+  { title: "Compra", desc: "Te acompañamos en todo el proceso: búsqueda, visitas, negociación, financiación y notaría." },
+  { title: "Venta", desc: "Valoración profesional, fotografía premium, marketing digital y gestión de visitas cualificadas." },
+  { title: "Inversión", desc: "Análisis de rentabilidad, gestión de patrimonio inmobiliario y asesoría fiscal especializada." },
+  { title: "Alquiler Premium", desc: "Selección de inquilinos, contratos blindados, gestión integral y mantenimiento del inmueble." },
+];
 
-    const mouseLeave = () => {
-        setPosition({ x: 0, y: 0 });
-    };
+const team = [
+  { name: "Antonio Delgado", role: "Director · Fundador", exp: "22 años en el sector" },
+  { name: "Isabel Torres", role: "Directora Comercial", exp: "15 años, especialista lujo" },
+  { name: "Miguel Ángel Vega", role: "Asesor Financiero", exp: "Banca privada 12 años" },
+];
 
-    const { x, y } = position;
+const stats = [
+  { value: "350+", label: "Propiedades vendidas" },
+  { value: "98%", label: "Satisfacción cliente" },
+  { value: "45", label: "Días venta media" },
+  { value: "22", label: "Años de experiencia" },
+];
 
-    return (
-        <motion.div
-            ref={ref}
-            onMouseMove={mouseMove}
-            onMouseLeave={mouseLeave}
-            animate={{ x, y }}
-            transition={{ type: "spring", stiffness: 150, damping: 15, mass: 0.1 }}
-            className={className}
-        >
-            {children}
-        </motion.div>
-    );
-};
+export default function InmobiliariaDemo() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const [activeFilter, setActiveFilter] = useState("Todo");
+  const [selectedProperty, setSelectedProperty] = useState(null);
 
-const AccordionItem = ({ title, content, isOpen, onClick }) => {
-    return (
-        <div className="border-b border-[#D4AF37]/20 overflow-hidden">
-            <button
-                onClick={onClick}
-                className="w-full py-6 flex justify-between items-center text-left active:opacity-50 md:active:opacity-100 transition-opacity"
-            >
-                <span className="text-xl md:text-2xl font-light text-white uppercase tracking-widest">{title}</span>
-                <motion.div
-                    animate={{ rotate: isOpen ? 180 : 0 }}
-                    transition={{ duration: 0.5, ease: [0.76, 0, 0.24, 1] }}
-                >
-                    <ChevronDown className="text-[#D4AF37]" />
-                </motion.div>
-            </button>
-            <AnimatePresence>
-                {isOpen && (
-                    <motion.div
-                        initial={{ height: 0, opacity: 0 }}
-                        animate={{ height: "auto", opacity: 1 }}
-                        exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.5, ease: [0.76, 0, 0.24, 1] }}
-                    >
-                        <div className="pb-6 text-white/60 font-light leading-relaxed text-sm md:text-base">
-                            {content}
-                        </div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-        </div>
-    );
-};
+  const types = ["Todo", "Ático", "Villa", "Piso", "Finca", "Loft", "Chalet"];
+  const filtered = activeFilter === "Todo" ? properties : properties.filter(p => p.type === activeFilter);
 
-const MobileMenu = ({ isOpen, setIsOpen }) => {
-    return (
+  return (
+    <DemoLayout title="Meridian" year="2026">
+      <div className="text-white selection:bg-[#b8960c] selection:text-[#0f172a] overflow-x-hidden bg-[#0f172a]" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
+
+        {/* ═══ MOBILE MENU ═══ */}
         <AnimatePresence>
-            {isOpen && (
-                <motion.div
-                    initial={{ opacity: 0, y: "-100%" }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: "-100%" }}
-                    transition={{ duration: 0.7, ease: [0.76, 0, 0.24, 1] }}
-                    className="fixed inset-0 z-40 bg-[#0A1128] flex flex-col items-center justify-center md:hidden"
-                >
-                    <div className="flex flex-col items-center gap-8 text-2xl font-serif text-white tracking-widest uppercase">
-                        <motion.a whileTap={{ scale: 0.9 }} href="#" onClick={() => setIsOpen(false)} className="active:text-[#D4AF37]">Properties</motion.a>
-                        <motion.a whileTap={{ scale: 0.9 }} href="#" onClick={() => setIsOpen(false)} className="active:text-[#D4AF37]">Standards</motion.a>
-                        <motion.a whileTap={{ scale: 0.9 }} href="#" onClick={() => setIsOpen(false)} className="active:text-[#D4AF37]">Contact</motion.a>
-                    </div>
-                </motion.div>
-            )}
+          {menuOpen && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="fixed inset-0 bg-[#0f172a] z-[90] flex flex-col justify-center items-center md:hidden">
+              <button onClick={() => setMenuOpen(false)} className="absolute top-6 right-6"><X className="w-6 h-6" /></button>
+              <nav className="flex flex-col gap-6 text-center">
+                {["Propiedades", "Servicios", "Equipo", "Contacto"].map((item, i) => (
+                  <motion.a key={item} initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: i * 0.08 }}
+                    className="text-2xl font-light tracking-wide" onClick={() => setMenuOpen(false)} href={`#${item.toLowerCase()}`}>{item}</motion.a>
+                ))}
+              </nav>
+            </motion.div>
+          )}
         </AnimatePresence>
-    );
-};
 
-export default function VantageRealEstate() {
-    const [openAccordion, setOpenAccordion] = useState(0);
-    const [menuOpen, setMenuOpen] = useState(false);
-    const carouselRef = useRef(null);
-    const [carouselWidth, setCarouselWidth] = useState(0);
-    
-    const { scrollYProgress } = useScroll();
-    const heroY = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
-    const heroOpacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+        {/* ═══ NAV ═══ */}
+        <nav className="fixed top-0 left-0 w-full px-6 md:px-12 py-5 flex justify-between items-center z-[80] bg-[#0f172a]/90 backdrop-blur-xl border-b border-[#b8960c]/5">
+          <div className="flex items-center gap-2">
+            <Building className="w-4 h-4 text-[#b8960c]" />
+            <span className="text-sm font-medium tracking-[0.15em] text-[#b8960c]">MERIDIAN</span>
+          </div>
+          <div className="hidden md:flex items-center gap-8">
+            {["Propiedades", "Servicios", "Equipo"].map(item => (
+              <a key={item} href={`#${item.toLowerCase()}`} className="text-xs text-white/40 hover:text-[#b8960c] transition-colors">{item}</a>
+            ))}
+            <a href="#contacto" className="px-5 py-2 border border-[#b8960c]/30 text-[#b8960c] text-xs tracking-[0.1em] hover:bg-[#b8960c] hover:text-[#0f172a] transition-all">Contactar</a>
+          </div>
+          <button onClick={() => setMenuOpen(true)} className="md:hidden"><Menu className="w-5 h-5 text-[#b8960c]" /></button>
+        </nav>
 
-    useEffect(() => {
-        const updateWidth = () => {
-            if (carouselRef.current) {
-                setCarouselWidth(carouselRef.current.scrollWidth - carouselRef.current.offsetWidth);
-            }
-        };
-        updateWidth();
-        window.addEventListener("resize", updateWidth);
-        return () => window.removeEventListener("resize", updateWidth);
-    }, []);
+        {/* ═══════════════════════════════════
+            1. HERO — LUXURY NAVY
+        ═══════════════════════════════════ */}
+        <section className="min-h-screen flex flex-col justify-center px-6 md:px-16 pt-24 pb-16 relative overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#0f172a] via-[#162042] to-[#0f172a]" />
+          <div className="absolute bottom-0 right-0 w-[40%] h-[60%] bg-gradient-to-tl from-[#b8960c]/5 to-transparent" />
 
-    const properties = [
-        { id: 1, title: "Villa Nova", price: "€4.5M", location: "Marbella, Spain", img: "https://loremflickr.com/1200/1600/mansion,luxury?random=1" },
-        { id: 2, title: "The Penthouse", price: "€2.1M", location: "Dubai, UAE", img: "https://loremflickr.com/1200/1600/mansion,luxury?random=2" },
-        { id: 3, title: "Coastal Estate", price: "€8.9M", location: "Malibu, USA", img: "https://loremflickr.com/1200/1600/mansion,luxury?random=3" },
-        { id: 4, title: "Alpine Retreat", price: "€6.2M", location: "St. Moritz, CH", img: "https://loremflickr.com/1200/1600/mansion,luxury?random=4" }
-    ];
+          <div className="relative z-10 max-w-5xl mx-auto w-full">
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+              <div className="w-12 h-[1px] bg-[#b8960c]/30 mb-8" />
+              <span className="text-[10px] tracking-[0.5em] uppercase text-[#b8960c]/50 block mb-6">Inmobiliaria de prestigio · Sevilla</span>
+            </motion.div>
 
-    const accordionData = [
-        { title: "Amenities", content: "State-of-the-art smart home integration, infinity pool with panoramic views, private cinema room, subterranean wine cellar with climate control, and a fully equipped wellness center including sauna and steam room." },
-        { title: "Location", content: "Perched atop the exclusive hills of the golden mile, offering absolute privacy while being merely minutes away from world-class dining, luxury boutiques, and the pristine coastline." },
-        { title: "Floorplan", content: "Expansive 1,200 sqm of meticulously designed living space spread across three levels. Features include a grand double-height entrance, 6 en-suite bedrooms, staff quarters, and an 8-car gallery garage." }
-    ];
+            <motion.h1 initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2, duration: 0.8 }}
+              className="text-[clamp(2.5rem,7vw,5rem)] font-light leading-[1.1] tracking-tight mb-8" style={{ fontFamily: "Georgia, serif" }}>
+              Propiedades que<br/>
+              <span className="italic text-[#b8960c]">definen un estilo de vida.</span>
+            </motion.h1>
 
-    return (
-        <DemoLayout title="Agencia Inmobiliaria">
-        <div className="text-white font-sans selection:bg-[#D4AF37] selection:text-[#0A1128] overflow-x-hidden">
-            <nav className="fixed top-0 left-0 w-full z-50 px-6 py-6 md:py-8 md:px-12 flex justify-between items-center mix-blend-difference">
-                <div className="pointer-events-auto flex items-center gap-4">
-                    <Link href="/" className="group flex items-center gap-2 text-white/80 md:hover:text-[#D4AF37] active:text-[#D4AF37] transition-colors duration-300">
-                        <motion.div whileHover={{ x: -5 }} whileTap={{ scale: 0.9 }} transition={{ type: "spring", stiffness: 300, damping: 20 }}>
-                            <ArrowLeft className="w-6 h-6 md:w-5 md:h-5" />
-                        </motion.div>
-                        <span className="hidden md:block text-sm tracking-widest uppercase font-medium">Catálogo</span>
-                    </Link>
-                </div>
-                <div className="text-xl md:text-3xl font-serif tracking-widest text-[#D4AF37] uppercase text-center absolute left-1/2 -translate-x-1/2 pointer-events-auto">
-                    Vantage
-                </div>
-                <div className="hidden md:block text-sm tracking-widest uppercase font-medium text-white/80 pointer-events-auto">
-                    Est. 2024
-                </div>
-                <div className="md:hidden pointer-events-auto">
-                    <motion.button 
-                        whileTap={{ scale: 0.9 }}
-                        onClick={() => setMenuOpen(!menuOpen)} 
-                        className="text-white focus:outline-none"
-                    >
-                        {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-                    </motion.button>
-                </div>
-            </nav>
+            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
+              className="text-base text-white/30 max-w-lg mb-10 leading-relaxed">
+              Más de 20 años seleccionando las mejores propiedades del mercado sevillano. Asesoramiento integral y exclusivo.
+            </motion.p>
 
-            <MobileMenu isOpen={menuOpen} setIsOpen={setMenuOpen} />
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }}
+              className="flex gap-4">
+              <a href="#propiedades" className="px-8 py-3.5 bg-[#b8960c] text-[#0f172a] text-xs font-semibold tracking-[0.1em] hover:bg-[#c9a71d] transition-colors">Ver Propiedades</a>
+              <a href="#contacto" className="px-8 py-3.5 border border-white/10 text-white/60 text-xs tracking-[0.1em] hover:border-[#b8960c]/30 hover:text-[#b8960c] transition-all">Contactar</a>
+            </motion.div>
+          </div>
 
-            <section className="relative w-full h-[100svh] flex items-center justify-center overflow-hidden">
-                <motion.div
-                    initial={{ scale: 1.1 }}
-                    animate={{ scale: 1 }}
-                    style={{ y: heroY, opacity: heroOpacity }}
-                    transition={{ duration: 2, ease: "easeOut" }}
-                    className="absolute inset-0 z-0"
-                >
-                    <img src="https://loremflickr.com/1920/1080/mansion,luxury?random=hero" alt="Luxury Mansion" className="w-full h-full object-cover opacity-60" />
-                    <div className="absolute inset-0 bg-gradient-to-b from-[#0A1128]/60 md:from-[#0A1128]/40 via-transparent to-[#0A1128]"></div>
-                </motion.div>
-                <div className="relative z-10 flex flex-col items-center text-center px-4 mt-20 w-full">
-                    <motion.h1
-                        initial={{ y: 100, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ duration: 1.2, ease: [0.76, 0, 0.24, 1], delay: 0.2 }}
-                        className="text-6xl md:text-9xl leading-[0.9] font-serif text-white tracking-tighter mb-4 md:mb-6"
-                    >
-                        Beyond Living
-                    </motion.h1>
-                    <motion.p
-                        initial={{ y: 50, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        transition={{ duration: 1, ease: [0.76, 0, 0.24, 1], delay: 0.4 }}
-                        className="text-[#D4AF37] tracking-[0.2em] md:tracking-[0.3em] uppercase text-xs md:text-lg max-w-[80%] mx-auto leading-relaxed"
-                    >
-                        Curating the world&apos;s most extraordinary homes
-                    </motion.p>
-                </div>
-            </section>
+          {/* Stats strip */}
+          <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 1 }}
+            className="relative z-10 max-w-5xl mx-auto w-full mt-20 grid grid-cols-2 md:grid-cols-4 gap-8 p-8 border-t border-[#b8960c]/10">
+            {stats.map((s, i) => (
+              <div key={i}>
+                <span className="text-3xl font-light text-[#b8960c]" style={{ fontFamily: "Georgia, serif" }}>{s.value}</span>
+                <p className="text-[10px] text-white/20 tracking-wide uppercase mt-1">{s.label}</p>
+              </div>
+            ))}
+          </motion.div>
+        </section>
 
-            <section className="py-24 md:py-32 px-6 md:px-12 bg-[#0A1128]">
-                <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start md:items-end mb-12 md:mb-16 gap-6 md:gap-8">
-                    <h2 className="text-[clamp(2.5rem,6vw,4rem)] font-serif text-white max-w-2xl leading-tight">
-                        Exclusive <span className="text-[#D4AF37] italic">Properties</span>
-                    </h2>
-                    <p className="text-white/60 max-w-sm font-light leading-relaxed text-sm md:text-base">
-                        Swipe to explore our handpicked selection of exceptional estates designed for the most discerning individuals.
-                    </p>
-                </div>
-                
-                <div className="relative w-full overflow-hidden" ref={carouselRef}>
-                    <motion.div
-                        drag="x"
-                        dragConstraints={{ right: 0, left: -carouselWidth }}
-                        dragElastic={0.1}
-                        className="flex gap-4 md:gap-8 cursor-grab active:cursor-grabbing w-max pr-[10vw]"
-                    >
-                        {properties.map((prop, idx) => (
-                            <motion.div
-                                key={prop.id}
-                                initial={{ opacity: 0, x: 50 }}
-                                whileInView={{ opacity: 1, x: 0 }}
-                                viewport={{ once: true, margin: "-10%" }}
-                                transition={{ duration: 0.8, delay: idx * 0.1 }}
-                                whileTap={{ scale: 0.98 }}
-                                className="relative w-[85vw] md:w-[40vw] h-[55vh] md:h-[70vh] flex-shrink-0 group overflow-hidden touch-pan-y"
-                            >
-                                <div className="absolute inset-0 bg-[#0A1128]/40 md:bg-[#0A1128]/20 md:group-hover:bg-transparent transition-colors duration-700 z-10 pointer-events-none" />
-                                <motion.img
-                                    whileHover={{ scale: 1.05 }}
-                                    transition={{ duration: 0.8, ease: "easeOut" }}
-                                    src={prop.img}
-                                    alt={prop.title}
-                                    className="w-full h-full object-cover grayscale-[20%] md:grayscale-[30%] md:group-hover:grayscale-0 transition-all duration-700"
-                                    draggable={false}
-                                />
-                                <div className="absolute bottom-0 left-0 w-full p-6 md:p-8 z-20 bg-gradient-to-t from-[#0A1128] via-[#0A1128]/80 to-transparent pointer-events-none">
-                                    <div className="flex flex-col md:flex-row md:justify-between md:items-end gap-2 md:gap-0">
-                                        <div>
-                                            <p className="flex items-center gap-2 text-[#D4AF37] text-xs md:text-sm uppercase tracking-widest mb-2 font-medium">
-                                                <MapPin className="w-3 h-3 md:w-4 md:h-4" /> {prop.location}
-                                            </p>
-                                            <h3 className="text-2xl md:text-4xl font-serif text-white">{prop.title}</h3>
-                                        </div>
-                                        <p className="text-xl md:text-2xl font-light text-white">{prop.price}</p>
-                                    </div>
-                                </div>
-                            </motion.div>
-                        ))}
-                    </motion.div>
-                </div>
-            </section>
+        {/* ═══════════════════════════════════
+            2. PROPIEDADES — GRID
+        ═══════════════════════════════════ */}
+        <section id="propiedades" className="py-20 md:py-32 px-6 md:px-16 bg-[#0a0f1e]">
+          <div className="max-w-6xl mx-auto">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
+              <div>
+                <span className="text-[10px] tracking-[0.3em] uppercase text-[#b8960c] block mb-3">Portfolio</span>
+                <h2 className="text-3xl md:text-4xl font-light tracking-tight" style={{ fontFamily: "Georgia, serif" }}>Propiedades destacadas</h2>
+              </div>
+              <div className="flex gap-2 overflow-x-auto pb-2">
+                {types.slice(0, 5).map(t => (
+                  <button key={t} onClick={() => setActiveFilter(t)}
+                    className={`px-4 py-2 text-[10px] tracking-[0.1em] uppercase border transition-all whitespace-nowrap ${activeFilter === t ? 'border-[#b8960c] bg-[#b8960c]/10 text-[#b8960c]' : 'border-white/5 text-white/30 hover:border-white/10'}`}>{t}</button>
+                ))}
+              </div>
+            </div>
 
-            <section className="py-24 md:py-32 px-6 md:px-12 bg-[#0d1530]">
-                <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-20 items-center">
-                    <motion.div
-                        initial={{ opacity: 0, y: 50 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true, margin: "-10%" }}
-                        transition={{ duration: 1 }}
-                        className="relative aspect-[4/5] w-full"
-                    >
-                        <img src="https://loremflickr.com/1000/1200/mansion,interior?random=details" alt="Interior" className="w-full h-full object-cover" />
-                        <motion.div 
-                            initial={{ scale: 0 }}
-                            whileInView={{ scale: 1 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 0.6, delay: 0.4, type: "spring" }}
-                            className="absolute -bottom-6 -right-6 md:-bottom-10 md:-right-10 w-32 h-32 md:w-64 md:h-64 bg-[#D4AF37] p-4 md:p-8 flex flex-col justify-center items-center text-center z-10"
-                        >
-                            <span className="text-3xl md:text-5xl font-serif text-[#0A1128] mb-1 md:mb-2">24/7</span>
-                            <span className="text-[#0A1128] text-[0.6rem] md:text-sm tracking-widest uppercase font-semibold">Concierge</span>
-                        </motion.div>
-                    </motion.div>
-                    
-                    <div className="mt-8 md:mt-0">
-                        <motion.h2
-                            initial={{ opacity: 0, y: 30 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 1 }}
-                            className="text-[clamp(2.5rem,5vw,3.75rem)] leading-tight font-serif text-white mb-8 md:mb-12"
-                        >
-                            The <span className="text-[#D4AF37] italic">Vantage</span> Standard
-                        </motion.h2>
-                        
-                        <div className="flex flex-col gap-2">
-                            {accordionData.map((item, i) => (
-                                <AccordionItem
-                                    key={i}
-                                    title={item.title}
-                                    content={item.content}
-                                    isOpen={openAccordion === i}
-                                    onClick={() => setOpenAccordion(openAccordion === i ? -1 : i)}
-                                />
-                            ))}
-                        </div>
-
-                        <motion.div
-                            initial={{ opacity: 0 }}
-                            whileInView={{ opacity: 1 }}
-                            viewport={{ once: true }}
-                            transition={{ duration: 1, delay: 0.3 }}
-                            className="mt-12 md:mt-16 grid grid-cols-3 gap-4 md:gap-6 border-t border-[#D4AF37]/20 pt-8 md:pt-12"
-                        >
-                            <div className="flex flex-col gap-1 md:gap-2">
-                                <Bed className="w-5 h-5 md:w-6 md:h-6 text-[#D4AF37]" />
-                                <span className="text-2xl md:text-3xl font-light text-white">6</span>
-                                <span className="text-[0.6rem] md:text-xs uppercase tracking-widest text-white/50">Bedrooms</span>
-                            </div>
-                            <div className="flex flex-col gap-1 md:gap-2">
-                                <Bath className="w-5 h-5 md:w-6 md:h-6 text-[#D4AF37]" />
-                                <span className="text-2xl md:text-3xl font-light text-white">8</span>
-                                <span className="text-[0.6rem] md:text-xs uppercase tracking-widest text-white/50">Bathrooms</span>
-                            </div>
-                            <div className="flex flex-col gap-1 md:gap-2">
-                                <Square className="w-5 h-5 md:w-6 md:h-6 text-[#D4AF37]" />
-                                <span className="text-2xl md:text-3xl font-light text-white">1.2k</span>
-                                <span className="text-[0.6rem] md:text-xs uppercase tracking-widest text-white/50">Sq. Meters</span>
-                            </div>
-                        </motion.div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+              <AnimatePresence mode="popLayout">
+                {filtered.map((p, i) => (
+                  <motion.div key={p.id} layout initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, scale: 0.95 }} transition={{ delay: i * 0.05 }}
+                    className="group cursor-pointer" onClick={() => setSelectedProperty(p)}>
+                    <div className={`aspect-[4/3] bg-gradient-to-br ${p.gradient} relative overflow-hidden mb-4`}>
+                      {p.featured && <span className="absolute top-3 left-3 px-2 py-1 text-[8px] tracking-wide uppercase bg-[#b8960c] text-[#0f172a] font-semibold">Destacada</span>}
+                      <button className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/10 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity backdrop-blur-sm">
+                        <Heart className="w-3.5 h-3.5" />
+                      </button>
+                      <div className="absolute bottom-3 left-3 right-3 flex gap-3">
+                        <span className="flex items-center gap-1 text-[10px] text-white/50"><Bed className="w-3 h-3" />{p.beds}</span>
+                        <span className="flex items-center gap-1 text-[10px] text-white/50"><Bath className="w-3 h-3" />{p.baths}</span>
+                        <span className="flex items-center gap-1 text-[10px] text-white/50"><Maximize className="w-3 h-3" />{p.area}</span>
+                      </div>
                     </div>
-                </div>
-            </section>
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <h3 className="text-sm font-medium group-hover:text-[#b8960c] transition-colors">{p.title}</h3>
+                        <p className="text-[10px] text-white/30 mt-0.5 flex items-center gap-1"><MapPin className="w-3 h-3" />{p.location}</p>
+                      </div>
+                      <span className="text-sm font-semibold text-[#b8960c]">{p.price}</span>
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
+          </div>
+        </section>
 
-            <section className="py-32 md:py-40 px-6 md:px-12 flex flex-col items-center justify-center text-center relative overflow-hidden bg-[#0A1128]">
-                <div className="absolute inset-0 opacity-5 pointer-events-none">
-                    <svg className="w-full h-full" viewBox="0 0 100 100" preserveAspectRatio="none">
-                        <path d="M0,0 L100,100 M100,0 L0,100" stroke="#D4AF37" strokeWidth="0.5" />
-                    </svg>
+        {/* ═══ PROPERTY MODAL ═══ */}
+        <AnimatePresence>
+          {selectedProperty && (
+            <>
+              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                onClick={() => setSelectedProperty(null)} className="fixed inset-0 bg-black/50 backdrop-blur-md z-[100]" />
+              <motion.div initial={{ opacity: 0, y: 80 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: 80 }}
+                className="fixed inset-4 md:inset-12 bg-[#0f172a] z-[101] overflow-y-auto p-8 md:p-16 border border-[#b8960c]/10">
+                <button onClick={() => setSelectedProperty(null)} className="absolute top-6 right-6"><X className="w-5 h-5 text-[#b8960c]" /></button>
+                <span className="text-[10px] tracking-[0.3em] uppercase text-[#b8960c]/50">{selectedProperty.type} · {selectedProperty.location}</span>
+                <h2 className="text-3xl md:text-5xl font-light tracking-tight mt-3 mb-4" style={{ fontFamily: "Georgia, serif" }}>{selectedProperty.title}</h2>
+                <span className="text-3xl text-[#b8960c] font-light">{selectedProperty.price}</span>
+                <div className="flex gap-6 mt-6 mb-8">
+                  <span className="flex items-center gap-2 text-sm text-white/40"><Bed className="w-4 h-4" />{selectedProperty.beds} hab.</span>
+                  <span className="flex items-center gap-2 text-sm text-white/40"><Bath className="w-4 h-4" />{selectedProperty.baths} baños</span>
+                  <span className="flex items-center gap-2 text-sm text-white/40"><Maximize className="w-4 h-4" />{selectedProperty.area}</span>
                 </div>
-                <motion.h2
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    whileInView={{ opacity: 1, scale: 1 }}
-                    viewport={{ once: true }}
-                    transition={{ duration: 1 }}
-                    className="text-[clamp(2.5rem,8vw,5rem)] leading-tight font-serif text-white mb-8 md:mb-10 max-w-4xl"
-                >
-                    Ready to step into <span className="text-[#D4AF37] italic">extraordinary</span>?
-                </motion.h2>
-                
-                <MagneticButton className="relative group cursor-pointer inline-block mt-4 md:mt-8">
-                    <motion.div whileTap={{ scale: 0.95 }} className="relative">
-                        <div className="absolute inset-0 bg-[#D4AF37] rounded-full scale-0 md:group-hover:scale-100 transition-transform duration-500 ease-out" />
-                        <div className="relative px-8 py-5 md:px-12 md:py-6 border border-[#D4AF37] rounded-full flex items-center justify-center gap-4 transition-colors duration-500 md:group-hover:border-transparent active:bg-[#D4AF37]">
-                            <span className="text-[#D4AF37] md:group-hover:text-[#0A1128] active:text-[#0A1128] uppercase tracking-[0.15em] md:tracking-[0.2em] font-medium text-xs md:text-sm transition-colors duration-500">
-                                Contact Private Agent
-                            </span>
-                        </div>
-                    </motion.div>
-                </MagneticButton>
-            </section>
+                <div className={`aspect-video bg-gradient-to-br ${selectedProperty.gradient} mb-8`} />
+                <a href="#contacto" onClick={() => setSelectedProperty(null)}
+                  className="inline-flex items-center gap-2 px-8 py-3.5 bg-[#b8960c] text-[#0f172a] text-xs font-semibold tracking-[0.1em] hover:bg-[#c9a71d] transition-colors">
+                  Solicitar Visita <ArrowRight className="w-3 h-3" />
+                </a>
+              </motion.div>
+            </>
+          )}
+        </AnimatePresence>
 
-            <footer className="px-6 md:px-12 py-10 md:py-12 bg-[#050914] text-white/60 text-xs md:text-sm font-light flex flex-col md:flex-row justify-between items-center gap-8 md:gap-6">
-                <div className="font-serif text-xl md:text-2xl text-white tracking-widest uppercase">
-                    Vantage
+        {/* ═══════════════════════════════════
+            3. SERVICIOS
+        ═══════════════════════════════════ */}
+        <section id="servicios" className="py-20 md:py-32 px-6 md:px-16 bg-[#0f172a]">
+          <div className="max-w-5xl mx-auto">
+            <span className="text-[10px] tracking-[0.3em] uppercase text-[#b8960c] block mb-3">Servicios</span>
+            <h2 className="text-3xl md:text-4xl font-light tracking-tight mb-16" style={{ fontFamily: "Georgia, serif" }}>Lo que ofrecemos</h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {services.map((s, i) => (
+                <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.1 }} viewport={{ once: true }}
+                  className="p-6 md:p-8 border border-white/5 hover:border-[#b8960c]/20 transition-colors group">
+                  <span className="text-xs text-[#b8960c]/30 font-medium">{String(i + 1).padStart(2, '0')}</span>
+                  <h3 className="text-xl font-medium mt-4 mb-3 group-hover:text-[#b8960c] transition-colors" style={{ fontFamily: "Georgia, serif" }}>{s.title}</h3>
+                  <p className="text-sm text-white/30 leading-relaxed">{s.desc}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ═══════════════════════════════════
+            4. EQUIPO
+        ═══════════════════════════════════ */}
+        <section id="equipo" className="py-20 md:py-32 px-6 md:px-16 bg-[#0a0f1e]">
+          <div className="max-w-5xl mx-auto">
+            <span className="text-[10px] tracking-[0.3em] uppercase text-[#b8960c] block mb-3">Equipo</span>
+            <h2 className="text-3xl md:text-4xl font-light tracking-tight mb-16" style={{ fontFamily: "Georgia, serif" }}>Profesionales de confianza</h2>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {team.map((m, i) => (
+                <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.15 }} viewport={{ once: true }} className="text-center">
+                  <div className="w-20 h-20 mx-auto mb-4 border border-[#b8960c]/15 flex items-center justify-center">
+                    <span className="text-lg font-light text-[#b8960c]/40">{m.name.split(' ').map(n => n[0]).join('')}</span>
+                  </div>
+                  <h3 className="text-sm font-medium">{m.name}</h3>
+                  <p className="text-[10px] text-[#b8960c]/50 mt-1">{m.role}</p>
+                  <p className="text-[10px] text-white/20 mt-1">{m.exp}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ═══════════════════════════════════
+            5. CONTACTO
+        ═══════════════════════════════════ */}
+        <section id="contacto" className="py-20 md:py-32 px-6 md:px-16 bg-[#0f172a]">
+          <div className="max-w-4xl mx-auto">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-16">
+              <div>
+                <span className="text-[10px] tracking-[0.3em] uppercase text-[#b8960c] block mb-3">Contacto</span>
+                <h2 className="text-3xl font-light tracking-tight mb-6" style={{ fontFamily: "Georgia, serif" }}>
+                  Hablemos de su<br/><span className="italic text-[#b8960c]">próxima propiedad.</span>
+                </h2>
+                <div className="space-y-4 text-sm text-white/40">
+                  <a href="tel:+34955678901" className="flex items-center gap-3 hover:text-[#b8960c] transition-colors"><Phone className="w-4 h-4" /> +34 955 678 901</a>
+                  <a href="mailto:info@meridian.es" className="flex items-center gap-3 hover:text-[#b8960c] transition-colors"><Mail className="w-4 h-4" /> info@meridian.es</a>
+                  <div className="flex items-center gap-3"><MapPin className="w-4 h-4" /> Av. de la Palmera 32, Sevilla</div>
                 </div>
-                <div className="flex gap-6 md:gap-8 uppercase tracking-widest">
-                    <motion.a whileTap={{ scale: 0.9 }} href="#" className="md:hover:text-[#D4AF37] active:text-[#D4AF37] transition-colors">Privacy</motion.a>
-                    <motion.a whileTap={{ scale: 0.9 }} href="#" className="md:hover:text-[#D4AF37] active:text-[#D4AF37] transition-colors">Terms</motion.a>
-                    <motion.a whileTap={{ scale: 0.9 }} href="#" className="md:hover:text-[#D4AF37] active:text-[#D4AF37] transition-colors">Imprint</motion.a>
-                </div>
-                <div className="flex gap-4">
-                    <MagneticButton>
-                        <motion.a whileTap={{ scale: 0.9 }} href="#" className="w-10 h-10 border border-white/20 rounded-full flex items-center justify-center md:hover:border-[#D4AF37] md:hover:text-[#D4AF37] active:border-[#D4AF37] active:text-[#D4AF37] transition-colors">
-                            <Instagram className="w-4 h-4" />
-                        </motion.a>
-                    </MagneticButton>
-                    <MagneticButton>
-                        <motion.a whileTap={{ scale: 0.9 }} href="#" className="w-10 h-10 border border-white/20 rounded-full flex items-center justify-center md:hover:border-[#D4AF37] md:hover:text-[#D4AF37] active:border-[#D4AF37] active:text-[#D4AF37] transition-colors">
-                            <Twitter className="w-4 h-4" />
-                        </motion.a>
-                    </MagneticButton>
-                    <MagneticButton>
-                        <motion.a whileTap={{ scale: 0.9 }} href="#" className="w-10 h-10 border border-white/20 rounded-full flex items-center justify-center md:hover:border-[#D4AF37] md:hover:text-[#D4AF37] active:border-[#D4AF37] active:text-[#D4AF37] transition-colors">
-                            <Linkedin className="w-4 h-4" />
-                        </motion.a>
-                    </MagneticButton>
-                </div>
-            </footer>
-        </div>
-        </DemoLayout>
-    );
+              </div>
+              <div className="space-y-4">
+                <input type="text" placeholder="Nombre completo" className="w-full px-0 py-3 text-sm bg-transparent border-b border-white/5 outline-none focus:border-[#b8960c]/30 transition-colors placeholder:text-white/15" />
+                <input type="email" placeholder="Email" className="w-full px-0 py-3 text-sm bg-transparent border-b border-white/5 outline-none focus:border-[#b8960c]/30 transition-colors placeholder:text-white/15" />
+                <input type="tel" placeholder="Teléfono" className="w-full px-0 py-3 text-sm bg-transparent border-b border-white/5 outline-none focus:border-[#b8960c]/30 transition-colors placeholder:text-white/15" />
+                <select className="w-full px-0 py-3 text-sm bg-transparent border-b border-white/5 outline-none focus:border-[#b8960c]/30 transition-colors text-white/30">
+                  <option>Interés</option><option>Comprar</option><option>Vender</option><option>Invertir</option><option>Alquilar</option>
+                </select>
+                <button className="mt-4 px-8 py-3 bg-[#b8960c] text-[#0f172a] text-xs font-semibold tracking-[0.1em] hover:bg-[#c9a71d] transition-colors">Enviar Consulta</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ═══ FOOTER ═══ */}
+        <footer className="py-8 px-6 md:px-16 border-t border-[#b8960c]/5">
+          <div className="max-w-5xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="flex items-center gap-2"><Building className="w-3 h-3 text-[#b8960c]/20" /><p className="text-[10px] text-white/15">© 2026 Meridian Inmobiliaria S.L.</p></div>
+            <p className="text-[10px] text-white/15">Av. de la Palmera 32, Sevilla</p>
+          </div>
+        </footer>
+
+      </div>
+    </DemoLayout>
+  );
 }
