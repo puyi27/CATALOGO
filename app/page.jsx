@@ -1,12 +1,10 @@
 import HeroKinetic from "@/components/HeroKinetic";
 import PortfolioGrid from "@/components/PortfolioGrid";
 import PortfolioBook from "@/components/PortfolioBook";
-import CursorMagnetico from "@/components/CursorMagnetico";
 
 export default function Home() {
   return (
-    <main className="flex flex-col relative w-full overflow-hidden md:cursor-none">
-      <CursorMagnetico />
+    <main className="flex flex-col relative w-full md:cursor-none">
       <HeroKinetic />
       <PortfolioGrid />
       <section className="w-full flex flex-col items-center justify-center bg-gradient-to-b from-[#050505] to-[#111111] py-24 border-t border-white/5 relative z-10">
