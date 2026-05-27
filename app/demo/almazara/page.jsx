@@ -39,20 +39,34 @@ export default function FincaLaAlmazara() {
       name: "Picual Reserva",
       price: "24€",
       notes: "Notas de tomate verde, higuera y hierba recién cortada.",
-      image: "https://loremflickr.com/600/800/oliveoil,bottle?lock=1"
+      gradient: "from-[#5a6b3a] via-[#3B4F2D] to-[#2a3a1e]"
     },
     {
       name: "Arbequina Suave",
       price: "22€",
       notes: "Aromas a manzana, plátano y almendra dulce.",
-      image: "https://loremflickr.com/600/800/oliveoil,bottle?lock=2"
+      gradient: "from-[#8a9a5a] via-[#6a7a4a] to-[#3B4F2D]"
     },
     {
       name: "Blend Familiar",
       price: "28€",
       notes: "Equilibrio perfecto con toques de alcachofa y nuez.",
-      image: "https://loremflickr.com/600/800/oliveoil,bottle?lock=3"
+      gradient: "from-[#4a5a2e] via-[#3B4F2D] to-[#1f2b18]"
     }
+  ]
+
+  const timeline = [
+    { year: "1890", text: "Don Manuel Romero planta los primeros 200 olivos en la Sierra Sur de Sevilla." },
+    { year: "1932", text: "Se construye la almazara de piedra que aún conservamos como museo." },
+    { year: "1978", text: "Tercera generación. Se introduce el prensado en frío con prensa hidráulica." },
+    { year: "2015", text: "Certificación ecológica y transición a energía solar 100%." },
+    { year: "2024", text: "Quinta generación. 12.000 olivos. Exportación a 8 países." },
+  ]
+
+  const testimonials = [
+    { name: "Marta G.", text: "El Picual Reserva tiene una intensidad que no he encontrado en ningún otro aceite. Puro campo andaluz.", loc: "Madrid" },
+    { name: "Pierre D.", text: "J'utilise l'Arbequina pour tous mes plats. C'est extraordinaire. La qualité est incomparable.", loc: "Lyon, Francia" },
+    { name: "Elena R.", text: "Visité la finca con mi familia. La experiencia es inolvidable. Volvemos cada otoño a la recolección.", loc: "Sevilla" },
   ]
 
   const stats = [
@@ -111,12 +125,8 @@ export default function FincaLaAlmazara() {
           className="absolute inset-0 z-0"
           style={{ y: useTransform(scrollYProgress, [0, 1], ["0%", "50%"]) }}
         >
-          <img 
-            src="https://loremflickr.com/1920/1080/olive,tree,nature?lock=30" 
-            alt="Olive groves" 
-            className="w-full h-full object-cover filter brightness-75 scale-105 pointer-events-none"
-          />
-          <div className="absolute inset-0 bg-black/30 pointer-events-none" />
+          <div className="w-full h-full bg-gradient-to-br from-[#5a6b3a] via-[#3B4F2D] to-[#1f2b18] scale-105 pointer-events-none" />
+          <div className="absolute inset-0 bg-black/20 pointer-events-none" />
         </motion.div>
         
         <div className="relative z-10 text-center text-[#F5F5E1] flex flex-col items-center px-4 w-full">
@@ -161,13 +171,13 @@ export default function FincaLaAlmazara() {
         
         <div className="w-full md:w-1/2 block">
           <div className="h-[60vh] md:h-screen w-full relative">
-            <img src="https://loremflickr.com/800/1200/olive,farmer?lock=41" alt="Harvest 1" className="w-full h-full object-cover pointer-events-none" />
+            <div className="w-full h-full bg-gradient-to-b from-[#6a7a4a] to-[#3B4F2D] pointer-events-none" />
           </div>
           <div className="h-[60vh] md:h-screen w-full relative">
-            <img src="https://loremflickr.com/800/1200/olive,nature?lock=42" alt="Harvest 2" className="w-full h-full object-cover pointer-events-none" />
+            <div className="w-full h-full bg-gradient-to-b from-[#3B4F2D] to-[#5a6b3a] pointer-events-none" />
           </div>
           <div className="h-[60vh] md:h-screen w-full relative">
-            <img src="https://loremflickr.com/800/1200/olive,tree?lock=43" alt="Harvest 3" className="w-full h-full object-cover pointer-events-none" />
+            <div className="w-full h-full bg-gradient-to-b from-[#4a5a2e] to-[#1f2b18] pointer-events-none" />
           </div>
         </div>
       </section>
@@ -196,7 +206,7 @@ export default function FincaLaAlmazara() {
                   className="w-full group relative flex flex-col items-center transition-transform"
                 >
                   <div className="w-full aspect-[3/4] overflow-hidden bg-black/10 relative mb-8 rounded-sm md:rounded-none">
-                    <img src={oil.image} alt={oil.name} className="w-full h-full object-cover transition-transform duration-1000 md:group-hover:scale-105 pointer-events-none" />
+                    <div className={`w-full h-full bg-gradient-to-br ${oil.gradient} transition-transform duration-1000 md:group-hover:scale-105`} />
                     <div className="flex absolute inset-0 bg-[#3B4F2D]/90 opacity-0 hover:opacity-100 active:opacity-100 md:group-hover:opacity-100 transition-opacity duration-500 items-center justify-center p-8 text-center pointer-events-none">
                       <p className="font-sans font-light text-[clamp(1rem,3vw,1.125rem)]">{oil.notes}</p>
                     </div>
@@ -244,7 +254,43 @@ export default function FincaLaAlmazara() {
         </div>
       </section>
 
-      <section className="py-32 md:py-40 px-6 bg-[#3B4F2D] text-[#F5F5E1] flex flex-col items-center text-center">
+      {/* ═══ HISTORIA ═══ */}
+      <section className="py-24 md:py-32 px-6 bg-[#F5F5E1]">
+        <div className="max-w-4xl mx-auto">
+          <h2 className="text-5xl md:text-7xl tracking-tighter font-light text-center mb-16 md:mb-20">Cinco Generaciones</h2>
+          <div className="space-y-8">
+            {timeline.map((t, i) => (
+              <motion.div key={i} initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }} transition={{ delay: i * 0.1 }}
+                className="flex items-start gap-6 md:gap-8 border-b border-[#3B4F2D]/10 pb-8">
+                <span className="text-3xl md:text-4xl font-light text-[#3B4F2D]/30 shrink-0 w-20">{t.year}</span>
+                <p className="font-sans font-light text-base md:text-lg opacity-70 leading-relaxed">{t.text}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ TESTIMONIOS ═══ */}
+      <section className="py-24 md:py-32 px-6 bg-[#3B4F2D] text-[#F5F5E1]">
+        <div className="max-w-5xl mx-auto">
+          <h2 className="text-5xl md:text-7xl tracking-tighter font-light text-center mb-16 md:mb-20">Lo Dicen Ellos</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            {testimonials.map((t, i) => (
+              <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }} transition={{ delay: i * 0.15 }}
+                className="border-l-2 border-[#F5F5E1]/20 pl-6">
+                <p className="font-sans font-light text-base leading-relaxed opacity-80 mb-4">"{t.text}"</p>
+                <p className="font-sans text-sm">{t.name}</p>
+                <p className="font-sans text-xs opacity-40">{t.loc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ═══ CTA ═══ */}
+      <section className="py-32 md:py-40 px-6 bg-[#F5F5E1] flex flex-col items-center text-center">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -257,12 +303,18 @@ export default function FincaLaAlmazara() {
             Pasea entre olivos centenarios, conoce la almazara desde dentro y degusta nuestra historia.
           </p>
           
-          <button className="w-full md:w-auto group relative inline-flex items-center justify-center px-8 md:px-12 py-5 md:py-6 border border-[#F5F5E1] overflow-hidden text-[clamp(1rem,3vw,1.125rem)] tracking-widest uppercase active:scale-95 transition-transform">
-            <div className="absolute inset-0 w-0 bg-[#F5F5E1] transition-all duration-[600ms] ease-out md:group-hover:w-full" />
-            <span className="relative text-[#F5F5E1] md:group-hover:text-[#3B4F2D] transition-colors duration-300">
+          <button className="w-full md:w-auto group relative inline-flex items-center justify-center px-8 md:px-12 py-5 md:py-6 border border-[#3B4F2D] overflow-hidden text-[clamp(1rem,3vw,1.125rem)] tracking-widest uppercase active:scale-95 transition-transform">
+            <div className="absolute inset-0 w-0 bg-[#3B4F2D] transition-all duration-[600ms] ease-out md:group-hover:w-full" />
+            <span className="relative text-[#3B4F2D] md:group-hover:text-[#F5F5E1] transition-colors duration-300">
               Reservar Visita
             </span>
           </button>
+
+          <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 font-sans text-sm">
+            <div><p className="opacity-40 mb-1">Dirección</p><p>Ctra. de Carmona km 12<br/>Alcalá de Guadaíra, Sevilla</p></div>
+            <div><p className="opacity-40 mb-1">Teléfono</p><p>+34 955 678 123</p></div>
+            <div><p className="opacity-40 mb-1">Horario Visitas</p><p>Sáb-Dom 10:00-14:00<br/>Oct-Feb: también Vie</p></div>
+          </div>
         </motion.div>
       </section>
 
