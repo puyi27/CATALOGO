@@ -1,359 +1,253 @@
 "use client";
 
-import React, { useState, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence, useMotionValue, useSpring } from "framer-motion";
 import Link from "next/link";
-import { ShoppingBag, X, Search, Heart, ChevronDown, ArrowRight, Star, Truck, Shield, RotateCcw, Menu } from "lucide-react";
+import { ShoppingCart, X, ArrowLeft, ArrowRight, Zap, Target, Shield, Globe } from "lucide-react";
 import DemoLayout from "@/components/DemoLayout";
 
-const collections = [
-  { id: "essentials", name: "Esenciales", season: "Todo el año" },
-  { id: "summer", name: "Verano 26", season: "Junio — Septiembre" },
-  { id: "limited", name: "Edición Limitada", season: "Solo 200 uds." },
-];
+export default function ObsidianApparel() {
+  const [isCartOpen, setIsCartOpen] = useState(false);
 
-const products = [
-  { id: 1, name: "Camisa Oversize Lino", price: 79, originalPrice: null, color: "Blanco Roto", collection: "essentials", new: false, bestseller: true, gradient: "from-[#f5f0e8] to-[#e8e0d0]" },
-  { id: 2, name: "Pantalón Wide Leg", price: 89, originalPrice: null, color: "Negro", collection: "essentials", new: false, bestseller: false, gradient: "from-[#1a1a1a] to-[#2d2d2d]" },
-  { id: 3, name: "Blazer Desestructurado", price: 149, originalPrice: 189, color: "Arena", collection: "summer", new: true, bestseller: false, gradient: "from-[#d4c5a9] to-[#b8a88a]" },
-  { id: 4, name: "Jersey Cashmere Blend", price: 119, originalPrice: null, color: "Gris Perla", collection: "essentials", new: false, bestseller: true, gradient: "from-[#c8c8c8] to-[#a8a8a8]" },
-  { id: 5, name: "Vestido Midi Fluido", price: 99, originalPrice: null, color: "Salvia", collection: "summer", new: true, bestseller: false, gradient: "from-[#9caf88] to-[#7d8f6e]" },
-  { id: 6, name: "Abrigo Cocoon", price: 229, originalPrice: null, color: "Camel", collection: "limited", new: true, bestseller: false, gradient: "from-[#c4a77d] to-[#a8885d]" },
-  { id: 7, name: "Top Asimétrico", price: 59, originalPrice: 79, color: "Crudo", collection: "summer", new: false, bestseller: false, gradient: "from-[#f0ebe0] to-[#ddd5c5]" },
-  { id: 8, name: "Bermuda Tailored", price: 69, originalPrice: null, color: "Marino", collection: "summer", new: false, bestseller: true, gradient: "from-[#1e2a3a] to-[#344a5f]" },
-];
+  const cursorX = useMotionValue(-100);
+  const cursorY = useMotionValue(-100);
+  const springConfig = { damping: 25, stiffness: 400 };
+  const cursorXSpring = useSpring(cursorX, springConfig);
+  const cursorYSpring = useSpring(cursorY, springConfig);
 
-const reviews = [
-  { name: "Elena M.", rating: 5, text: "La calidad del lino es increíble. Llevo comprando aquí 3 años y nunca decepciona.", product: "Camisa Oversize Lino", date: "Mayo 2026" },
-  { name: "Marta G.", rating: 5, text: "El blazer desestructurado es exactamente lo que buscaba. Corte perfecto, tela con caída espectacular.", product: "Blazer Desestructurado", date: "Abril 2026" },
-  { name: "Pablo R.", rating: 4, text: "Gran relación calidad-precio. El pantalón wide leg es muy cómodo y versátil.", product: "Pantalón Wide Leg", date: "Marzo 2026" },
-];
-
-export default function TiendaDemo() {
-  const [activeCollection, setActiveCollection] = useState("essentials");
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [cartOpen, setCartOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [hoveredProduct, setHoveredProduct] = useState(null);
-
-  const filtered = activeCollection === "all" ? products : products.filter(p => p.collection === activeCollection);
+  useEffect(() => {
+    const moveCursor = (e) => {
+      cursorX.set(e.clientX - 12);
+      cursorY.set(e.clientY - 12);
+    };
+    window.addEventListener("mousemove", moveCursor);
+    return () => {
+      window.removeEventListener("mousemove", moveCursor);
+    };
+  }, [cursorX, cursorY]);
 
   return (
-    <DemoLayout title="Atelier" year="2026">
-      <div className="text-[#111] selection:bg-black selection:text-white font-sans overflow-x-hidden bg-white">
+    <DemoLayout title="Tienda Dystopia">
+    <div className="text-white font-sans uppercase selection:bg-[#00FF00] selection:text-black md:cursor-none overflow-x-hidden">
+      <motion.div
+        className="hidden md:flex fixed top-0 left-0 w-6 h-6 border-2 border-[#00FF00] rounded-full pointer-events-none z-[100] mix-blend-difference items-center justify-center"
+        style={{ x: cursorXSpring, y: cursorYSpring }}
+      >
+        <div className="w-1 h-1 bg-[#00FF00] rounded-full" />
+      </motion.div>
 
-        {/* ═══ SEARCH OVERLAY ═══ */}
-        <AnimatePresence>
-          {searchOpen && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-white z-[100] flex flex-col items-center justify-start pt-32 px-6">
-              <button onClick={() => setSearchOpen(false)} className="absolute top-6 right-6"><X className="w-6 h-6" /></button>
-              <input type="text" placeholder="Buscar productos..." autoFocus
-                className="w-full max-w-2xl text-3xl md:text-5xl font-light tracking-tight border-b border-black/10 pb-4 outline-none placeholder:text-black/20 bg-transparent" />
-              <div className="mt-8 flex gap-4">
-                {["Lino", "Verano", "Oversize", "Cashmere"].map(t => (
-                  <span key={t} className="px-4 py-2 text-xs tracking-[0.15em] uppercase border border-black/10 rounded-full text-black/40 hover:border-black/30 cursor-pointer transition-colors">{t}</span>
-                ))}
+      <nav className="fixed top-0 left-0 w-full p-4 md:p-8 flex justify-between items-center z-50 mix-blend-difference pointer-events-none">
+        <Link href="/" className="pointer-events-auto flex items-center gap-2 md:hover:text-[#00FF00] transition-colors uppercase font-bold tracking-widest text-xs md:text-sm bg-black/20 p-2 md:p-3 rounded-lg backdrop-blur-sm active:scale-95">
+          <ArrowLeft size={16} /> <span className="hidden md:inline">CATÁLOGO</span>
+        </Link>
+        <div className="text-xl md:text-3xl font-black tracking-tighter pointer-events-auto">OBSIDIAN</div>
+        <button onClick={() => setIsCartOpen(true)} className="pointer-events-auto md:hover:text-[#00FF00] transition-colors flex items-center gap-2 md:gap-3 font-bold tracking-widest text-xs md:text-sm group bg-black/20 p-2 md:p-3 rounded-lg backdrop-blur-sm active:scale-95">
+          <span className="hidden md:inline">CART</span> <ShoppingCart size={18} className="md:group-hover:scale-110 transition-transform" />
+        </button>
+      </nav>
+
+      <header className="relative h-[100svh] w-full flex flex-col justify-end overflow-hidden pt-24">
+        <div className="absolute inset-0 z-0">
+           <img src="https://loremflickr.com/1920/1080/streetwear,fashion?lock=101" alt="Hero" className="w-full h-full object-cover opacity-60 grayscale md:hover:grayscale-0 transition-all duration-1000 scale-105 md:hover:scale-100" />
+           <div className="absolute inset-0 bg-black/40"></div>
+        </div>
+        
+        <div className="relative z-10 w-full overflow-hidden border-y border-[#00FF00]/30 py-4 md:py-6 bg-black/80 backdrop-blur-md">
+          <motion.div
+            animate={{ x: ["0%", "-50%"] }}
+            transition={{ repeat: Infinity, ease: "linear", duration: 15 }}
+            className="flex whitespace-nowrap text-[#00FF00] font-black text-6xl md:text-9xl tracking-tighter"
+          >
+            <span className="pr-8 md:pr-12">NEW COLLECTION DROP :: OBSIDIAN SS26 ::</span>
+            <span className="pr-8 md:pr-12">NEW COLLECTION DROP :: OBSIDIAN SS26 ::</span>
+            <span className="pr-8 md:pr-12">NEW COLLECTION DROP :: OBSIDIAN SS26 ::</span>
+            <span className="pr-8 md:pr-12">NEW COLLECTION DROP :: OBSIDIAN SS26 ::</span>
+          </motion.div>
+        </div>
+      </header>
+
+      <main>
+        <section className="py-20 md:py-32 px-4 md:px-6 max-w-[1400px] mx-auto overflow-hidden">
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 md:mb-16 gap-4 md:gap-6">
+            <h2 className="text-6xl md:text-9xl font-black tracking-tighter leading-none">INVENTORY</h2>
+            <p className="text-zinc-500 font-bold tracking-widest text-xs md:text-sm pb-1 md:pb-3">SEASON 26 :: CLASSIFIED GEAR</p>
+          </div>
+          
+          <motion.div 
+            className="flex md:grid md:grid-cols-3 gap-6 md:gap-8 overflow-x-auto md:overflow-visible snap-x snap-mandatory pb-8 md:pb-0 -mx-4 px-4 md:mx-0 md:px-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']"
+          >
+            <motion.div whileTap={{ scale: 0.96 }} className="group cursor-pointer min-w-[85vw] md:min-w-0 snap-center shrink-0">
+              <div className="relative aspect-[3/4] overflow-hidden bg-zinc-900 border border-white/10 md:group-hover:border-[#00FF00] transition-colors rounded-lg md:rounded-none">
+                <img src="https://loremflickr.com/800/1000/streetwear,fashion?lock=102" className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 opacity-100 md:group-hover:opacity-0 grayscale" alt="Heavyweight Tee 1" />
+                <img src="https://loremflickr.com/800/1000/streetwear,fashion?lock=103" className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 opacity-0 md:group-hover:opacity-100 grayscale md:group-hover:grayscale-0 scale-110 md:group-hover:scale-100" alt="Heavyweight Tee 2" />
+                <div className="absolute top-4 left-4 bg-[#00FF00] text-black text-[10px] md:text-xs font-black px-2 py-1 tracking-widest rounded-sm md:rounded-none">NEW</div>
+              </div>
+              <div className="mt-4 md:mt-6 flex justify-between items-start font-bold uppercase tracking-widest text-xs md:text-sm px-1 md:px-0">
+                <div>
+                  <h3 className="md:group-hover:text-[#00FF00] transition-colors text-base md:text-lg">HEAVYWEIGHT TEE</h3>
+                  <p className="text-zinc-500 mt-1 text-[10px] md:text-xs">BLACK / ONYX</p>
+                </div>
+                <div className="text-right text-base md:text-lg">€55</div>
               </div>
             </motion.div>
-          )}
-        </AnimatePresence>
 
-        {/* ═══ CART DRAWER ═══ */}
-        <AnimatePresence>
-          {cartOpen && (
-            <>
-              <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-                onClick={() => setCartOpen(false)} className="fixed inset-0 bg-black/20 z-[100]" />
-              <motion.div initial={{ x: "100%" }} animate={{ x: 0 }} exit={{ x: "100%" }}
-                transition={{ type: "spring", damping: 30, stiffness: 300 }}
-                className="fixed top-0 right-0 bottom-0 w-full max-w-md bg-white z-[101] flex flex-col shadow-2xl"
-              >
-                <div className="p-6 border-b border-black/5 flex justify-between items-center">
-                  <h3 className="text-sm tracking-[0.2em] uppercase">Bolsa (2)</h3>
-                  <button onClick={() => setCartOpen(false)}><X className="w-5 h-5" /></button>
+            <motion.div whileTap={{ scale: 0.96 }} className="group cursor-pointer min-w-[85vw] md:min-w-0 snap-center shrink-0">
+              <div className="relative aspect-[3/4] overflow-hidden bg-zinc-900 border border-white/10 md:group-hover:border-[#00FF00] transition-colors rounded-lg md:rounded-none">
+                <img src="https://loremflickr.com/800/1000/streetwear,fashion?lock=104" className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 opacity-100 md:group-hover:opacity-0 grayscale" alt="Cargo Pants 1" />
+                <img src="https://loremflickr.com/800/1000/streetwear,fashion?lock=105" className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 opacity-0 md:group-hover:opacity-100 grayscale md:group-hover:grayscale-0 scale-110 md:group-hover:scale-100" alt="Cargo Pants 2" />
+              </div>
+              <div className="mt-4 md:mt-6 flex justify-between items-start font-bold uppercase tracking-widest text-xs md:text-sm px-1 md:px-0">
+                <div>
+                  <h3 className="md:group-hover:text-[#00FF00] transition-colors text-base md:text-lg">CARGO PANTS</h3>
+                  <p className="text-zinc-500 mt-1 text-[10px] md:text-xs">NIGHT SHADOW</p>
                 </div>
-                <div className="flex-1 p-6 space-y-6 overflow-y-auto">
-                  {[products[0], products[3]].map(p => (
-                    <div key={p.id} className="flex gap-4">
-                      <div className={`w-20 h-24 rounded-lg bg-gradient-to-br ${p.gradient} shrink-0`} />
-                      <div className="flex-1 flex flex-col justify-between">
-                        <div>
-                          <p className="text-sm font-medium">{p.name}</p>
-                          <p className="text-xs text-black/40 mt-0.5">{p.color} — Talla M</p>
-                        </div>
-                        <div className="flex justify-between items-end">
-                          <p className="text-sm">{p.price}€</p>
-                          <button className="text-[10px] tracking-[0.15em] uppercase text-black/30 underline underline-offset-2">Eliminar</button>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
+                <div className="text-right text-base md:text-lg">€120</div>
+              </div>
+            </motion.div>
+
+            <motion.div whileTap={{ scale: 0.98 }} className="group opacity-50 cursor-not-allowed min-w-[85vw] md:min-w-0 snap-center shrink-0">
+              <div className="relative aspect-[3/4] overflow-hidden bg-zinc-900 border border-white/5 rounded-lg md:rounded-none">
+                <img src="https://loremflickr.com/800/1000/streetwear,fashion?lock=106" className="w-full h-full object-cover grayscale" alt="Tactical Vest" />
+                <div className="absolute inset-0 flex items-center justify-center bg-black/60 backdrop-blur-sm">
+                  <span className="border-2 border-white/50 text-white/80 px-4 md:px-6 py-2 text-xl md:text-2xl font-black tracking-widest rotate-[-15deg]">SOLD OUT</span>
                 </div>
-                <div className="p-6 border-t border-black/5">
-                  <div className="flex justify-between mb-4">
-                    <span className="text-sm text-black/50">Subtotal</span>
-                    <span className="text-sm font-medium">198€</span>
-                  </div>
-                  <button className="w-full bg-black text-white py-4 text-xs tracking-[0.2em] uppercase hover:bg-black/90 transition-colors">Finalizar Compra</button>
-                  <p className="text-center text-[10px] text-black/30 mt-3 tracking-[0.1em] uppercase">Envío gratuito a partir de 100€</p>
+              </div>
+              <div className="mt-4 md:mt-6 flex justify-between items-start font-bold uppercase tracking-widest text-xs md:text-sm px-1 md:px-0">
+                <div>
+                  <h3 className="text-base md:text-lg">TACTICAL VEST</h3>
+                  <p className="text-zinc-500 mt-1 text-[10px] md:text-xs">GRAPHITE</p>
                 </div>
+                <div className="text-right text-base md:text-lg">€85</div>
+              </div>
+            </motion.div>
+          </motion.div>
+        </section>
+
+        <section className="py-20 md:py-32 border-y border-white/10 relative overflow-hidden bg-[#050505]">
+          <div className="max-w-[1400px] mx-auto px-4 md:px-6 grid grid-cols-1 md:grid-cols-3 gap-16 md:gap-8 text-center relative z-10">
+            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} className="flex flex-col items-center">
+              <Target className="text-[#00FF00] mb-6 md:mb-8 w-10 h-10 md:w-12 md:h-12" />
+              <div className="text-6xl md:text-9xl font-black text-white/5 tracking-tighter mb-4 absolute top-0 -z-10">01</div>
+              <h3 className="text-2xl md:text-4xl font-black tracking-widest mb-3 md:mb-4">LIMITED PRODUCTION</h3>
+              <p className="text-zinc-500 text-xs md:text-base font-bold tracking-widest leading-loose max-w-xs px-4">EACH GARMENT IS PRODUCED IN STRICTLY LIMITED QUANTITIES TO ENSURE EXCLUSIVITY.</p>
+            </motion.div>
+            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ delay: 0.1 }} className="flex flex-col items-center">
+              <Shield className="text-[#00FF00] mb-6 md:mb-8 w-10 h-10 md:w-12 md:h-12" />
+              <div className="text-6xl md:text-9xl font-black text-white/5 tracking-tighter mb-4 absolute top-0 -z-10">02</div>
+              <h3 className="text-2xl md:text-4xl font-black tracking-widest mb-3 md:mb-4">TACTICAL UTILITY</h3>
+              <p className="text-zinc-500 text-xs md:text-base font-bold tracking-widest leading-loose max-w-xs px-4">ENGINEERED FOR THE URBAN BATTLEFIELD WITH MILITARY-GRADE MATERIALS.</p>
+            </motion.div>
+            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-100px" }} transition={{ delay: 0.2 }} className="flex flex-col items-center">
+              <Globe className="text-[#00FF00] mb-6 md:mb-8 w-10 h-10 md:w-12 md:h-12" />
+              <div className="text-6xl md:text-9xl font-black text-white/5 tracking-tighter mb-4 absolute top-0 -z-10">03</div>
+              <h3 className="text-2xl md:text-4xl font-black tracking-widest mb-3 md:mb-4">GLOBAL SYNDICATE</h3>
+              <p className="text-zinc-500 text-xs md:text-base font-bold tracking-widest leading-loose max-w-xs px-4">A WORLDWIDE NETWORK OF INDIVIDUALS WHO REFUSE TO CONFORM TO THE MASSES.</p>
+            </motion.div>
+          </div>
+        </section>
+
+        <section className="py-20 md:py-32 bg-black border-b border-white/10">
+          <div className="max-w-[1400px] mx-auto px-0 md:px-6">
+            <h2 className="text-6xl md:text-8xl font-black mb-12 md:mb-20 tracking-tighter text-center px-4">SURVEILLANCE LOGS</h2>
+            <div className="flex md:grid md:grid-cols-2 gap-6 md:gap-12 overflow-x-auto md:overflow-visible snap-x snap-mandatory px-4 md:px-0 pb-8 md:pb-0 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:'none'] [scrollbar-width:'none']">
+              <motion.div whileTap={{ scale: 0.98 }} className="p-8 md:p-10 border border-white/10 md:hover:border-[#00FF00]/50 transition-colors bg-[#050505] min-w-[85vw] md:min-w-0 snap-center rounded-xl md:rounded-none shrink-0">
+                <Zap className="text-[#00FF00] mb-6 md:mb-8" size={28} />
+                <p className="text-lg md:text-2xl font-bold tracking-wide leading-relaxed mb-8 md:mb-10 text-zinc-300">&quot;OBSIDIAN APPAREL REDEFINES WHAT IT MEANS TO WEAR STREETWEAR IN A DYSTOPIAN PRESENT. BRUTAL, UNCOMPROMISING, ESSENTIAL.&quot;</p>
+                <div className="text-[#00FF00] font-black tracking-widest text-[10px] md:text-sm">HYPEBEAST :: HIGHSNOBIETY</div>
               </motion.div>
-            </>
-          )}
-        </AnimatePresence>
+              <motion.div whileTap={{ scale: 0.98 }} className="p-8 md:p-10 border border-white/10 md:hover:border-[#00FF00]/50 transition-colors bg-[#050505] min-w-[85vw] md:min-w-0 snap-center rounded-xl md:rounded-none shrink-0">
+                <Zap className="text-[#00FF00] mb-6 md:mb-8" size={28} />
+                <p className="text-lg md:text-2xl font-bold tracking-wide leading-relaxed mb-8 md:mb-10 text-zinc-300">&quot;THE AESTHETIC IS PURE AGGRESSION CONCEALED IN MINIMALIST TAILORING. A TRIUMPH OF URBAN SURVIVAL GEAR.&quot;</p>
+                <div className="text-[#00FF00] font-black tracking-widest text-[10px] md:text-sm">VOGUE HOMMES :: DAZED</div>
+              </motion.div>
+            </div>
+          </div>
+        </section>
 
-        {/* ═══ MOBILE MENU ═══ */}
-        <AnimatePresence>
-          {menuOpen && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-white z-[90] flex flex-col p-6 md:hidden"
+        <section className="py-24 md:py-40 relative flex items-center justify-center overflow-hidden">
+          <div className="absolute inset-0 z-0">
+            <img src="https://loremflickr.com/1920/1080/streetwear,fashion?lock=107" className="w-full h-full object-cover opacity-20 grayscale" alt="Background" />
+            <div className="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+          </div>
+          <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">
+            <h2 className="text-6xl md:text-9xl font-black tracking-tighter mb-6 md:mb-8 text-[#00FF00] leading-none">JOIN THE SYNDICATE</h2>
+            <p className="text-sm md:text-xl font-bold tracking-widest mb-10 md:mb-12 text-zinc-400 px-2">ENTER THE MAINFRAME FOR EARLY ACCESS TO CLASSIFIED DROPS.</p>
+            <div className="flex flex-col md:flex-row gap-3 md:gap-4 justify-center max-w-2xl mx-auto w-full">
+              <input type="email" placeholder="ENTER ENCRYPTED EMAIL" className="bg-black/50 border border-white/30 px-6 py-4 md:py-5 outline-none focus:border-[#00FF00] transition-colors w-full font-bold tracking-widest text-center md:text-left text-xs md:text-sm rounded-lg md:rounded-none placeholder:text-white/30" />
+              <button className="bg-[#00FF00] text-black px-12 py-4 md:py-5 font-black tracking-tighter text-lg md:text-xl md:hover:bg-white transition-colors shrink-0 rounded-lg md:rounded-none active:scale-95">INITIALIZE</button>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer className="border-t border-[#00FF00]/30 bg-[#050505] pt-16 md:pt-24 pb-8 md:pb-12 px-4 md:px-6 uppercase tracking-widest text-[10px] md:text-xs font-bold">
+        <div className="max-w-[1400px] mx-auto grid grid-cols-1 md:grid-cols-4 gap-10 md:gap-12 mb-16 md:mb-24 text-center md:text-left">
+          <div className="md:col-span-2 flex flex-col items-center md:items-start">
+            <h2 className="text-4xl md:text-7xl font-black tracking-tighter mb-4 md:mb-6 text-white">OBSIDIAN</h2>
+            <p className="text-zinc-500 max-w-sm leading-relaxed md:leading-loose">FORGED IN THE STREETS. ENGINEERED FOR THE FUTURE. NO COMPROMISE. NO SURRENDER.</p>
+          </div>
+          <div className="flex flex-col space-y-4 md:space-y-6 text-zinc-400 items-center md:items-start">
+            <a href="#" className="md:hover:text-[#00FF00] transition-colors active:text-[#00FF00] py-2 md:py-0">SHOP ALL</a>
+            <a href="#" className="md:hover:text-[#00FF00] transition-colors active:text-[#00FF00] py-2 md:py-0">ARCHIVE CLASSIFIED</a>
+            <a href="#" className="md:hover:text-[#00FF00] transition-colors active:text-[#00FF00] py-2 md:py-0">SYNDICATE MANIFESTO</a>
+            <a href="#" className="md:hover:text-[#00FF00] transition-colors active:text-[#00FF00] py-2 md:py-0">COMMS DIRECT</a>
+          </div>
+          <div className="flex flex-col space-y-4 md:space-y-6 text-zinc-400 items-center md:items-start">
+            <a href="#" className="md:hover:text-[#00FF00] transition-colors active:text-[#00FF00] py-2 md:py-0">INSTAGRAM NETWORK</a>
+            <a href="#" className="md:hover:text-[#00FF00] transition-colors active:text-[#00FF00] py-2 md:py-0">TWITTER FEED</a>
+            <a href="#" className="md:hover:text-[#00FF00] transition-colors active:text-[#00FF00] py-2 md:py-0">DISCORD MAINFRAME</a>
+          </div>
+        </div>
+        <div className="max-w-[1400px] mx-auto flex flex-col md:flex-row justify-between items-center text-zinc-600 border-t border-white/10 pt-6 md:pt-8 gap-4 text-center">
+          <p>© 2026 OBSIDIAN APPAREL</p>
+          <p>ALL RIGHTS RESERVED :: SECURE CONNECTION</p>
+        </div>
+      </footer>
+
+      <AnimatePresence>
+        {isCartOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[110] bg-black/80 backdrop-blur-md flex justify-end"
+          >
+            <motion.div
+              initial={{ x: "100%" }}
+              animate={{ x: 0 }}
+              exit={{ x: "100%" }}
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="w-full max-w-lg h-[100svh] bg-[#050505] md:border-l border-[#00FF00]/30 p-6 md:p-8 flex flex-col uppercase font-bold tracking-widest relative overflow-hidden"
             >
-              <div className="flex justify-end"><button onClick={() => setMenuOpen(false)}><X className="w-6 h-6" /></button></div>
-              <nav className="flex-1 flex flex-col justify-center gap-8">
-                {["Novedades", "Esenciales", "Edición Limitada", "Sobre Nosotros"].map((item, i) => (
-                  <motion.a key={item} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.08 }}
-                    className="text-3xl font-light tracking-tight text-black/80" onClick={() => setMenuOpen(false)}>{item}</motion.a>
-                ))}
-              </nav>
-            </motion.div>
-          )}
-        </AnimatePresence>
+              <div className="absolute top-0 right-0 w-64 md:w-96 h-64 md:h-96 bg-[#00FF00] opacity-10 md:opacity-5 blur-[80px] md:blur-[120px] rounded-full pointer-events-none"></div>
 
-        {/* ═══ FIXED NAV ═══ */}
-        <nav className="fixed top-0 left-0 w-full px-6 md:px-12 py-5 flex justify-between items-center z-[80] bg-white/80 backdrop-blur-xl border-b border-black/5">
-          <div className="flex items-center gap-6">
-            <button onClick={() => setMenuOpen(true)} className="md:hidden"><Menu className="w-5 h-5" /></button>
-            <span className="text-xs tracking-[0.3em] uppercase font-medium hidden md:block">Atelier</span>
-          </div>
-          <div className="hidden md:flex items-center gap-8">
-            {["Novedades", "Esenciales", "Edición Limitada"].map(item => (
-              <a key={item} className="text-[11px] tracking-[0.15em] uppercase text-black/50 hover:text-black transition-colors cursor-pointer">{item}</a>
-            ))}
-          </div>
-          <div className="flex items-center gap-4">
-            <button onClick={() => setSearchOpen(true)} className="hover:opacity-50 transition-opacity"><Search className="w-[18px] h-[18px]" /></button>
-            <button className="hover:opacity-50 transition-opacity hidden md:block"><Heart className="w-[18px] h-[18px]" /></button>
-            <button onClick={() => setCartOpen(true)} className="relative hover:opacity-50 transition-opacity">
-              <ShoppingBag className="w-[18px] h-[18px]" />
-              <span className="absolute -top-1 -right-1.5 w-3.5 h-3.5 bg-black text-white text-[8px] flex items-center justify-center rounded-full">2</span>
-            </button>
-          </div>
-        </nav>
-
-        {/* ═══════════════════════════════════
-            1. HERO — EDITORIAL MINIMAL
-        ═══════════════════════════════════ */}
-        <section className="pt-32 md:pt-40 pb-16 md:pb-24 px-6 md:px-12">
-          <div className="max-w-7xl mx-auto">
-            <motion.div initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}
-              className="mb-8">
-              <span className="text-[10px] tracking-[0.3em] uppercase text-black/30">Colección Verano 2026</span>
-            </motion.div>
-            <motion.h1 initial={{ opacity: 0, y: 50 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, ease: [0.16, 1, 0.3, 1] }}
-              className="text-[clamp(2.5rem,8vw,6rem)] font-light tracking-tight leading-[0.95] mb-8">
-              Lo esencial,<br/><span className="italic text-black/40">nada más.</span>
-            </motion.h1>
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
-              className="flex items-center gap-3">
-              <a className="flex items-center gap-2 text-xs tracking-[0.15em] uppercase border-b border-black pb-1 hover:opacity-50 transition-opacity cursor-pointer">
-                Explorar colección <ArrowRight className="w-3 h-3" />
-              </a>
-            </motion.div>
-
-            <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3, duration: 0.8 }}
-              className="mt-12 aspect-[21/9] rounded-2xl bg-gradient-to-br from-[#f5f0e8] via-[#e8dcc8] to-[#d4c5a9] relative overflow-hidden">
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-[15vw] font-extralight tracking-tighter text-black/[0.04] select-none uppercase">Atelier</span>
-              </div>
-            </motion.div>
-          </div>
-        </section>
-
-        {/* ═══════════════════════════════════
-            2. COLECCIONES — FILTER PILLS
-        ═══════════════════════════════════ */}
-        <section className="px-6 md:px-12 pb-20 md:pb-32">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-6">
-              <div>
-                <span className="text-[10px] tracking-[0.3em] uppercase text-black/30 block mb-3">Colecciones</span>
-                <h2 className="text-3xl md:text-4xl font-light tracking-tight">Nuestras piezas</h2>
-              </div>
-              <div className="flex gap-2 overflow-x-auto pb-2">
-                <button onClick={() => setActiveCollection("all")}
-                  className={`px-4 py-2 text-[10px] tracking-[0.15em] uppercase rounded-full border transition-all whitespace-nowrap ${activeCollection === "all" ? "bg-black text-white border-black" : "border-black/10 text-black/40 hover:border-black/30"}`}>
-                  Todo
+              <div className="flex justify-between items-center border-b border-white/10 pb-6 mb-8 relative z-10 pt-4 md:pt-0">
+                <h2 className="text-2xl md:text-3xl font-black tracking-tighter">SECURE CART (0)</h2>
+                <button onClick={() => setIsCartOpen(false)} className="active:scale-90 md:hover:text-[#00FF00] transition-colors md:hover:rotate-90 duration-300 p-2 -mr-2">
+                  <X size={28} className="md:w-8 md:h-8" />
                 </button>
-                {collections.map(c => (
-                  <button key={c.id} onClick={() => setActiveCollection(c.id)}
-                    className={`px-4 py-2 text-[10px] tracking-[0.15em] uppercase rounded-full border transition-all whitespace-nowrap ${activeCollection === c.id ? "bg-black text-white border-black" : "border-black/10 text-black/40 hover:border-black/30"}`}>
-                    {c.name}
-                  </button>
-                ))}
               </div>
-            </div>
 
-            {/* ═══ PRODUCT GRID ═══ */}
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-              <AnimatePresence mode="popLayout">
-                {filtered.map((p, i) => (
-                  <motion.div key={p.id} layout
-                    initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, scale: 0.9 }}
-                    transition={{ delay: i * 0.05, duration: 0.4 }}
-                    className="group cursor-pointer"
-                    onMouseEnter={() => setHoveredProduct(p.id)}
-                    onMouseLeave={() => setHoveredProduct(null)}
-                  >
-                    <div className={`aspect-[3/4] rounded-xl bg-gradient-to-br ${p.gradient} relative overflow-hidden mb-3`}>
-                      {p.new && <span className="absolute top-3 left-3 px-2 py-1 text-[8px] tracking-[0.2em] uppercase bg-black text-white rounded-full">Nuevo</span>}
-                      {p.bestseller && <span className="absolute top-3 left-3 px-2 py-1 text-[8px] tracking-[0.2em] uppercase bg-white/90 text-black rounded-full border border-black/5">Bestseller</span>}
-                      <motion.div animate={{ opacity: hoveredProduct === p.id ? 1 : 0 }}
-                        className="absolute inset-0 flex items-center justify-center bg-black/10 backdrop-blur-[2px]">
-                        <span className="px-4 py-2 text-[10px] tracking-[0.2em] uppercase bg-white text-black rounded-full">Vista rápida</span>
-                      </motion.div>
-                      <button className="absolute top-3 right-3 w-8 h-8 rounded-full bg-white/80 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                        <Heart className="w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                    <p className="text-sm font-medium tracking-tight">{p.name}</p>
-                    <p className="text-xs text-black/40 mt-0.5">{p.color}</p>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className="text-sm">{p.price}€</span>
-                      {p.originalPrice && <span className="text-xs text-black/30 line-through">{p.originalPrice}€</span>}
-                    </div>
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            </div>
-          </div>
-        </section>
-
-        {/* ═══════════════════════════════════
-            3. LOOKBOOK BANNER
-        ═══════════════════════════════════ */}
-        <section className="px-6 md:px-12 pb-20 md:pb-32">
-          <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="aspect-[4/5] rounded-2xl bg-gradient-to-br from-[#1a1a1a] to-[#333] relative overflow-hidden group cursor-pointer">
-              <div className="absolute inset-0 flex flex-col justify-end p-8 md:p-12">
-                <span className="text-[10px] tracking-[0.3em] uppercase text-white/40 mb-2">Lookbook</span>
-                <h3 className="text-3xl md:text-4xl font-light text-white tracking-tight mb-4">Temporada<br/>Verano 26</h3>
-                <span className="text-xs tracking-[0.15em] uppercase text-white/60 border-b border-white/30 pb-1 w-fit group-hover:text-white group-hover:border-white transition-colors">Ver lookbook</span>
+              <div className="flex-1 flex flex-col items-center justify-center text-zinc-600 space-y-4 md:space-y-6 relative z-10">
+                <ShoppingCart size={64} className="opacity-10 md:w-20 md:h-20" />
+                <p className="text-lg md:text-xl font-black tracking-tighter">CART IS EMPTY</p>
+                <p className="text-[10px] md:text-xs tracking-widest text-center px-4">LOAD UP BEFORE THE DROP ENDS</p>
               </div>
-            </div>
-            <div className="aspect-[4/5] rounded-2xl bg-gradient-to-br from-[#f5f0e8] to-[#e0d5c0] relative overflow-hidden group cursor-pointer">
-              <div className="absolute inset-0 flex flex-col justify-end p-8 md:p-12">
-                <span className="text-[10px] tracking-[0.3em] uppercase text-black/30 mb-2">Edición Limitada</span>
-                <h3 className="text-3xl md:text-4xl font-light text-black tracking-tight mb-4">Solo<br/>200 piezas</h3>
-                <span className="text-xs tracking-[0.15em] uppercase text-black/50 border-b border-black/30 pb-1 w-fit group-hover:text-black group-hover:border-black transition-colors">Descubrir</span>
+
+              <div className="mt-auto border-t border-white/10 pt-6 md:pt-8 space-y-6 relative z-10 pb-6 md:pb-0">
+                <div className="flex justify-between text-lg md:text-xl font-black">
+                  <span>SUBTOTAL</span>
+                  <span className="text-[#00FF00]">€0.00</span>
+                </div>
+                <button className="w-full bg-[#00FF00] text-black py-4 md:py-5 md:hover:bg-white transition-all font-black text-xl md:text-2xl tracking-tighter group flex items-center justify-center gap-3 md:gap-4 rounded-lg md:rounded-none active:scale-[0.98]" onClick={() => setIsCartOpen(false)}>
+                  CHECKOUT <ArrowRight className="md:group-hover:translate-x-2 transition-transform w-5 h-5 md:w-6 md:h-6" />
+                </button>
               </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ═══════════════════════════════════
-            4. VALORES DE MARCA
-        ═══════════════════════════════════ */}
-        <section className="py-20 md:py-32 border-y border-black/5">
-          <div className="max-w-7xl mx-auto px-6 md:px-12">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8 md:gap-12">
-              {[
-                { icon: Truck, title: "Envío Gratuito", desc: "En pedidos superiores a 100€. Entrega en 2-4 días." },
-                { icon: RotateCcw, title: "Devolución Libre", desc: "30 días para devolver. Sin preguntas, sin costes." },
-                { icon: Shield, title: "Pago Seguro", desc: "Cifrado SSL. Visa, Mastercard, PayPal, Bizum." },
-                { icon: Star, title: "Calidad Premium", desc: "Tejidos europeos seleccionados. Confección artesanal." },
-              ].map((v, i) => (
-                <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.1 }} viewport={{ once: true }} className="text-center">
-                  <v.icon className="w-6 h-6 mx-auto mb-4 text-black/30" strokeWidth={1.5} />
-                  <h3 className="text-sm font-medium tracking-tight mb-2">{v.title}</h3>
-                  <p className="text-xs text-black/40 leading-relaxed">{v.desc}</p>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ═══════════════════════════════════
-            5. RESEÑAS
-        ═══════════════════════════════════ */}
-        <section className="py-20 md:py-32 px-6 md:px-12">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex justify-between items-end mb-12">
-              <div>
-                <span className="text-[10px] tracking-[0.3em] uppercase text-black/30 block mb-3">Opiniones</span>
-                <h2 className="text-3xl md:text-4xl font-light tracking-tight">Lo que dicen nuestros clientes</h2>
-              </div>
-              <div className="hidden md:flex items-center gap-1">
-                {[1,2,3,4,5].map(s => <Star key={s} className="w-4 h-4 fill-black text-black" />)}
-                <span className="text-xs text-black/40 ml-2">4.9/5 (847 reseñas)</span>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {reviews.map((r, i) => (
-                <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.1 }} viewport={{ once: true }}
-                  className="p-6 md:p-8 rounded-2xl border border-black/5 bg-[#fafaf8]"
-                >
-                  <div className="flex items-center gap-0.5 mb-4">
-                    {Array.from({ length: r.rating }).map((_, s) => <Star key={s} className="w-3 h-3 fill-black text-black" />)}
-                  </div>
-                  <p className="text-sm text-black/70 leading-relaxed mb-6">"{r.text}"</p>
-                  <div className="flex justify-between items-end">
-                    <div>
-                      <p className="text-sm font-medium">{r.name}</p>
-                      <p className="text-[10px] text-black/30 tracking-[0.1em] uppercase mt-0.5">{r.product}</p>
-                    </div>
-                    <span className="text-[10px] text-black/20">{r.date}</span>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ═══════════════════════════════════
-            6. NEWSLETTER
-        ═══════════════════════════════════ */}
-        <section className="py-20 md:py-32 px-6 md:px-12 bg-[#fafaf8]">
-          <div className="max-w-2xl mx-auto text-center">
-            <h2 className="text-3xl md:text-4xl font-light tracking-tight mb-4">Únete a Atelier</h2>
-            <p className="text-sm text-black/40 mb-8">Acceso anticipado a colecciones, eventos exclusivos y 10% en tu primera compra.</p>
-            <div className="flex gap-2 max-w-md mx-auto">
-              <input type="email" placeholder="tu@email.com"
-                className="flex-1 px-5 py-3.5 text-sm border border-black/10 rounded-full outline-none focus:border-black/30 transition-colors bg-white" />
-              <button className="px-6 py-3.5 bg-black text-white text-xs tracking-[0.15em] uppercase rounded-full hover:bg-black/90 transition-colors whitespace-nowrap">Suscribir</button>
-            </div>
-          </div>
-        </section>
-
-        {/* ═══════════════════════════════════
-            FOOTER
-        ═══════════════════════════════════ */}
-        <footer className="py-12 md:py-16 px-6 md:px-12 border-t border-black/5">
-          <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
-            {[
-              { title: "Tienda", links: ["Novedades", "Esenciales", "Edición Limitada", "Outlet"] },
-              { title: "Ayuda", links: ["Envíos", "Devoluciones", "Tallas", "Contacto"] },
-              { title: "Empresa", links: ["Nuestra Historia", "Sostenibilidad", "Empleo", "Prensa"] },
-              { title: "Legal", links: ["Privacidad", "Cookies", "Términos", "Accesibilidad"] },
-            ].map((col, i) => (
-              <div key={i}>
-                <h4 className="text-xs tracking-[0.2em] uppercase font-medium mb-4">{col.title}</h4>
-                <ul className="space-y-2.5">
-                  {col.links.map(l => <li key={l}><a className="text-xs text-black/40 hover:text-black transition-colors cursor-pointer">{l}</a></li>)}
-                </ul>
-              </div>
-            ))}
-          </div>
-          <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4 pt-8 border-t border-black/5">
-            <p className="text-[10px] tracking-[0.15em] uppercase text-black/20">© 2026 Atelier. Calle Sierpes 42, Sevilla, España.</p>
-            <p className="text-[10px] tracking-[0.15em] uppercase text-black/20">Diseñado con cuidado en Andalucía.</p>
-          </div>
-        </footer>
-
-      </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
     </DemoLayout>
   );
 }

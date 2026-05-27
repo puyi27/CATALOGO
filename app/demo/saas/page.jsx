@@ -1,340 +1,408 @@
 "use client";
 
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Zap, BarChart3, Shield, Globe, ArrowRight, Check, X, Menu, Star, Users, Clock, Code, Database, Lock, Cpu, ChevronDown, Mail } from "lucide-react";
-import DemoLayout from "@/components/DemoLayout";
+import React, { useState, useEffect, useRef } from 'react';
+import { LazyMotion, domAnimation, m, useSpring, useMotionValue, useTransform } from 'framer-motion';
+import Link from 'next/link';
+import DemoLayout from '@/components/DemoLayout';
+import { Zap, Cpu, Server, Users, Activity, Database, Globe, ArrowUpRight, ArrowLeft } from 'lucide-react';
 
-const features = [
-  { icon: BarChart3, title: "Analytics en Tiempo Real", desc: "Dashboards personalizables con métricas que importan. Exporta en CSV, PDF o conecta vía API.", tag: "Core" },
-  { icon: Zap, title: "Automatizaciones", desc: "Crea flujos de trabajo sin código. Triggers, condiciones y acciones encadenadas. Hasta 500 automatizaciones/mes.", tag: "Pro" },
-  { icon: Shield, title: "Seguridad Enterprise", desc: "SOC 2 Type II, GDPR compliant. SSO/SAML, 2FA, audit logs. Cifrado AES-256 en reposo.", tag: "Enterprise" },
-  { icon: Database, title: "API REST & Webhooks", desc: "API documentada con Swagger. Rate limit de 10K req/min. SDK oficial para Python, JS y Go.", tag: "Core" },
-  { icon: Globe, title: "Multi-workspace", desc: "Gestiona equipos separados con permisos granulares. Ideal para agencias y consultoras.", tag: "Pro" },
-  { icon: Cpu, title: "IA Integrada", desc: "Predicciones de churn, scoring automático de leads y resúmenes inteligentes de datos.", tag: "Enterprise" },
-];
+function CustomCursor() {
+  const cursorX = useMotionValue(-100);
+  const cursorY = useMotionValue(-100);
+  const scale = useMotionValue(1);
+  const isHovering = useMotionValue(0);
 
-const pricing = [
-  { name: "Starter", price: "29", period: "/mes", desc: "Para equipos pequeños que empiezan.", features: ["Hasta 5 usuarios", "1.000 registros", "Dashboard básico", "Soporte email", "API básica"], highlight: false, cta: "Empezar Gratis" },
-  { name: "Pro", price: "79", period: "/mes", desc: "Para equipos en crecimiento.", features: ["Hasta 25 usuarios", "50.000 registros", "Dashboards avanzados", "Automatizaciones", "Soporte prioritario", "SSO incluido"], highlight: true, cta: "Probar 14 días gratis" },
-  { name: "Enterprise", price: "Custom", period: "", desc: "Para organizaciones con necesidades específicas.", features: ["Usuarios ilimitados", "Registros ilimitados", "IA integrada", "SLA 99.99%", "Account manager", "On-premise disponible"], highlight: false, cta: "Contactar Ventas" },
-];
+  const springConfig = { damping: 30, stiffness: 400, mass: 0.5 };
+  const cursorXSpring = useSpring(cursorX, springConfig);
+  const cursorYSpring = useSpring(cursorY, springConfig);
+  const scaleSpring = useSpring(scale, springConfig);
+  const hoverSpring = useSpring(isHovering, springConfig);
 
-const metrics = [
-  { value: "2.4K", label: "Empresas activas" },
-  { value: "99.98%", label: "Uptime 12 meses" },
-  { value: "340M", label: "Registros procesados" },
-  { value: "<200ms", label: "Latencia media API" },
-];
+  useEffect(() => {
+    const moveCursor = (e) => {
+      cursorX.set(e.clientX - 6);
+      cursorY.set(e.clientY - 6);
+    };
 
-const testimonials = [
-  { company: "Factorial", name: "María García", role: "VP of Engineering", text: "Migramos desde Salesforce y reducimos costes un 40%. La API de Nexus es la mejor documentada que hemos usado.", avatar: "MG" },
-  { company: "Cabify", name: "Pablo Torres", role: "Head of Data", text: "Las automatizaciones nos ahorraron 120 horas/mes en tareas manuales. El ROI fue inmediato.", avatar: "PT" },
-  { company: "Glovo", name: "Ana Ruiz", role: "CTO", text: "El soporte enterprise responde en menos de 15 min. En 2 años no hemos tenido un solo incidente grave.", avatar: "AR" },
-];
+    const handleMouseOver = (e) => {
+      const target = e.target;
+      if (target.tagName.toLowerCase() === 'button' || target.tagName.toLowerCase() === 'a' || target.closest('.interactive-el')) {
+        scale.set(3);
+        isHovering.set(1);
+      } else {
+        scale.set(1);
+        isHovering.set(0);
+      }
+    };
 
-const faqs = [
-  { q: "¿Puedo probar antes de pagar?", a: "Sí. Plan Pro gratis durante 14 días sin tarjeta de crédito. Si no te convence, no pagas nada." },
-  { q: "¿Cómo migro mis datos?", a: "Tenemos herramientas de importación para CSV, Excel, Salesforce, HubSpot y Airtable. El equipo de onboarding te acompaña gratis." },
-  { q: "¿Dónde se alojan los datos?", a: "Infraestructura en AWS EU (Frankfurt e Irlanda). Opción de región US disponible. On-premise para Enterprise." },
-  { q: "¿Hay descuento anual?", a: "Sí. Facturación anual = 2 meses gratis (ahorro del 16%). Aplica a todos los planes." },
-];
+    window.addEventListener('mousemove', moveCursor);
+    window.addEventListener('mouseover', handleMouseOver);
 
-const integrations = ["Slack", "Zapier", "Google", "HubSpot", "Stripe", "GitHub", "Notion", "Linear"];
-
-export default function SaasDemo() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [billingAnnual, setBillingAnnual] = useState(true);
-  const [openFaq, setOpenFaq] = useState(null);
+    return () => {
+      window.removeEventListener('mousemove', moveCursor);
+      window.removeEventListener('mouseover', handleMouseOver);
+    };
+  }, [cursorX, cursorY, scale, isHovering]);
 
   return (
-    <DemoLayout title="Nexus" year="2026">
-      <div className="text-white selection:bg-[#3b82f6] selection:text-white overflow-x-hidden bg-[#0a0a0a]" style={{ fontFamily: "'Inter', system-ui, sans-serif" }}>
+    <m.div
+      className="fixed top-0 left-0 w-3 h-3 rounded-full border border-purple-500 pointer-events-none z-[9999] mix-blend-screen hidden md:block"
+      style={{
+        x: cursorXSpring,
+        y: cursorYSpring,
+        scale: scaleSpring,
+        backgroundColor: useTransform(hoverSpring, [0, 1], ['rgba(168, 85, 247, 0)', 'rgba(168, 85, 247, 0.5)'])
+      }}
+    />
+  );
+}
 
-        {/* ═══ MOBILE MENU ═══ */}
-        <AnimatePresence>
-          {menuOpen && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-[#0a0a0a] z-[90] flex flex-col justify-center items-center md:hidden">
-              <button onClick={() => setMenuOpen(false)} className="absolute top-6 right-6"><X className="w-6 h-6" /></button>
-              <nav className="flex flex-col gap-6 text-center">
-                {["Producto", "Precios", "Clientes", "Docs"].map((item, i) => (
-                  <motion.a key={item} initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: i * 0.08 }}
-                    className="text-2xl font-medium" onClick={() => setMenuOpen(false)} href={`#${item.toLowerCase()}`}>{item}</motion.a>
-                ))}
-              </nav>
-            </motion.div>
-          )}
-        </AnimatePresence>
+const generateSmoothPath = (data, width = 500, height = 200) => {
+  if (data.length === 0) return "";
+  const max = 120;
+  const min = 0;
+  const range = max - min || 1;
+  const stepX = width / (data.length - 1);
+  const points = data.map((val, i) => {
+    const x = i * stepX;
+    const y = height - ((val - min) / range) * height * 0.8 - height * 0.1;
+    return { x, y };
+  });
+  return points.reduce((acc, point, i, a) => {
+    if (i === 0) return `M ${point.x} ${point.y}`;
+    const prev = a[i - 1];
+    const cp1x = prev.x + (point.x - prev.x) / 3;
+    const cp1y = prev.y;
+    const cp2x = point.x - (point.x - prev.x) / 3;
+    const cp2y = point.y;
+    return `${acc} C ${cp1x} ${cp1y}, ${cp2x} ${cp2y}, ${point.x} ${point.y}`;
+  }, "");
+};
 
-        {/* ═══ NAV ═══ */}
-        <nav className="fixed top-0 left-0 w-full px-6 md:px-12 py-4 flex justify-between items-center z-[80] bg-[#0a0a0a]/80 backdrop-blur-xl border-b border-white/5">
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-[#3b82f6] to-[#818cf8] flex items-center justify-center"><Zap className="w-3.5 h-3.5 text-white" /></div>
-            <span className="text-sm font-semibold">Nexus</span>
+const BentoBox = ({ children, className, delay = 0 }) => (
+  <m.div
+    initial={{ opacity: 0, y: 20 }}
+    animate={{ opacity: 1, y: 0 }}
+    transition={{ duration: 0.5, delay, ease: "easeOut" }}
+    className={`bg-[#0a0a0a] border border-white/5 rounded-3xl p-5 md:p-6 flex flex-col relative overflow-hidden active:scale-[0.98] transition-transform md:active:scale-100 ${className}`}
+  >
+    <div className="absolute inset-0 bg-gradient-to-b from-white/[0.02] to-transparent pointer-events-none" />
+    <div className="relative z-10 flex flex-col h-full w-full">
+      {children}
+    </div>
+  </m.div>
+);
+
+export default function SaasDemo() {
+  const [latencyData, setLatencyData] = useState(Array.from({ length: 20 }, () => Math.floor(Math.random() * 60) + 40));
+  const [activeUsers, setActiveUsers] = useState(14520);
+  const [cpuUsage, setCpuUsage] = useState(42);
+  const [reqs, setReqs] = useState(842);
+  const [reqHistory, setReqHistory] = useState(Array.from({ length: 12 }, () => Math.floor(Math.random() * 500) + 500));
+  const [nodes, setNodes] = useState([
+    { name: 'eu-west-1a', ip: '10.0.1.24', status: 'ok', load: 45 },
+    { name: 'eu-west-1b', ip: '10.0.1.25', status: 'ok', load: 62 },
+    { name: 'us-east-1a', ip: '10.0.2.11', status: 'warn', load: 88 },
+    { name: 'ap-south-1a', ip: '10.0.3.5', status: 'ok', load: 31 },
+  ]);
+
+  const carouselRef = useRef(null);
+
+  useEffect(() => {
+    const intLatency = setInterval(() => {
+      setLatencyData(p => [...p.slice(1), Math.floor(Math.random() * 60) + 40]);
+    }, 1500);
+    const intUsers = setInterval(() => {
+      setActiveUsers(p => p + Math.floor(Math.random() * 100) - 40);
+    }, 2000);
+    const intCpu = setInterval(() => {
+      setCpuUsage(Math.floor(Math.random() * 30) + 40);
+    }, 3000);
+    const intReqs = setInterval(() => {
+      const n = Math.floor(Math.random() * 500) + 500;
+      setReqs(n);
+      setReqHistory(p => [...p.slice(1), n]);
+    }, 1000);
+    const intNodes = setInterval(() => {
+      setNodes(p => p.map(n => {
+        const load = Math.max(10, Math.min(99, n.load + Math.floor(Math.random() * 15) - 7));
+        return { ...n, load, status: load > 85 ? 'warn' : 'ok' };
+      }));
+    }, 2500);
+
+    return () => {
+      clearInterval(intLatency);
+      clearInterval(intUsers);
+      clearInterval(intCpu);
+      clearInterval(intReqs);
+      clearInterval(intNodes);
+    };
+  }, []);
+
+  const getLatencyCard = (idSuffix) => (
+    <BentoBox className="col-span-1 md:col-span-2 lg:col-span-2 row-span-2 h-[320px] md:h-auto" delay={0.1}>
+      <div className="flex justify-between items-start mb-2">
+        <div>
+          <h2 className="text-neutral-400 font-medium flex items-center gap-2">
+            <Zap size={16} className="text-amber-500" />
+            Global Latency
+          </h2>
+          <div className="text-[clamp(3rem,10vw,4rem)] font-bold mt-2 md:mt-4 font-mono text-white leading-none">
+            {latencyData[latencyData.length - 1]}
+            <span className="text-xl md:text-2xl text-neutral-500 ml-1">ms</span>
           </div>
-          <div className="hidden md:flex items-center gap-8">
-            {["Producto", "Precios", "Clientes", "Docs"].map(item => (
-              <a key={item} href={`#${item.toLowerCase()}`} className="text-xs text-white/40 hover:text-white transition-colors">{item}</a>
-            ))}
-            <a href="#precios" className="px-4 py-2 text-xs font-medium bg-white text-black rounded-lg hover:bg-white/90 transition-colors">Empezar Gratis</a>
+        </div>
+        <div className="px-3 py-1 bg-amber-500/10 text-amber-500 rounded-full text-xs font-medium border border-amber-500/20">
+          p99
+        </div>
+      </div>
+      <div className="flex-1 w-full relative mt-4">
+        <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none" viewBox="0 0 500 200">
+          <defs>
+            <linearGradient id={`latencyGradient-${idSuffix}`} x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="rgb(245, 158, 11)" stopOpacity="0.3" />
+              <stop offset="100%" stopColor="rgb(245, 158, 11)" stopOpacity="0" />
+            </linearGradient>
+          </defs>
+          <m.path
+            d={generateSmoothPath(latencyData) + " L 500 200 L 0 200 Z"}
+            fill={`url(#latencyGradient-${idSuffix})`}
+            transition={{ type: "tween", ease: "linear", duration: 1.5 }}
+          />
+          <m.path
+            d={generateSmoothPath(latencyData)}
+            fill="none"
+            stroke="rgb(245, 158, 11)"
+            strokeWidth="3"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            transition={{ type: "tween", ease: "linear", duration: 1.5 }}
+          />
+        </svg>
+        <div className="absolute inset-0 pointer-events-none border-t border-b border-white/5 flex flex-col justify-between py-2">
+          <span className="text-xs md:text-sm text-neutral-600 font-mono">120ms</span>
+          <span className="text-xs md:text-sm text-neutral-600 font-mono">60ms</span>
+          <span className="text-xs md:text-sm text-neutral-600 font-mono">0ms</span>
+        </div>
+      </div>
+    </BentoBox>
+  );
+
+  const cpuCard = (
+    <BentoBox className="col-span-1 row-span-1 h-full w-full" delay={0.2}>
+      <div className="flex justify-between items-start">
+        <Cpu size={20} className="text-blue-500" />
+        <span className="text-xs md:text-sm text-blue-500 bg-blue-500/10 px-2 py-1 rounded-full font-mono border border-blue-500/20">us-east-1</span>
+      </div>
+      <div className="mt-auto">
+        <div className="text-4xl font-bold font-mono text-white">{cpuUsage}%</div>
+        <div className="text-sm text-neutral-500 mt-1">CPU Utilization</div>
+      </div>
+      <div className="w-full bg-white/5 h-1.5 rounded-full mt-4 overflow-hidden">
+        <m.div 
+          className="h-full bg-blue-500"
+          animate={{ width: `${cpuUsage}%` }}
+          transition={{ type: "spring", stiffness: 100, damping: 20 }}
+        />
+      </div>
+    </BentoBox>
+  );
+
+  const nodesCard = (
+    <BentoBox className="col-span-1 row-span-2 flex flex-col h-[320px] md:h-auto" delay={0.3}>
+      <div className="flex items-center justify-between mb-4 md:mb-6">
+        <div className="flex items-center gap-2">
+          <Server size={20} className="text-purple-500" />
+          <h2 className="text-neutral-400 font-medium">Nodes</h2>
+        </div>
+        <span className="flex h-2 w-2 relative">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+          <span className="relative inline-flex rounded-full h-2 w-2 bg-purple-500"></span>
+        </span>
+      </div>
+      <div className="flex-1 flex flex-col gap-2 md:gap-3 justify-center">
+        {nodes.map((node, i) => (
+          <div key={i} className="flex items-center justify-between p-2 md:p-3 rounded-xl bg-white/[0.03] border border-white/5">
+            <div className="flex items-center gap-3">
+              <div className={`w-2 h-2 rounded-full ${node.status === 'ok' ? 'bg-emerald-500' : 'bg-rose-500'}`} />
+              <div>
+                <div className="text-sm font-medium text-neutral-200">{node.name}</div>
+                <div className="text-xs md:text-sm text-neutral-500 font-mono">{node.ip}</div>
+              </div>
+            </div>
+            <div className={`text-xs font-mono ${node.status === 'ok' ? 'text-emerald-500' : 'text-rose-500'}`}>
+              {node.load}%
+            </div>
           </div>
-          <button onClick={() => setMenuOpen(true)} className="md:hidden"><Menu className="w-5 h-5" /></button>
+        ))}
+      </div>
+    </BentoBox>
+  );
+
+  const usersCard = (
+    <BentoBox className="col-span-1 row-span-1 h-full w-full" delay={0.4}>
+      <div className="flex justify-between items-start">
+        <Users size={20} className="text-emerald-500" />
+        <div className="flex items-center text-xs md:text-sm text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded-full font-mono border border-emerald-500/20 gap-1">
+          <ArrowUpRight size={12} />
+          12%
+        </div>
+      </div>
+      <div className="mt-auto">
+        <m.div className="text-4xl font-bold font-mono text-white" key={activeUsers}>
+          {activeUsers.toLocaleString()}
+        </m.div>
+        <div className="text-sm text-neutral-500 mt-1">Active Connections</div>
+      </div>
+    </BentoBox>
+  );
+
+  const reqsCard = (
+    <BentoBox className="col-span-1 row-span-1 flex flex-col h-full w-full" delay={0.5}>
+      <div className="flex justify-between items-start mb-2">
+        <Activity size={20} className="text-rose-500" />
+      </div>
+      <div className="flex items-end gap-2 mt-auto mb-4">
+        <div className="text-3xl font-bold font-mono text-white">{reqs}</div>
+        <div className="text-sm text-neutral-500 mb-1">req/s</div>
+      </div>
+      <div className="flex items-end h-10 gap-1 w-full relative">
+        {reqHistory.map((val, i) => (
+          <div key={i} className="flex-1 bg-white/5 rounded-t-sm h-full relative overflow-hidden">
+            <m.div 
+              className="absolute bottom-0 w-full bg-rose-500 rounded-t-sm"
+              animate={{ height: `${(val / 1000) * 100}%` }}
+              transition={{ type: "spring", stiffness: 300, damping: 20 }}
+            />
+          </div>
+        ))}
+      </div>
+    </BentoBox>
+  );
+
+  const dbCard = (
+    <BentoBox className="col-span-1 row-span-1 flex flex-col justify-between h-full w-full" delay={0.6}>
+      <div className="flex justify-between items-start">
+        <div className="flex items-center gap-2">
+          <Database size={20} className="text-indigo-500" />
+        </div>
+        <span className="text-xs md:text-sm text-neutral-500 bg-white/5 px-2 py-1 rounded-md border border-white/5">Primary DB</span>
+      </div>
+      <div className="grid grid-cols-2 gap-3 mt-auto">
+        <div className="bg-white/[0.03] p-3 rounded-xl border border-white/5">
+          <div className="text-xs md:text-sm text-neutral-500 mb-1">Reads/s</div>
+          <m.div 
+            className="text-lg font-bold font-mono text-indigo-400"
+            key={reqs}
+            initial={{ opacity: 0.5 }}
+            animate={{ opacity: 1 }}
+          >
+            {(Math.floor(reqs * 4.2)).toLocaleString()}
+          </m.div>
+        </div>
+        <div className="bg-white/[0.03] p-3 rounded-xl border border-white/5">
+          <div className="text-xs md:text-sm text-neutral-500 mb-1">Writes/s</div>
+          <m.div 
+            className="text-lg font-bold font-mono text-indigo-400"
+            key={activeUsers}
+            initial={{ opacity: 0.5 }}
+            animate={{ opacity: 1 }}
+          >
+            {(Math.floor(reqs * 0.8)).toLocaleString()}
+          </m.div>
+        </div>
+      </div>
+    </BentoBox>
+  );
+
+  const edgeCard = (
+    <BentoBox className="col-span-1 md:col-span-2 lg:col-span-2 row-span-1 flex flex-col justify-center h-[180px] md:h-auto" delay={0.7}>
+      <div className="flex items-center justify-between w-full">
+        <div className="flex items-center gap-3 md:gap-5">
+          <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-cyan-500/10 flex items-center justify-center border border-cyan-500/20 relative shrink-0">
+            <m.div 
+              className="absolute inset-0 border-2 border-cyan-500/30 rounded-full"
+              animate={{ scale: [1, 1.5], opacity: [1, 0] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+            />
+            <Globe size={24} className="text-cyan-500 relative z-10 md:w-7 md:h-7" />
+          </div>
+          <div>
+            <h3 className="text-base md:text-lg font-medium text-white">Edge Network</h3>
+            <div className="text-xs md:text-sm text-neutral-500 mt-1">Global routing active</div>
+          </div>
+        </div>
+        <div className="text-right">
+          <div className="text-2xl md:text-3xl font-bold font-mono text-cyan-400">
+            12.4
+            <span className="text-xs md:text-sm text-cyan-500/50 ml-1">TB/s</span>
+          </div>
+          <div className="text-xs md:text-sm text-neutral-500 mt-1 md:mt-2">Total Bandwidth</div>
+        </div>
+      </div>
+    </BentoBox>
+  );
+
+  return (
+    <DemoLayout title="SaaS Telemetry">
+    <LazyMotion features={domAnimation}>
+      <style dangerouslySetInnerHTML={{__html: `@media (pointer: fine) { body { cursor: none !important; } }`}} />
+      <div className="text-neutral-100 font-sans selection:bg-amber-500/30 overflow-x-hidden">
+        
+        <CustomCursor />
+
+        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-purple-900/10 rounded-full blur-[120px] pointer-events-none mix-blend-screen translate-x-1/3 -translate-y-1/3" />
+        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-blue-900/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen -translate-x-1/3 translate-y-1/3" />
+        <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
+
+        <nav className="mb-8 md:mb-12 flex items-center justify-between max-w-7xl mx-auto relative z-10">
+          <Link href="/" className="inline-flex items-center gap-2 text-neutral-400 active:scale-95 transition-all interactive-el md:hover:text-white">
+            <ArrowLeft size={16} />
+            <span>Catálogo</span>
+          </Link>
+          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
+            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+            <span className="text-xs text-emerald-500 font-mono font-medium">System Operational</span>
+          </div>
         </nav>
 
-        {/* ═══════════════════════════════════
-            1. HERO — TECH DARK
-        ═══════════════════════════════════ */}
-        <section className="min-h-screen flex flex-col justify-center items-center text-center px-6 pt-20 relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-b from-[#3b82f6]/5 via-[#0a0a0a] to-[#0a0a0a]" />
-          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] rounded-full bg-[#3b82f6]/[0.03] blur-[120px]" />
+        <main className="max-w-7xl mx-auto relative z-10">
+          <header className="mb-8 mt-2 md:mt-0">
+            <h1 className="text-[clamp(2.5rem,8vw,5rem)] leading-none font-bold tracking-tight mb-3 text-white">Telemetry</h1>
+            <p className="text-neutral-500 text-sm md:text-base max-w-[85vw]">Real-time infrastructure monitoring and global edge performance.</p>
+          </header>
 
-          <div className="relative z-10 max-w-3xl">
-            <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-              className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full border border-white/10 bg-white/5 mb-8">
-              <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-              <span className="text-[10px] text-white/50">v3.2 — IA Predictiva ahora disponible</span>
-            </motion.div>
-
-            <motion.h1 initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-              className="text-[clamp(2.5rem,7vw,4.5rem)] font-bold leading-[1.05] tracking-tight mb-6">
-              La plataforma que<br/>
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#3b82f6] to-[#818cf8]">tu equipo necesita.</span>
-            </motion.h1>
-
-            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}
-              className="text-base md:text-lg text-white/40 max-w-xl mx-auto mb-10 leading-relaxed">
-              CRM, automatizaciones y analytics en un solo producto. Sin curva de aprendizaje. Sin contratos anuales.
-            </motion.p>
-
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6 }}
-              className="flex flex-col sm:flex-row items-center justify-center gap-3">
-              <a href="#precios" className="px-8 py-3.5 bg-white text-black text-sm font-semibold rounded-lg hover:bg-white/90 transition-colors flex items-center gap-2">
-                Empezar Gratis <ArrowRight className="w-4 h-4" />
-              </a>
-              <a href="#producto" className="px-8 py-3.5 border border-white/10 text-white/70 text-sm rounded-lg hover:border-white/20 transition-all">
-                Ver Demo
-              </a>
-            </motion.div>
-
-            {/* Mock Dashboard */}
-            <motion.div initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.8 }}
-              className="mt-16 p-4 md:p-6 rounded-2xl border border-white/5 bg-white/[0.02] backdrop-blur-sm">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-3 h-3 rounded-full bg-red-500/50" /><div className="w-3 h-3 rounded-full bg-yellow-500/50" /><div className="w-3 h-3 rounded-full bg-green-500/50" />
-                <span className="text-[10px] text-white/20 ml-2">nexus-dashboard</span>
-              </div>
-              <div className="grid grid-cols-4 gap-2 md:gap-3">
-                {metrics.map((m, i) => (
-                  <div key={i} className="p-3 md:p-4 rounded-xl bg-white/[0.03] border border-white/5 text-center">
-                    <span className="text-lg md:text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-br from-[#3b82f6] to-[#818cf8]">{m.value}</span>
-                    <p className="text-[8px] md:text-[10px] text-white/20 mt-1 uppercase tracking-wide">{m.label}</p>
-                  </div>
-                ))}
-              </div>
-              <div className="mt-3 grid grid-cols-3 gap-2 md:gap-3">
-                <div className="col-span-2 h-32 rounded-xl bg-gradient-to-br from-[#3b82f6]/10 to-[#818cf8]/5 border border-white/5 p-3 flex flex-col justify-between">
-                  <span className="text-[10px] text-white/20">Revenue MRR</span>
-                  <div className="flex items-end gap-1 h-16">
-                    {[35, 42, 38, 55, 48, 62, 58, 72, 68, 85, 78, 92].map((h, i) => (
-                      <div key={i} className="flex-1 rounded-t-sm bg-gradient-to-t from-[#3b82f6]/40 to-[#818cf8]/20" style={{ height: `${h}%` }} />
-                    ))}
-                  </div>
-                </div>
-                <div className="h-32 rounded-xl bg-white/[0.03] border border-white/5 p-3 flex flex-col justify-between">
-                  <span className="text-[10px] text-white/20">Active Users</span>
-                  <span className="text-2xl font-bold">2,847</span>
-                  <span className="text-[10px] text-green-400">↑ 12.4%</span>
-                </div>
-              </div>
-            </motion.div>
+          <div className="hidden md:grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 auto-rows-[180px]">
+            {getLatencyCard('desk')}
+            {cpuCard}
+            {nodesCard}
+            {usersCard}
+            {reqsCard}
+            {dbCard}
+            {edgeCard}
           </div>
-        </section>
 
-        {/* ═══════════════════════════════════
-            2. FEATURES
-        ═══════════════════════════════════ */}
-        <section id="producto" className="py-20 md:py-32 px-6 md:px-12">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-16">
-              <span className="text-[10px] tracking-[0.3em] uppercase text-[#3b82f6] block mb-3">Producto</span>
-              <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Todo lo que necesitas. Nada que sobre.</h2>
+          <div className="flex md:hidden flex-col gap-4">
+            {getLatencyCard('mob')}
+            <div ref={carouselRef} className="overflow-hidden w-[100vw] -ml-4 px-4 py-2">
+              <m.div
+                drag="x"
+                dragConstraints={carouselRef}
+                dragElastic={0.2}
+                className="flex gap-4 w-max cursor-grab active:cursor-grabbing pr-8"
+              >
+                <div className="w-[75vw] max-w-[300px] shrink-0 h-[180px]">{cpuCard}</div>
+                <div className="w-[75vw] max-w-[300px] shrink-0 h-[180px]">{usersCard}</div>
+                <div className="w-[75vw] max-w-[300px] shrink-0 h-[180px]">{reqsCard}</div>
+                <div className="w-[75vw] max-w-[300px] shrink-0 h-[180px]">{dbCard}</div>
+              </m.div>
             </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-              {features.map((f, i) => (
-                <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.08 }} viewport={{ once: true }}
-                  className="p-6 rounded-xl border border-white/5 bg-white/[0.02] hover:border-[#3b82f6]/20 hover:bg-[#3b82f6]/[0.03] transition-all group">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="w-10 h-10 rounded-lg bg-[#3b82f6]/10 flex items-center justify-center group-hover:bg-[#3b82f6]/20 transition-colors">
-                      <f.icon className="w-5 h-5 text-[#3b82f6]" />
-                    </div>
-                    <span className="px-2 py-0.5 text-[8px] tracking-wide uppercase bg-white/5 text-white/30 rounded-full border border-white/5">{f.tag}</span>
-                  </div>
-                  <h3 className="text-base font-semibold mb-2">{f.title}</h3>
-                  <p className="text-sm text-white/30 leading-relaxed">{f.desc}</p>
-                </motion.div>
-              ))}
-            </div>
+            {nodesCard}
+            {edgeCard}
           </div>
-        </section>
-
-        {/* ═══════════════════════════════════
-            3. INTEGRACIONES
-        ═══════════════════════════════════ */}
-        <section className="py-16 px-6 md:px-12 border-y border-white/5">
-          <div className="max-w-6xl mx-auto">
-            <div className="flex flex-col md:flex-row items-center justify-between gap-8">
-              <div>
-                <h3 className="text-xl font-semibold mb-2">+40 Integraciones</h3>
-                <p className="text-sm text-white/30">Conecta con las herramientas que ya usas.</p>
-              </div>
-              <div className="flex flex-wrap gap-3 justify-center">
-                {integrations.map((name, i) => (
-                  <motion.div key={name} initial={{ opacity: 0, scale: 0.9 }} whileInView={{ opacity: 1, scale: 1 }}
-                    transition={{ delay: i * 0.05 }} viewport={{ once: true }}
-                    className="px-4 py-2 rounded-lg border border-white/5 bg-white/[0.02] text-xs text-white/40">{name}</motion.div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ═══════════════════════════════════
-            4. PRICING
-        ═══════════════════════════════════ */}
-        <section id="precios" className="py-20 md:py-32 px-6 md:px-12">
-          <div className="max-w-5xl mx-auto">
-            <div className="text-center mb-12">
-              <span className="text-[10px] tracking-[0.3em] uppercase text-[#3b82f6] block mb-3">Precios</span>
-              <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-6">Transparentes. Sin sorpresas.</h2>
-              <div className="inline-flex items-center gap-3 p-1 rounded-full border border-white/10 bg-white/5">
-                <button onClick={() => setBillingAnnual(false)} className={`px-4 py-1.5 text-xs rounded-full transition-all ${!billingAnnual ? 'bg-white text-black' : 'text-white/40'}`}>Mensual</button>
-                <button onClick={() => setBillingAnnual(true)} className={`px-4 py-1.5 text-xs rounded-full transition-all ${billingAnnual ? 'bg-white text-black' : 'text-white/40'}`}>Anual (-16%)</button>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {pricing.map((plan, i) => (
-                <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.1 }} viewport={{ once: true }}
-                  className={`p-6 md:p-8 rounded-2xl border ${plan.highlight ? 'border-[#3b82f6]/30 bg-[#3b82f6]/5 relative' : 'border-white/5 bg-white/[0.02]'}`}>
-                  {plan.highlight && <div className="absolute -top-3 left-1/2 -translate-x-1/2 px-3 py-1 text-[10px] font-semibold bg-[#3b82f6] text-white rounded-full">Popular</div>}
-                  <h3 className="text-lg font-semibold mb-1">{plan.name}</h3>
-                  <p className="text-xs text-white/30 mb-6">{plan.desc}</p>
-                  <div className="flex items-baseline gap-1 mb-6">
-                    {plan.price === "Custom" ? (
-                      <span className="text-3xl font-bold">Custom</span>
-                    ) : (
-                      <>
-                        <span className="text-4xl font-bold">{billingAnnual ? Math.round(parseInt(plan.price) * 0.84) : plan.price}€</span>
-                        <span className="text-sm text-white/30">{plan.period}</span>
-                      </>
-                    )}
-                  </div>
-                  <ul className="space-y-3 mb-8">
-                    {plan.features.map((f, fi) => (
-                      <li key={fi} className="flex items-center gap-2 text-sm text-white/50"><Check className="w-4 h-4 text-[#3b82f6] shrink-0" />{f}</li>
-                    ))}
-                  </ul>
-                  <button className={`w-full py-3 text-sm font-medium rounded-lg transition-colors ${plan.highlight ? 'bg-[#3b82f6] text-white hover:bg-[#2563eb]' : 'bg-white/5 text-white hover:bg-white/10 border border-white/10'}`}>
-                    {plan.cta}
-                  </button>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ═══════════════════════════════════
-            5. TESTIMONIOS
-        ═══════════════════════════════════ */}
-        <section id="clientes" className="py-20 md:py-32 px-6 md:px-12 border-t border-white/5">
-          <div className="max-w-6xl mx-auto">
-            <div className="text-center mb-16">
-              <span className="text-[10px] tracking-[0.3em] uppercase text-[#3b82f6] block mb-3">Clientes</span>
-              <h2 className="text-3xl md:text-4xl font-bold tracking-tight">Equipos que confían en Nexus</h2>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {testimonials.map((t, i) => (
-                <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.1 }} viewport={{ once: true }}
-                  className="p-6 rounded-xl border border-white/5 bg-white/[0.02]">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-[#3b82f6]/20 to-[#818cf8]/20 flex items-center justify-center text-xs font-semibold text-[#3b82f6]">{t.avatar}</div>
-                    <div>
-                      <p className="text-sm font-medium">{t.name}</p>
-                      <p className="text-[10px] text-white/30">{t.role} · {t.company}</p>
-                    </div>
-                  </div>
-                  <p className="text-sm text-white/40 leading-relaxed italic">"{t.text}"</p>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ═══════════════════════════════════
-            6. FAQ
-        ═══════════════════════════════════ */}
-        <section className="py-20 md:py-32 px-6 md:px-12">
-          <div className="max-w-3xl mx-auto">
-            <div className="text-center mb-16">
-              <h2 className="text-3xl font-bold tracking-tight">Preguntas frecuentes</h2>
-            </div>
-            <div className="space-y-0">
-              {faqs.map((f, i) => (
-                <div key={i} className="border-b border-white/5">
-                  <button onClick={() => setOpenFaq(openFaq === i ? null : i)}
-                    className="w-full py-5 flex justify-between items-center text-left">
-                    <span className="text-sm font-medium pr-8">{f.q}</span>
-                    <ChevronDown className={`w-4 h-4 text-white/20 shrink-0 transition-transform ${openFaq === i ? 'rotate-180' : ''}`} />
-                  </button>
-                  <AnimatePresence>
-                    {openFaq === i && (
-                      <motion.div initial={{ height: 0, opacity: 0 }} animate={{ height: "auto", opacity: 1 }} exit={{ height: 0, opacity: 0 }}
-                        className="overflow-hidden"><p className="pb-5 text-sm text-white/30 leading-relaxed">{f.a}</p></motion.div>
-                    )}
-                  </AnimatePresence>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ═══════════════════════════════════
-            7. CTA
-        ═══════════════════════════════════ */}
-        <section className="py-20 md:py-32 px-6 md:px-12">
-          <div className="max-w-4xl mx-auto p-8 md:p-16 rounded-2xl bg-gradient-to-br from-[#3b82f6]/10 to-[#818cf8]/5 border border-[#3b82f6]/10 text-center relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-64 h-64 bg-[#3b82f6]/5 rounded-full blur-[80px]" />
-            <h2 className="text-3xl md:text-4xl font-bold tracking-tight mb-4 relative z-10">
-              Empieza hoy.<br/><span className="bg-clip-text text-transparent bg-gradient-to-r from-[#3b82f6] to-[#818cf8]">Gratis.</span>
-            </h2>
-            <p className="text-sm text-white/30 max-w-md mx-auto mb-8 relative z-10">14 días de prueba en el plan Pro. Sin tarjeta. Sin compromiso.</p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-3 relative z-10">
-              <input type="email" placeholder="tu@empresa.com"
-                className="px-5 py-3 text-sm bg-white/5 border border-white/10 rounded-lg outline-none focus:border-[#3b82f6]/50 transition-colors placeholder:text-white/20 w-full sm:w-64" />
-              <button className="px-8 py-3 bg-white text-black text-sm font-semibold rounded-lg hover:bg-white/90 transition-colors whitespace-nowrap w-full sm:w-auto">Crear Cuenta</button>
-            </div>
-          </div>
-        </section>
-
-        {/* ═══ FOOTER ═══ */}
-        <footer className="py-8 px-6 md:px-12 border-t border-white/5">
-          <div className="max-w-6xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
-            <div className="flex items-center gap-2">
-              <div className="w-5 h-5 rounded bg-gradient-to-br from-[#3b82f6] to-[#818cf8] flex items-center justify-center"><Zap className="w-3 h-3" /></div>
-              <p className="text-[10px] text-white/20">© 2026 Nexus Technologies S.L.</p>
-            </div>
-            <div className="flex gap-6 text-[10px] text-white/20">
-              <span>Privacidad</span><span>Términos</span><span>Status</span><span>Docs</span>
-            </div>
-          </div>
-        </footer>
-
+        </main>
       </div>
+    </LazyMotion>
     </DemoLayout>
   );
 }

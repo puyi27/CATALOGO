@@ -1,278 +1,375 @@
-"use client";
+"use client"
 
-import React, { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Phone, MapPin, Clock, Star, Wine, Utensils, Flame, X, Menu, Instagram, ChevronRight } from "lucide-react";
-import DemoLayout from "@/components/DemoLayout";
+import React, { useState, useEffect, useRef } from "react"
+import { motion, AnimatePresence, useScroll, useTransform } from "framer-motion"
+import Link from "next/link"
+import { ArrowLeft, Menu, X } from "lucide-react"
+import DemoLayout from "@/components/DemoLayout"
 
-const menuItems = {
-  entrantes: [
-    { name: "Salmorejo Cordobés", desc: "Con virutas de jamón ibérico y huevo de codorniz confitado", price: "9€" },
-    { name: "Croquetas de Puchero", desc: "Crujientes por fuera, cremosas por dentro. Receta de la abuela Concha", price: "11€" },
-    { name: "Ensaladilla Rusa Deconstruida", desc: "Mayonesa de ajo negro, langostino de Sanlúcar, alcaparras", price: "13€" },
-    { name: "Tortillita de Camarones", desc: "Con alioli de lima y cilantro fresco", price: "10€" },
-  ],
-  principales: [
-    { name: "Rabo de Toro a la Cordobesa", desc: "Guisado durante 6 horas con vino Pedro Ximénez. Puré de patata trufado", price: "22€" },
-    { name: "Atún Rojo de Almadraba", desc: "Tataki con sésamo negro, ponzu casero y wakame", price: "26€" },
-    { name: "Carrillada Ibérica", desc: "Braseada con reducción de Oloroso. Verduras de temporada asadas", price: "19€" },
-    { name: "Bacalao al Pil-Pil", desc: "Con espuma de ajo suave y pimiento choricero confitado", price: "21€" },
-  ],
-  postres: [
-    { name: "Torrija Caramelizada", desc: "Con helado de canela y miel de caña de Frigiliana", price: "8€" },
-    { name: "Coulant de Chocolate 70%", desc: "Con crema inglesa de naranja amarga y sal Maldon", price: "9€" },
-    { name: "Crema Catalana", desc: "Clásica. Vainilla de Madagascar y azúcar quemado al momento", price: "7€" },
-  ],
-};
+const Nav = () => {
+  const [show, setShow] = useState(true)
+  const [lastScrollY, setLastScrollY] = useState(0)
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
 
-const wines = [
-  { name: "Fino La Barajuela", bodega: "Luis Pérez", region: "Jerez", price: "Copa 4€ / Bot. 22€" },
-  { name: "Ribera del Duero Reserva", bodega: "Pesquera", region: "Valladolid", price: "Copa 6€ / Bot. 38€" },
-  { name: "Albariño Mar de Frades", bodega: "Mar de Frades", region: "Rías Baixas", price: "Copa 5€ / Bot. 28€" },
-];
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > lastScrollY && window.scrollY > 100) {
+        setShow(false)
+      } else {
+        setShow(true)
+      }
+      setLastScrollY(window.scrollY)
+    }
+    window.addEventListener("scroll", handleScroll)
+    return () => window.removeEventListener("scroll", handleScroll)
+  }, [lastScrollY])
 
-const reviews = [
-  { name: "Miguel A.", rating: 5, text: "El rabo de toro es el mejor que he probado fuera de Córdoba. El servicio, impecable. Volveremos.", source: "Google" },
-  { name: "Laura P.", rating: 5, text: "Cenamos en la terraza. El ambiente, la comida, los vinos... todo perfecto. Una experiencia.", source: "TripAdvisor" },
-  { name: "Antonio S.", rating: 5, text: "Las croquetas de puchero me recordaron a las de mi madre. Eso es lo más grande que puedo decir.", source: "Google" },
-];
-
-export default function RestauranteDemo() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState("entrantes");
+  useEffect(() => {
+    if (mobileMenuOpen) {
+      document.body.style.overflow = "hidden"
+    } else {
+      document.body.style.overflow = ""
+    }
+  }, [mobileMenuOpen])
 
   return (
-    <DemoLayout title="Casa Concha" year="2026">
-      <div className="text-[#1a0505] selection:bg-[#8B0000] selection:text-[#f5f0e8] overflow-x-hidden bg-[#f5f0e8]" style={{ fontFamily: "'Georgia', 'Times New Roman', serif" }}>
+    <>
+      <motion.nav
+        initial={{ y: -100 }}
+        animate={{ y: show ? 0 : -100 }}
+        transition={{ duration: 0.3 }}
+        className="fixed top-0 left-0 w-full z-50 flex justify-between items-center p-6 md:px-12 bg-black/30 backdrop-blur-md text-white"
+      >
+        <Link href="/" className="hidden md:flex items-center gap-2 uppercase tracking-widest text-sm md:text-base hover:opacity-70 transition-opacity active:scale-95">
+          <ArrowLeft size={16} /> Catálogo
+        </Link>
+        <div className="text-2xl font-serif tracking-[0.3em] uppercase">Aura</div>
+        
+        <button className="hidden md:block uppercase tracking-widest text-sm md:text-base border border-white px-4 py-2 hover:bg-white hover:text-black transition-colors active:scale-95">
+          Reservar
+        </button>
 
-        {/* ═══ MOBILE MENU ═══ */}
-        <AnimatePresence>
-          {menuOpen && (
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-              className="fixed inset-0 bg-[#1a0505] z-[90] flex flex-col justify-center items-center md:hidden">
-              <button onClick={() => setMenuOpen(false)} className="absolute top-6 right-6"><X className="w-6 h-6 text-[#f5f0e8]" /></button>
-              <nav className="flex flex-col gap-6 text-center">
-                {["La Carta", "Bodega", "Nosotros", "Reservar"].map((item, i) => (
-                  <motion.a key={item} initial={{ y: 20, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: i * 0.1 }}
-                    className="text-3xl text-[#f5f0e8] tracking-wide" onClick={() => setMenuOpen(false)} href={`#${item.toLowerCase().replace(' ', '-')}`}>{item}</motion.a>
-                ))}
-              </nav>
-            </motion.div>
-          )}
-        </AnimatePresence>
+        <button 
+          className="md:hidden p-2 active:scale-90 transition-transform"
+          onClick={() => setMobileMenuOpen(true)}
+        >
+          <Menu size={24} />
+        </button>
+      </motion.nav>
 
-        {/* ═══ NAV ═══ */}
-        <nav className="fixed top-0 left-0 w-full px-6 md:px-16 py-5 flex justify-between items-center z-[80] bg-[#f5f0e8]/90 backdrop-blur-lg border-b border-[#8B0000]/5">
-          <span className="text-xs tracking-[0.3em] uppercase text-[#8B0000]">Casa Concha</span>
-          <div className="hidden md:flex items-center gap-8">
-            {["La Carta", "Bodega", "Nosotros"].map(item => (
-              <a key={item} href={`#${item.toLowerCase().replace(' ', '-')}`} className="text-[11px] tracking-[0.15em] uppercase text-[#1a0505]/40 hover:text-[#8B0000] transition-colors">{item}</a>
-            ))}
-            <a href="#reservar" className="px-5 py-2 bg-[#8B0000] text-[#f5f0e8] text-xs tracking-[0.15em] uppercase rounded-full hover:bg-[#6d0000] transition-colors">Reservar Mesa</a>
-          </div>
-          <button onClick={() => setMenuOpen(true)} className="md:hidden"><Menu className="w-5 h-5 text-[#8B0000]" /></button>
-        </nav>
-
-        {/* ═══════════════════════════════════
-            1. HERO — CÁLIDA Y TÁCTIL
-        ═══════════════════════════════════ */}
-        <section className="min-h-[80vh] md:min-h-screen flex flex-col justify-end px-6 md:px-16 pb-16 md:pb-24 pt-32 relative overflow-hidden">
-          <div className="absolute inset-0 bg-gradient-to-b from-[#f5f0e8] via-[#f5f0e8] to-[#ede5d8]" />
-          
-          <div className="absolute top-1/2 right-0 -translate-y-1/2 w-[50vw] h-[70vh] rounded-l-[3rem] bg-gradient-to-br from-[#8B0000]/5 to-[#8B0000]/10 hidden md:block" />
-
-          <div className="relative z-10 max-w-5xl">
-            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1 }}
-              className="flex items-center gap-4 mb-8">
-              <div className="w-10 h-[1px] bg-[#8B0000]/30" />
-              <span className="text-[10px] tracking-[0.5em] uppercase text-[#8B0000]/50">Cocina andaluza de autor · Desde 1987</span>
-            </motion.div>
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: "-100%" }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: "-100%" }}
+            transition={{ duration: 0.5, ease: [0.77, 0, 0.17, 1] }}
+            className="fixed inset-0 z-[100] bg-black text-white flex flex-col p-6"
+          >
+            <div className="flex justify-between items-center w-full">
+              <div className="text-2xl font-serif tracking-[0.3em] uppercase">Aura</div>
+              <button 
+                className="p-2 active:scale-90 transition-transform"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <X size={24} />
+              </button>
+            </div>
             
-            <motion.h1 initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1, delay: 0.3 }}
-              className="text-[clamp(2.5rem,8vw,6rem)] leading-[1.05] tracking-tight mb-8">
-              Donde la tradición<br/>
-              <span className="italic text-[#8B0000]">se sirve en mesa.</span>
-            </motion.h1>
-
-            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }}
-              className="text-base text-[#1a0505]/40 max-w-lg leading-relaxed mb-10" style={{ fontFamily: "system-ui" }}>
-              Recetas heredadas, producto de mercado, vinos con historia. Un rincón donde el tiempo sabe a lumbre lenta.
-            </motion.p>
-
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 1 }}
-              className="flex flex-col sm:flex-row gap-3">
-              <a href="#reservar" className="px-8 py-3.5 bg-[#8B0000] text-[#f5f0e8] text-xs tracking-[0.15em] uppercase rounded-full hover:bg-[#6d0000] transition-colors text-center">Reservar Mesa</a>
-              <a href="#la-carta" className="px-8 py-3.5 border border-[#8B0000]/20 text-[#8B0000] text-xs tracking-[0.15em] uppercase rounded-full hover:border-[#8B0000]/40 transition-colors text-center">Ver la Carta</a>
-            </motion.div>
-          </div>
-        </section>
-
-        {/* ═══════════════════════════════════
-            2. LA CARTA — TABS
-        ═══════════════════════════════════ */}
-        <section id="la-carta" className="py-20 md:py-32 px-6 md:px-16 bg-[#1a0505] text-[#f5f0e8]">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-16">
-              <span className="text-[10px] tracking-[0.5em] uppercase text-[#8B0000] block mb-4">Nuestra carta</span>
-              <h2 className="text-4xl md:text-5xl tracking-tight font-light">Sabores de siempre</h2>
+            <div className="flex-1 flex flex-col items-center justify-center gap-12 text-2xl font-serif uppercase tracking-widest">
+              <Link href="/" className="active:scale-95 transition-transform">Inicio</Link>
+              <button className="active:scale-95 transition-transform">Menú</button>
+              <button className="active:scale-95 transition-transform">La Bodega</button>
+              <button className="border border-white px-8 py-4 active:scale-95 transition-transform mt-8 text-sm">
+                Reservar Mesa
+              </button>
             </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  )
+}
 
-            <div className="flex justify-center gap-6 mb-12">
-              {[
-                { key: "entrantes", label: "Entrantes", icon: Flame },
-                { key: "principales", label: "Principales", icon: Utensils },
-                { key: "postres", label: "Postres", icon: Star },
-              ].map(t => (
-                <button key={t.key} onClick={() => setActiveTab(t.key)}
-                  className={`flex items-center gap-2 px-4 py-2 text-[10px] tracking-[0.2em] uppercase rounded-full border transition-all ${activeTab === t.key ? 'border-[#8B0000] bg-[#8B0000]/10 text-[#f5f0e8]' : 'border-[#f5f0e8]/10 text-[#f5f0e8]/40 hover:border-[#f5f0e8]/20'}`}
-                  style={{ fontFamily: "system-ui" }}>
-                  <t.icon className="w-3 h-3" /> {t.label}
-                </button>
-              ))}
-            </div>
+const MagneticButton = ({ children, className }) => {
+  const ref = useRef(null)
+  const [position, setPosition] = useState({ x: 0, y: 0 })
 
-            <AnimatePresence mode="wait">
-              <motion.div key={activeTab} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
-                className="space-y-0">
-                {menuItems[activeTab].map((item, i) => (
-                  <motion.div key={i} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.08 }}
-                    className="flex justify-between items-start py-6 border-b border-[#f5f0e8]/5 group">
-                    <div className="flex-1 pr-8">
-                      <h3 className="text-lg tracking-wide group-hover:text-[#8B0000] transition-colors" style={{ fontFamily: "Georgia, serif" }}>{item.name}</h3>
-                      <p className="text-xs text-[#f5f0e8]/30 mt-1 leading-relaxed" style={{ fontFamily: "system-ui" }}>{item.desc}</p>
-                    </div>
-                    <span className="text-lg text-[#8B0000] font-light shrink-0">{item.price}</span>
-                  </motion.div>
-                ))}
-              </motion.div>
-            </AnimatePresence>
+  const handleMouse = (e) => {
+    if (window.innerWidth < 768) return
+    const { clientX, clientY } = e
+    const { height, width, left, top } = ref.current.getBoundingClientRect()
+    const middleX = clientX - (left + width / 2)
+    const middleY = clientY - (top + height / 2)
+    setPosition({ x: middleX * 0.2, y: middleY * 0.2 })
+  }
 
-            <p className="text-center text-[10px] text-[#f5f0e8]/20 mt-12 tracking-wide" style={{ fontFamily: "system-ui" }}>
-              IVA incluido. Alérgenos disponibles bajo solicitud. Carta sujeta a disponibilidad de mercado.
-            </p>
-          </div>
-        </section>
+  const reset = () => {
+    if (window.innerWidth < 768) return
+    setPosition({ x: 0, y: 0 })
+  }
 
-        {/* ═══════════════════════════════════
-            3. BODEGA
-        ═══════════════════════════════════ */}
-        <section id="bodega" className="py-20 md:py-32 px-6 md:px-16 bg-[#f5f0e8]">
-          <div className="max-w-4xl mx-auto">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-12 gap-4">
-              <div>
-                <span className="text-[10px] tracking-[0.5em] uppercase text-[#8B0000] block mb-4">Selección de vinos</span>
-                <h2 className="text-4xl font-light tracking-tight">La bodega</h2>
-              </div>
-              <Wine className="w-6 h-6 text-[#8B0000]/20" />
-            </div>
+  return (
+    <motion.div
+      ref={ref}
+      onMouseMove={handleMouse}
+      onMouseLeave={reset}
+      animate={{ x: position.x, y: position.y }}
+      transition={{ type: "spring", stiffness: 150, damping: 15, mass: 0.1 }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  )
+}
 
-            <div className="space-y-4">
-              {wines.map((w, i) => (
-                <motion.div key={i} initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }}
-                  transition={{ delay: i * 0.1 }} viewport={{ once: true }}
-                  className="p-6 rounded-2xl border border-[#8B0000]/10 bg-white hover:border-[#8B0000]/20 transition-colors">
-                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
-                    <div>
-                      <h3 className="text-lg tracking-wide">{w.name}</h3>
-                      <p className="text-xs text-[#1a0505]/30 mt-1" style={{ fontFamily: "system-ui" }}>{w.bodega} · {w.region}</p>
-                    </div>
-                    <span className="text-sm text-[#8B0000] whitespace-nowrap" style={{ fontFamily: "system-ui" }}>{w.price}</span>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ═══════════════════════════════════
-            4. NOSOTROS
-        ═══════════════════════════════════ */}
-        <section id="nosotros" className="py-20 md:py-32 px-6 md:px-16 bg-[#ede5d8]">
-          <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
-            <div className="aspect-[4/5] rounded-3xl bg-gradient-to-br from-[#8B0000]/10 to-[#8B0000]/20 relative overflow-hidden order-2 md:order-1">
-              <div className="absolute inset-0 flex items-center justify-center">
-                <span className="text-[15rem] font-light text-[#8B0000]/[0.04] select-none">C</span>
-              </div>
-            </div>
-            <div className="order-1 md:order-2">
-              <span className="text-[10px] tracking-[0.5em] uppercase text-[#8B0000] block mb-6">Nuestra historia</span>
-              <h2 className="text-3xl md:text-4xl font-light tracking-tight mb-6 leading-[1.2]">
-                Tres generaciones<br/><span className="italic text-[#8B0000]">de fogones.</span>
-              </h2>
-              <div className="space-y-4 text-sm text-[#1a0505]/50 leading-relaxed" style={{ fontFamily: "system-ui" }}>
-                <p>Concha Romero abrió estas puertas en 1987 con una idea sencilla: cocinar como en casa, pero para todos. Su hija María tomó el relevo en 2005, y hoy su nieto Pablo lidera la cocina.</p>
-                <p>Las recetas viajan de generación en generación. El salmorejo es el de Concha. El rabo de toro, el de María. Pablo aporta la técnica moderna sin traicionar la esencia.</p>
-                <p>Cada mañana compramos en el Mercado de Triana. No hay carta fija: hay mercado.</p>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* ═══════════════════════════════════
-            5. RESEÑAS
-        ═══════════════════════════════════ */}
-        <section className="py-20 md:py-32 px-6 md:px-16 bg-[#f5f0e8]">
-          <div className="max-w-4xl mx-auto">
-            <div className="text-center mb-16">
-              <span className="text-[10px] tracking-[0.5em] uppercase text-[#8B0000] block mb-4">Opiniones</span>
-              <h2 className="text-4xl font-light tracking-tight">Lo que dicen de nosotros</h2>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {reviews.map((r, i) => (
-                <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
-                  transition={{ delay: i * 0.1 }} viewport={{ once: true }}
-                  className="p-6 rounded-2xl bg-white border border-[#8B0000]/5">
-                  <div className="flex items-center gap-1 mb-4">
-                    {Array.from({ length: r.rating }).map((_, s) => <Star key={s} className="w-3 h-3 fill-amber-500 text-amber-500" />)}
-                  </div>
-                  <p className="text-sm text-[#1a0505]/60 leading-relaxed mb-6 italic" style={{ fontFamily: "Georgia, serif" }}>"{r.text}"</p>
-                  <div className="flex justify-between items-end" style={{ fontFamily: "system-ui" }}>
-                    <p className="text-xs font-medium">{r.name}</p>
-                    <span className="text-[10px] text-[#1a0505]/20">{r.source}</span>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ═══════════════════════════════════
-            6. RESERVAR
-        ═══════════════════════════════════ */}
-        <section id="reservar" className="py-20 md:py-32 px-6 md:px-16 bg-[#1a0505] text-[#f5f0e8]">
-          <div className="max-w-3xl mx-auto text-center">
-            <span className="text-[10px] tracking-[0.5em] uppercase text-[#8B0000] block mb-6">Reservas</span>
-            <h2 className="text-4xl md:text-5xl font-light tracking-tight mb-4 leading-[1.1]">
-              Tu mesa<br/><span className="italic text-[#8B0000]">te espera.</span>
-            </h2>
-            <p className="text-sm text-[#f5f0e8]/30 max-w-md mx-auto mb-10" style={{ fontFamily: "system-ui" }}>
-              Reserva por teléfono o WhatsApp. Grupos de más de 8 personas, menú cerrado con antelación.
-            </p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16">
-              <a href="tel:+34954678901" className="px-8 py-4 bg-[#8B0000] text-[#f5f0e8] text-xs tracking-[0.2em] uppercase rounded-full hover:bg-[#6d0000] transition-colors flex items-center gap-2">
-                <Phone className="w-4 h-4" /> 954 678 901
-              </a>
-              <a href="https://wa.me/34654321098" className="px-8 py-4 border border-[#f5f0e8]/10 text-xs tracking-[0.2em] uppercase rounded-full hover:border-[#f5f0e8]/20 transition-colors">
-                WhatsApp
-              </a>
-            </div>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8" style={{ fontFamily: "system-ui" }}>
-              <div><MapPin className="w-4 h-4 text-[#8B0000]/40 mx-auto mb-3" /><p className="text-xs text-[#f5f0e8]/30">C/ Betis 42<br/>Triana, Sevilla</p></div>
-              <div><Clock className="w-4 h-4 text-[#8B0000]/40 mx-auto mb-3" /><p className="text-xs text-[#f5f0e8]/30">Mar-Sáb 13:00-16:00 / 20:30-23:30<br/>Dom 13:00-16:00</p></div>
-              <div><Instagram className="w-4 h-4 text-[#8B0000]/40 mx-auto mb-3" /><p className="text-xs text-[#f5f0e8]/30">@casaconcha<br/>Platos del día en Stories</p></div>
-            </div>
-          </div>
-        </section>
-
-        {/* ═══ FOOTER ═══ */}
-        <footer className="py-8 px-6 md:px-16 border-t border-[#8B0000]/5 bg-[#f5f0e8]">
-          <div className="max-w-4xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4" style={{ fontFamily: "system-ui" }}>
-            <p className="text-[10px] tracking-wide text-[#8B0000]/20">© 2026 Casa Concha. Cocina andaluza desde 1987.</p>
-            <p className="text-[10px] tracking-wide text-[#8B0000]/20">C/ Betis 42, Triana, Sevilla</p>
-          </div>
-        </footer>
-
+const Hero = () => {
+  const title = "AURA"
+  return (
+    <section className="relative w-full h-screen flex flex-col items-center justify-center overflow-hidden">
+      <div className="absolute inset-0 z-0">
+        <img
+          src="https://loremflickr.com/1920/1080/finedining,plating?lock=40"
+          alt="Aura plating"
+          className="w-full h-full object-cover opacity-40"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black" />
       </div>
+      <div className="z-10 text-center flex flex-col items-center w-full px-4">
+        <h1 className="text-white text-7xl md:text-9xl font-serif tracking-tighter uppercase overflow-hidden flex justify-center w-full">
+          {title.split("").map((char, index) => (
+            <motion.span
+              key={index}
+              initial={{ y: "100%" }}
+              animate={{ y: 0 }}
+              transition={{ duration: 1, delay: 0.5 + index * 0.1, ease: [0.77, 0, 0.17, 1] }}
+            >
+              {char}
+            </motion.span>
+          ))}
+        </h1>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: 1.5 }}
+          className="text-gray-400 mt-8 tracking-[0.2em] md:tracking-[0.3em] uppercase text-sm md:text-base text-center"
+        >
+          Gastronomía sensorial
+        </motion.p>
+      </div>
+    </section>
+  )
+}
+
+const menuItems = [
+  { name: "Preludio del Mar", img: "https://loremflickr.com/1920/1080/seafood,plating?lock=41" },
+  { name: "Tierra Quemada", img: "https://loremflickr.com/1920/1080/meat,smoke?lock=42" },
+  { name: "Texturas de Bosque", img: "https://loremflickr.com/1920/1080/mushrooms,foraging?lock=43" },
+  { name: "El Origen", img: "https://loremflickr.com/1920/1080/dessert,minimal?lock=44" }
+]
+
+const Experience = () => {
+  const [activeItem, setActiveItem] = useState(0)
+
+  return (
+    <section className="relative w-full min-h-screen py-24 md:py-32 flex flex-col items-center justify-center bg-black overflow-hidden">
+      <div className="absolute inset-0 z-0">
+        <AnimatePresence mode="wait">
+          <motion.img
+            key={activeItem}
+            src={menuItems[activeItem].img}
+            initial={{ opacity: 0, scale: 1.05 }}
+            animate={{ opacity: 0.25, scale: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.8 }}
+            className="absolute inset-0 w-full h-full object-cover"
+          />
+        </AnimatePresence>
+        <div className="absolute inset-0 bg-black/40" />
+      </div>
+
+      <div className="z-10 w-full max-w-5xl flex flex-col items-center">
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-gray-500 uppercase tracking-[0.4em] text-sm md:text-base mb-12 md:mb-24 px-6 text-center"
+        >
+          La Experiencia
+        </motion.h2>
+
+        <div className="flex flex-col items-center w-full px-6">
+          {menuItems.map((item, index) => (
+            <motion.div
+              key={index}
+              onMouseEnter={() => setActiveItem(index)}
+              onClick={() => setActiveItem(index)}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1 }}
+              className="group cursor-pointer py-8 w-full text-center border-b border-white/5 last:border-0 relative"
+            >
+              <h3 className={`text-3xl md:text-6xl font-serif transition-colors duration-500 tracking-wide relative z-10 ${activeItem === index ? 'text-white' : 'text-white/30 group-hover:text-white'}`}>
+                {item.name}
+              </h3>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+const Chef = () => {
+  return (
+    <section className="w-full min-h-screen bg-[#030303] flex flex-col md:flex-row items-center justify-center px-6 md:px-24 py-24 md:py-32 gap-12 md:gap-32">
+      <motion.div
+        initial={{ opacity: 0, x: -50 }}
+        whileInView={{ opacity: 1, x: 0 }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 1 }}
+        className="w-full md:w-5/12 aspect-[3/4] relative"
+      >
+        <img
+          src="https://loremflickr.com/800/1200/chef,portrait?lock=45"
+          alt="Chef portrait"
+          className="w-full h-full object-cover md:grayscale opacity-90"
+        />
+        <div className="absolute inset-0 border border-white/10 -translate-x-4 translate-y-4 pointer-events-none" />
+      </motion.div>
+      <div className="w-full md:w-6/12 flex flex-col justify-center text-center md:text-left">
+        <motion.p
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1 }}
+          className="text-5xl md:text-7xl tracking-tighter font-serif text-white leading-tight"
+        >
+          "No cocinamos comida, esculpimos recuerdos."
+        </motion.p>
+        <motion.p
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 1, delay: 0.3 }}
+          className="mt-8 md:mt-12 text-gray-500 uppercase tracking-[0.2em] text-sm md:text-base"
+        >
+          — Alejandro Valdés, Head Chef
+        </motion.p>
+      </div>
+    </section>
+  )
+}
+
+const Cellar = () => {
+  const targetRef = useRef(null)
+
+  const { scrollYProgress } = useScroll({
+    target: targetRef,
+  })
+  
+  const x = useTransform(scrollYProgress, [0, 1], ["0%", "-66%"])
+  
+  const wines = [
+    { title: "Terroir", img: "https://loremflickr.com/600/800/wineglass?lock=50" },
+    { title: "Añada", img: "https://loremflickr.com/600/800/vineyard,dark?lock=51" },
+    { title: "Equilibrio", img: "https://loremflickr.com/600/800/winecellar?lock=52" }
+  ]
+
+  return (
+    <section ref={targetRef} className="relative h-[300vh] bg-black">
+      <div className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden">
+        <div className="absolute top-24 md:top-32 left-6 md:left-24 z-10">
+          <h2 className="text-gray-500 uppercase tracking-[0.4em] text-sm md:text-base">La Bodega</h2>
+        </div>
+        <motion.div style={{ x }} className="flex w-max gap-12 md:gap-24 px-6 md:px-24 mt-20">
+          {wines.map((wine, idx) => (
+            <div key={idx} className="w-[75vw] md:w-[35vw] h-[50vh] md:h-[60vh] shrink-0 relative group">
+              <div className="w-full h-full overflow-hidden">
+                <img
+                  src={wine.img}
+                  className="w-full h-full object-cover grayscale opacity-50 group-hover:grayscale-0 group-hover:scale-105 group-hover:opacity-100 transition-all duration-700"
+                  alt={wine.title}
+                />
+              </div>
+              <h3 className="absolute bottom-8 left-8 text-2xl md:text-3xl font-serif text-white tracking-widest uppercase">
+                {wine.title}
+              </h3>
+            </div>
+          ))}
+        </motion.div>
+      </div>
+    </section>
+  )
+}
+
+const Reservation = () => {
+  return (
+    <section className="w-full py-40 md:py-64 bg-[#030303] flex flex-col items-center justify-center text-center px-6 relative overflow-hidden">
+      <motion.p
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        className="text-gray-400 uppercase tracking-[0.2em] md:tracking-[0.4em] text-sm md:text-base mb-12 md:mb-16"
+      >
+        Solo 12 comensales por noche.
+      </motion.p>
+      <MagneticButton>
+        <button className="px-8 md:px-16 py-6 md:py-8 bg-white text-black font-serif text-xl md:text-4xl uppercase tracking-widest hover:bg-gray-200 active:scale-95 transition-all">
+          Solicitar Mesa
+        </button>
+      </MagneticButton>
+    </section>
+  )
+}
+
+const Footer = () => {
+  return (
+    <footer className="w-full bg-black text-white py-12 md:py-16 border-t border-white/5 flex flex-col md:flex-row items-center justify-between px-6 md:px-24 gap-8 md:gap-0">
+      <div className="font-serif text-3xl tracking-[0.3em] uppercase text-white/80">
+        Aura
+      </div>
+      <div className="flex flex-col items-center md:items-end text-sm md:text-base uppercase tracking-widest text-gray-500 gap-3">
+        <p>Calle Falsa 123, Ciudad</p>
+        <p>reservas@aura.com</p>
+        <p>+34 900 000 000</p>
+      </div>
+    </footer>
+  )
+}
+
+export default function RestauranteDemo() {
+  const [cursorPos, setCursorPos] = useState({ x: -100, y: -100 })
+  const [isClient, setIsClient] = useState(false)
+
+  useEffect(() => {
+    setIsClient(true)
+    const updateCursor = (e) => {
+      setCursorPos({ x: e.clientX, y: e.clientY })
+    }
+    window.addEventListener("mousemove", updateCursor)
+    return () => window.removeEventListener("mousemove", updateCursor)
+  }, [])
+
+  return (
+    <DemoLayout title="Aura">
+    <div className="text-white font-sans selection:bg-white selection:text-black md:cursor-none">
+      {isClient && (
+        <motion.div
+          className="fixed top-0 left-0 w-6 h-6 bg-white rounded-full pointer-events-none z-[100] mix-blend-difference -translate-x-1/2 -translate-y-1/2 hidden md:block"
+          animate={{ x: cursorPos.x, y: cursorPos.y }}
+          transition={{ type: "spring", stiffness: 800, damping: 35, mass: 0.1 }}
+        />
+      )}
+      <Nav />
+      <Hero />
+      <Experience />
+      <Chef />
+      <Cellar />
+      <Reservation />
+      <Footer />
+    </div>
     </DemoLayout>
-  );
+  )
 }
