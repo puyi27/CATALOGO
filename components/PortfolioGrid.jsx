@@ -6,28 +6,28 @@ import Link from 'next/link';
 import { ArrowUpRight, LayoutGrid, Filter } from 'lucide-react';
 
 const demos = [
-  { id: 'metal', color: '#ff4500', nombre: 'INDUSTRIA PESADA', path: '/demo/metal', tags: ['industrial', 'backend'], img: 'https://loremflickr.com/600/800/welding,steel/all?lock=1' },
-  { id: 'panaderia', color: '#d4a373', nombre: 'OBRADOR ARTESANO', path: '/demo/panaderia', tags: ['alimentación', 'ecommerce'], img: 'https://loremflickr.com/600/800/bread,bakery/all?lock=1' },
-  { id: 'interiorismo', color: '#e5e7eb', nombre: 'ARQUITECTURA', path: '/demo/interiorismo', tags: ['construcción', 'portfolio'], img: 'https://loremflickr.com/600/800/minimalist,interior/all?lock=1' },
-  { id: 'almazara', color: '#4E6840', nombre: 'AGROTECH', path: '/demo/almazara', tags: ['agro', 'backend'], img: 'https://loremflickr.com/600/800/olive,farm/all?lock=1' },
-  { id: 'clinica', color: '#008080', nombre: 'CLÍNICA DENTAL', path: '/demo/clinica', tags: ['salud', 'crm'], img: 'https://loremflickr.com/600/800/surgery,doctor/all?lock=1' },
-  { id: 'restaurante', color: '#1a1a1a', nombre: 'ALTA GASTRONOMÍA', path: '/demo/restaurante', tags: ['alimentación', 'portfolio'], img: 'https://loremflickr.com/600/800/restaurant,food/all?lock=1' },
-  { id: 'agencia', color: '#ff00ff', nombre: 'AGENCIA CREATIVA', path: '/demo/agencia', tags: ['portfolio', 'branding'], img: 'https://loremflickr.com/600/800/branding,design/all?lock=1' },
-  { id: 'barberia', color: '#b91c1c', nombre: 'BARBERÍA VINTAGE', path: '/demo/barberia', tags: ['servicios', 'ecommerce'], img: 'https://loremflickr.com/600/800/barber,vintage/all?lock=1' },
-  { id: 'gaming', color: '#8b5cf6', nombre: 'E-SPORTS', path: '/demo/gaming', tags: ['entretenimiento', 'backend'], img: 'https://loremflickr.com/600/800/esports,gaming/all?lock=1' },
-  { id: 'inmobiliaria', color: '#3b82f6', nombre: 'REAL ESTATE', path: '/demo/inmobiliaria', tags: ['inmobiliaria', 'vr'], img: 'https://loremflickr.com/600/800/mansion,villa/all?lock=1' },
-  { id: 'saas', color: '#0ea5e9', nombre: 'SAAS B2B', path: '/demo/saas', tags: ['tecnología', 'backend'], img: 'https://loremflickr.com/600/800/code,server/all?lock=1' },
-  { id: 'tienda', color: '#ec4899', nombre: 'ALTA JOYERÍA', path: '/demo/tienda', tags: ['ecommerce', 'lujo'], img: 'https://loremflickr.com/600/800/jewelry,luxury/all?lock=1' },
-  { id: 'tech', color: '#06b6d4', nombre: 'SOFTWARE HOUSE', path: '/demo/tech', tags: ['tecnología', 'backend'], img: 'https://loremflickr.com/600/800/cyberpunk,tech/all?lock=1' },
-  { id: 'creativo', color: '#f97316', nombre: 'ESTUDIO CREATIVO', path: '/demo/creativo', tags: ['portfolio', 'branding'], img: 'https://loremflickr.com/600/800/art,studio/all?lock=1' },
-  { id: 'editorial', color: '#a855f7', nombre: 'REVISTA DIGITAL', path: '/demo/editorial', tags: ['portfolio', 'branding'], img: 'https://loremflickr.com/600/800/magazine,editorial/all?lock=1' },
-  { id: 'gastronomia', color: '#ef4444', nombre: 'CHEF ESTRELLA', path: '/demo/gastronomia', tags: ['alimentación', 'portfolio'], img: 'https://loremflickr.com/600/800/chef,gourmet/all?lock=1' },
-  { id: 'premium', color: '#fbbf24', nombre: 'RELOJERÍA SUIZA', path: '/demo/premium', tags: ['lujo', 'ecommerce'], img: 'https://loremflickr.com/600/800/watch,luxury/all?lock=1' },
-  { id: 'sostenibilidad', color: '#22c55e', nombre: 'ENERGÍA VERDE', path: '/demo/sostenibilidad', tags: ['agro', 'backend'], img: 'https://loremflickr.com/600/800/solar,energy/all?lock=1' },
-  { id: 'urbano', color: '#f43f5e', nombre: 'STREETWEAR', path: '/demo/urbano', tags: ['ecommerce', 'lujo'], img: 'https://loremflickr.com/600/800/streetwear,urban/all?lock=1' },
-  { id: 'zen', color: '#a3e635', nombre: 'RETIRO WELLNESS', path: '/demo/zen', tags: ['servicios', 'crm'], img: 'https://loremflickr.com/600/800/yoga,zen/all?lock=1' },
-  { id: 'nightlife', color: '#e879f9', nombre: 'CLUB & NIGHTLIFE', path: '/demo/nightlife', tags: ['entretenimiento', 'backend'], img: 'https://loremflickr.com/600/800/nightclub,party/all?lock=1' },
-  { id: 'transporte', color: '#38bdf8', nombre: 'LOGÍSTICA & FLOTA', path: '/demo/transporte', tags: ['industrial', 'backend'], img: 'https://loremflickr.com/600/800/truck,logistics/all?lock=1' },
+  { id: 'metal', color: '#ff4500', nombre: 'INDUSTRIA PESADA', path: '/demo/metal', tags: ['industrial', 'backend'], img: '/previews/metal.jpg', fontClass: 'font-mono font-black uppercase tracking-tighter' },
+  { id: 'panaderia', color: '#d4a373', nombre: 'OBRADOR ARTESANO', path: '/demo/panaderia', tags: ['alimentación', 'ecommerce'], img: '/previews/panaderia.jpg', fontClass: 'font-serif italic tracking-wide' },
+  { id: 'interiorismo', color: '#e5e7eb', nombre: 'ARQUITECTURA', path: '/demo/interiorismo', tags: ['construcción', 'portfolio'], img: '/previews/interiorismo.jpg', fontClass: 'font-sans font-light tracking-[0.2em]' },
+  { id: 'almazara', color: '#4E6840', nombre: 'AGROTECH', path: '/demo/almazara', tags: ['agro', 'backend'], img: '/previews/almazara.jpg', fontClass: 'font-serif tracking-tight' },
+  { id: 'clinica', color: '#008080', nombre: 'CLÍNICA DENTAL', path: '/demo/clinica', tags: ['salud', 'crm'], img: '/previews/clinica.jpg', fontClass: 'font-sans font-medium tracking-tight' },
+  { id: 'restaurante', color: '#1a1a1a', nombre: 'ALTA GASTRONOMÍA', path: '/demo/restaurante', tags: ['alimentación', 'portfolio'], img: '/previews/restaurante.jpg', fontClass: 'font-serif tracking-widest' },
+  { id: 'agencia', color: '#ff00ff', nombre: 'AGENCIA CREATIVA', path: '/demo/agencia', tags: ['portfolio', 'branding'], img: '/previews/agencia.jpg', fontClass: 'font-serif italic tracking-tighter' },
+  { id: 'barberia', color: '#b91c1c', nombre: 'BARBERÍA VINTAGE', path: '/demo/barberia', tags: ['servicios', 'ecommerce'], img: '/previews/barberia.jpg', fontClass: 'font-serif font-black uppercase' },
+  { id: 'gaming', color: '#8b5cf6', nombre: 'E-SPORTS', path: '/demo/gaming', tags: ['entretenimiento', 'backend'], img: '/previews/gaming.jpg', fontClass: 'font-mono font-black italic tracking-tighter' },
+  { id: 'inmobiliaria', color: '#3b82f6', nombre: 'REAL ESTATE', path: '/demo/inmobiliaria', tags: ['inmobiliaria', 'vr'], img: '/previews/inmobiliaria.jpg', fontClass: 'font-sans font-light tracking-[0.15em]' },
+  { id: 'saas', color: '#0ea5e9', nombre: 'SAAS B2B', path: '/demo/saas', tags: ['tecnología', 'backend'], img: '/previews/saas.jpg', fontClass: 'font-sans font-black tracking-tighter' },
+  { id: 'tienda', color: '#ec4899', nombre: 'ALTA JOYERÍA', path: '/demo/tienda', tags: ['ecommerce', 'lujo'], img: '/previews/tienda.jpg', fontClass: 'font-serif tracking-[0.25em]' },
+  { id: 'tech', color: '#06b6d4', nombre: 'SOFTWARE HOUSE', path: '/demo/tech', tags: ['tecnología', 'backend'], img: '/previews/tech.jpg', fontClass: 'font-mono font-bold tracking-tight' },
+  { id: 'creativo', color: '#f97316', nombre: 'ESTUDIO CREATIVO', path: '/demo/creativo', tags: ['portfolio', 'branding'], img: '/previews/creativo.jpg', fontClass: 'font-sans font-black italic uppercase' },
+  { id: 'editorial', color: '#a855f7', nombre: 'REVISTA DIGITAL', path: '/demo/editorial', tags: ['portfolio', 'branding'], img: '/previews/editorial.jpg', fontClass: 'font-serif font-light tracking-wide' },
+  { id: 'gastronomia', color: '#ef4444', nombre: 'CHEF ESTRELLA', path: '/demo/gastronomia', tags: ['alimentación', 'portfolio'], img: '/previews/gastronomia.jpg', fontClass: 'font-serif italic' },
+  { id: 'premium', color: '#fbbf24', nombre: 'RELOJERÍA SUIZA', path: '/demo/premium', tags: ['lujo', 'ecommerce'], img: '/previews/premium.jpg', fontClass: 'font-serif tracking-widest uppercase' },
+  { id: 'sostenibilidad', color: '#22c55e', nombre: 'ENERGÍA VERDE', path: '/demo/sostenibilidad', tags: ['agro', 'backend'], img: '/previews/sostenibilidad.jpg', fontClass: 'font-sans font-medium tracking-tight' },
+  { id: 'urbano', color: '#f43f5e', nombre: 'STREETWEAR', path: '/demo/urbano', tags: ['ecommerce', 'lujo'], img: '/previews/urbano.jpg', fontClass: 'font-sans font-black italic tracking-tighter' },
+  { id: 'zen', color: '#a3e635', nombre: 'RETIRO WELLNESS', path: '/demo/zen', tags: ['servicios', 'crm'], img: '/previews/zen.jpg', fontClass: 'font-serif font-light tracking-[0.1em]' },
+  { id: 'nightlife', color: '#e879f9', nombre: 'CLUB & NIGHTLIFE', path: '/demo/nightlife', tags: ['entretenimiento', 'backend'], img: '/previews/nightlife.jpg', fontClass: 'font-sans font-black tracking-tighter uppercase' },
+  { id: 'transporte', color: '#38bdf8', nombre: 'LOGÍSTICA & FLOTA', path: '/demo/transporte', tags: ['industrial', 'backend'], img: '/previews/transporte.jpg', fontClass: 'font-mono font-bold tracking-tight' },
 ];
 
 const allTags = [...new Set(demos.flatMap((d) => d.tags))];
@@ -125,7 +125,7 @@ export default function PortfolioGrid() {
 
                     <div className="absolute bottom-0 left-0 right-0 p-5">
                       <div className="flex items-center justify-between">
-                        <h3 className="text-xl md:text-2xl font-black uppercase tracking-tighter text-white">
+                        <h3 className={`text-xl md:text-2xl text-white ${demo.fontClass || 'font-black uppercase tracking-tighter'}`}>
                           {demo.nombre}
                         </h3>
                         <div
