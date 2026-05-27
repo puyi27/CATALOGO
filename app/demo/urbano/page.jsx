@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef } from "react";
 import { LazyMotion, domAnimation, m, AnimatePresence, useInView } from "framer-motion";
-import { LazyMotion, domAnimation, m, AnimatePresence, useInView } from "framer-motion";
 import { ShoppingBag, Clock, Zap, ArrowUpRight, Mail, Menu, X } from "lucide-react";
 import Link from "next/link";
 import DemoLayout from "@/components/DemoLayout";

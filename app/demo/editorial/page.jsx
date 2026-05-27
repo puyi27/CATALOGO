@@ -800,6 +800,7 @@ export default function VogueEssencePage() {
             — The Guardian
           </cite>
         </motion.div>
+        <motion.div
           style={{
             width: '80px',
             height: '1px',

@@ -372,7 +372,7 @@ function Patrimonio() {
                 {t.year}
               </span>
             </div>
-            <div className="w-[10px] h-[10px] rounded-full bg-[#C3A370] shrink-0 mt-1.5 shadow-[0_0_0_4px_rgba(195,163,112,0.15)]" />
+            <div className="w-[10px] h-[10px] rounded-full bg-[#C3A370] shrink-0 mt-1.5 border-4 border-transparent" />
             <p className="font-serif text-lg md:text-xl leading-[1.7] text-[#8C8578] italic">
               {t.event}
             </p>
