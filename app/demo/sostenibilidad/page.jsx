@@ -173,7 +173,7 @@ export default function AlcalaSemeueveDemo() {
           </div>
         </section>
 
-        {/* MARQUEE SECTION (Nuevo) */}
+        {/* MARQUEE SECTION */}
         <div className="w-full bg-[#117C4E] text-[#011B11] py-4 border-y border-[#117C4E] overflow-hidden flex items-center">
           <div className="marquee-inner flex whitespace-nowrap min-w-[200%]">
             <span className="text-sm md:text-lg uppercase tracking-[0.3em] font-medium px-8">TRANSPORTE DIGNO YA • NO MÁS ESPERAS • ALCALÁ SE MUEVE •</span>
@@ -207,7 +207,7 @@ export default function AlcalaSemeueveDemo() {
           </div>
         </section>
 
-        {/* LINE STATUS SECTION (Nueva) */}
+        {/* LINE STATUS SECTION */}
         <section className="status-section py-20 px-8 md:px-24 w-full bg-[#011B11] text-[#FBF5E9] border-y border-[#117C4E]/20">
           <div className="max-w-[100rem] mx-auto flex flex-col md:flex-row gap-16">
             <div className="w-full md:w-1/3 flex flex-col justify-center">
@@ -227,7 +227,6 @@ export default function AlcalaSemeueveDemo() {
             </div>
             
             <div className="w-full md:w-2/3 flex flex-col">
-              {/* Filas de estado de líneas */}
               {[
                 { name: "M-121", route: "Alcalá - Sevilla (Centro)", status: "Colapsada", color: "bg-red-500", textAlert: "text-red-400" },
                 { name: "M-122", route: "Alcalá - Sevilla (Directo)", status: "Retrasos (+25m)", color: "bg-orange-500", textAlert: "text-orange-400" },
@@ -348,7 +347,7 @@ export default function AlcalaSemeueveDemo() {
           </div>
         </section>
 
-        {/* MASSIVE CTA */}
+        {/* MASSIVE CTA WITH GOOGLE FORM LINK */}
         <section className="relative py-40 md:py-64 px-8 text-[#FBF5E9] flex flex-col items-center justify-center overflow-hidden">
           <div className="absolute inset-0 z-0">
             <div 
@@ -361,12 +360,18 @@ export default function AlcalaSemeueveDemo() {
             <h2 className="text-5xl md:text-[8rem] tracking-tighter font-serif mb-16 leading-[0.9] text-[#FBF5E9]">
               Dales visibilidad.<br/>Únete a la queja.
             </h2>
-            <button className="group relative flex items-center justify-center gap-6 pb-4 border-b border-[#117C4E]/30 hover:border-[#117C4E] transition-colors duration-500 w-fit">
+            {/* Aquí hemos cambiado el botón por un enlace <a> hacia tu formulario real */}
+            <a 
+              href="https://docs.google.com/forms/d/e/1FAIpQLSddnQ7lRKxyMImMjVOsMx6e-a8-GOJ4CIQShlj6znZmB-Tx2Q/viewform"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group relative flex items-center justify-center gap-6 pb-4 border-b border-[#117C4E]/30 hover:border-[#117C4E] transition-colors duration-500 w-fit cursor-pointer"
+            >
               <span className="text-sm md:text-base uppercase tracking-[0.3em] font-light text-[#117C4E]">
                 Reportar una incidencia
               </span>
               <ArrowRight className="w-5 h-5 text-[#117C4E] transition-transform duration-500 md:group-hover:translate-x-4" strokeWidth={1} />
-            </button>
+            </a>
           </div>
         </section>
       </div>
