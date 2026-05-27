@@ -38,7 +38,7 @@ export default function PortfolioGrid() {
 
   return (
     <LazyMotion features={domAnimation}>
-      <section className="relative bg-[#050505] text-white overflow-hidden py-24 md:py-32 border-t border-white/5">
+      <section id="catalogo" className="relative bg-[#050505] text-white overflow-hidden py-24 md:py-32 border-t border-white/5">
         <div className="max-w-[90rem] mx-auto px-6 md:px-12">
           <m.div
             initial={{ opacity: 0, y: 30 }}

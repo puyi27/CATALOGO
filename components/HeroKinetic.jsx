@@ -137,7 +137,7 @@ export default function HeroKinetic() {
             className="mt-14 flex flex-col sm:flex-row gap-4 justify-center"
           >
             <a
-              href="#alma"
+              href="#catalogo"
               className="group inline-flex items-center gap-2 bg-white text-black px-8 py-4 rounded-full font-bold text-sm uppercase tracking-widest hover:bg-zinc-100 transition-colors"
             >
               Ver el Catálogo
