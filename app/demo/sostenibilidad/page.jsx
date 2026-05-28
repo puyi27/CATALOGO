@@ -323,7 +323,38 @@ export default function AlcalaSemeueveDemo() {
               { line: "Urbanos", route: "Circular Urbana (H. San Agustín)", grievance: "Frecuencia fantasma. Espera de 1h en parada. El panel electrónico sigue apagado.", time: "Hace 22 min." },
               { line: "M-120", route: "Alcalá - Dos Hermanas (Directo)", grievance: "Aire acondicionado averiado en hora punta. Calor insoportable y hacinamiento.", time: "Hace 1 hora." },
             ].map((report, index) => (
-              <div key={index} className="report-card group bg-[#011B11] p-8 rounded-2xl flex flex-col gap-6 text-[#FBF5E9] border border-[#117C4E]/10 hover:border-[#117C4E]/40 transition-colors">
+              <div 
+                key={index} 
+                className="report-card group bg-[#011B11] p-8 rounded-2xl flex flex-col gap-6 text-[#FBF5E9] border border-[#117C4E]/10 hover:border-[#117C4E]/40 transition-colors"
+                onMouseEnter={(e) => {
+                  import('animejs').then((animeModule) => {
+                    const anime = animeModule.default;
+                    anime.remove(e.currentTarget);
+                    anime({
+                      targets: e.currentTarget,
+                      scale: 1.02,
+                      translateY: -5,
+                      boxShadow: '0px 10px 20px rgba(17, 124, 78, 0.2)',
+                      duration: 400,
+                      easing: 'easeOutExpo'
+                    });
+                  });
+                }}
+                onMouseLeave={(e) => {
+                  import('animejs').then((animeModule) => {
+                    const anime = animeModule.default;
+                    anime.remove(e.currentTarget);
+                    anime({
+                      targets: e.currentTarget,
+                      scale: 1,
+                      translateY: 0,
+                      boxShadow: '0px 0px 0px rgba(17, 124, 78, 0)',
+                      duration: 600,
+                      easing: 'easeOutElastic(1, .8)'
+                    });
+                  });
+                }}
+              >
                 <div className="flex justify-between items-start gap-4">
                   <div className="flex items-center gap-4">
                     <div className="p-3 bg-[#117C4E]/20 rounded-full text-[#117C4E]">

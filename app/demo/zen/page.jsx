@@ -33,6 +33,29 @@ export default function SatoriRetreat() {
     return () => window.removeEventListener("resize", updateWidth);
   }, []);
 
+  useEffect(() => {
+    import('animejs').then((animeModule) => {
+      const anime = animeModule.default;
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            anime({
+              targets: '.anime-zen-item',
+              translateY: [40, 0],
+              opacity: [0, 1],
+              delay: anime.stagger(200, { start: 100 }),
+              easing: 'easeOutQuart',
+              duration: 1200
+            });
+            observer.disconnect();
+          }
+        });
+      });
+      const el = document.querySelector('.anime-zen-container');
+      if(el) observer.observe(el);
+    });
+  }, []);
+
   const handleNext = () => {
     if (step < 3) setStep(step + 1);
   };
@@ -82,11 +105,7 @@ export default function SatoriRetreat() {
 
       <section className="relative h-[100svh] flex flex-col justify-center items-center px-6">
         <div className="absolute inset-0 z-0">
-          <img 
-            src="https://loremflickr.com/1920/1080/zen,garden,meditation/all" 
-            alt="Zen Garden" 
-            className="w-full h-full object-cover opacity-80"
-          />
+          <div className="w-full h-full bg-gradient-to-br from-[#8C9A8E] via-[#A8B5A9] to-[#E3E8E3] opacity-60 mix-blend-multiply" />
           <div className="absolute inset-0 bg-[#F5EFEB]/30" />
         </div>
         
@@ -156,7 +175,33 @@ export default function SatoriRetreat() {
         </motion.div>
       </section>
 
-      <section className="py-24 md:py-32 px-6 md:px-20 bg-[#F5EFEB] min-h-[100svh] flex items-center">
+      <section className="py-24 md:py-32 px-6 md:px-20 bg-[#F5EFEB] border-t border-[#2C302E]/5">
+        <div className="max-w-6xl mx-auto">
+          <div className="mb-16 md:mb-20 text-center md:text-left">
+            <h2 className="text-4xl md:text-5xl font-light tracking-tight mb-4">Our Philosophy</h2>
+            <p className="text-xs md:text-sm tracking-widest uppercase opacity-60">The pillars of Satori</p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 anime-zen-container">
+            {[
+              { num: "I", title: "Minimalism", text: "Removing the non-essential to reveal the profound." },
+              { num: "II", title: "Presence", text: "Being fully engaged with the current moment." },
+              { num: "III", title: "Harmony", text: "Aligning internal rhythms with natural cycles." },
+              { num: "IV", title: "Transience", text: "Embracing the impermanence of all things." }
+            ].map((pillar, i) => (
+              <div key={i} className="anime-zen-item opacity-0 p-8 border border-[#2C302E]/10 bg-white hover:bg-[#E3E8E3]/30 transition-colors rounded-3xl flex flex-col justify-between aspect-[4/5]">
+                <div className="text-[#2C302E]/40 font-serif italic text-2xl mb-8">{pillar.num}</div>
+                <div>
+                  <h3 className="text-2xl font-light mb-3">{pillar.title}</h3>
+                  <p className="font-light opacity-70 text-sm leading-relaxed">{pillar.text}</p>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="py-24 md:py-32 px-6 md:px-20 bg-[#E3E8E3] min-h-[100svh] flex items-center">
         <div className="max-w-4xl mx-auto w-full">
           <div className="mb-12 md:mb-16 text-center">
             <h2 className="text-4xl md:text-5xl font-light tracking-tight mb-4">Reserve Your Journey</h2>

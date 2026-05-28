@@ -29,23 +29,46 @@ export default function NightfallDemo() {
     return () => window.removeEventListener('mousemove', handleMouseMove)
   }, [])
 
+  useEffect(() => {
+    import('animejs').then((animeModule) => {
+      const anime = animeModule.default;
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            anime({
+              targets: '.anime-gallery-item',
+              scale: [0.9, 1],
+              opacity: [0, 1],
+              delay: anime.stagger(150),
+              easing: 'easeOutExpo',
+              duration: 800
+            });
+            observer.disconnect();
+          }
+        });
+      });
+      const el = document.querySelector('.anime-gallery-container');
+      if(el) observer.observe(el);
+    });
+  }, []);
+
   const strobeOpacity = useTransform(scrollY, (y) => (Math.floor(y / 30) % 2 === 0 ? 0 : 0.08))
 
   const lineup = [
-    { id: 1, date: "JUL 12", name: "AMELIE LENS", img: "https://loremflickr.com/600/800/dj,techno?lock=101" },
-    { id: 2, date: "JUL 19", name: "CHARLOTTE DE WITTE", img: "https://loremflickr.com/600/800/dj,techno?lock=102" },
-    { id: 3, date: "AUG 02", name: "TALE OF US", img: "https://loremflickr.com/600/800/dj,techno?lock=103" },
-    { id: 4, date: "AUG 16", name: "PEGGY GOU", img: "https://loremflickr.com/600/800/dj,techno?lock=104" },
-    { id: 5, date: "AUG 30", name: "RICHIE HAWTIN", img: "https://loremflickr.com/600/800/dj,techno?lock=105" },
+    { id: 1, date: "JUL 12", name: "AMELIE LENS", gradient: "from-[#FF00FF] to-blue-900" },
+    { id: 2, date: "JUL 19", name: "CHARLOTTE DE WITTE", gradient: "from-[#00FFFF] to-purple-900" },
+    { id: 3, date: "AUG 02", name: "TALE OF US", gradient: "from-blue-600 to-black" },
+    { id: 4, date: "AUG 16", name: "PEGGY GOU", gradient: "from-fuchsia-600 to-black" },
+    { id: 5, date: "AUG 30", name: "RICHIE HAWTIN", gradient: "from-red-600 to-black" },
   ]
 
   const gallery = [
-    "https://loremflickr.com/600/600/party,club?lock=110",
-    "https://loremflickr.com/600/800/party,club?lock=111",
-    "https://loremflickr.com/800/600/party,club?lock=112",
-    "https://loremflickr.com/600/600/party,club?lock=113",
-    "https://loremflickr.com/600/1000/party,club?lock=114",
-    "https://loremflickr.com/800/800/party,club?lock=115",
+    "from-purple-900 to-black",
+    "from-fuchsia-900 to-black",
+    "from-blue-900 to-black",
+    "from-cyan-900 to-black",
+    "from-rose-900 to-black",
+    "from-indigo-900 to-black",
   ]
 
   const drinks = [
@@ -85,7 +108,7 @@ export default function NightfallDemo() {
       >
         <AnimatePresence>
           {hoveredDJ && (
-            <motion.img key={hoveredDJ.id} initial={{ opacity: 0, filter: "hue-rotate(0deg) contrast(100%)" }} animate={{ opacity: 1, filter: "hue-rotate(90deg) contrast(250%)" }} exit={{ opacity: 0 }} src={hoveredDJ.img} className="w-full h-full object-cover grayscale border-4 border-[#00FFFF]" alt="DJ" />
+            <motion.div key={hoveredDJ.id} initial={{ opacity: 0, filter: "hue-rotate(0deg) contrast(100%)" }} animate={{ opacity: 1, filter: "hue-rotate(90deg) contrast(250%)" }} exit={{ opacity: 0 }} className={`w-full h-full bg-gradient-to-br ${hoveredDJ.gradient} border-4 border-[#00FFFF]`} />
           )}
         </AnimatePresence>
       </motion.div>
@@ -200,7 +223,7 @@ export default function NightfallDemo() {
       </nav>
 
       <section className="relative h-[100dvh] flex items-center justify-center overflow-hidden border-b-4 border-white pt-16">
-        <motion.div animate={{ opacity: [0.3, 0.7, 0.3], scale: [1, 1.05, 1] }} transition={{ duration: 0.6, repeat: Infinity, ease: "easeInOut" }} className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: "url('https://loremflickr.com/1920/1080/nightclub,laser,party?lock=50')" }} />
+        <motion.div animate={{ opacity: [0.3, 0.7, 0.3], scale: [1, 1.05, 1] }} transition={{ duration: 0.6, repeat: Infinity, ease: "easeInOut" }} className="absolute inset-0 bg-gradient-to-br from-fuchsia-900 via-black to-cyan-900" />
         <div className="absolute inset-0 bg-black/60" />
         <div className="relative z-10 flex flex-col items-center px-4 w-full">
           <motion.h1 animate={{ x: [0, -5, 5, -3, 3, 0, 0, 0, 0, 0], y: [0, 3, -3, 3, -3, 0, 0, 0, 0, 0], textShadow: ["0px 0px 0px transparent", "8px 0px 0px #FF00FF, -8px 0px 0px #00FFFF", "-8px 0px 0px #FF00FF, 8px 0px 0px #00FFFF", "4px 4px 0px #FF00FF, -4px -4px 0px #00FFFF", "0px 0px 0px transparent", "0px 0px 0px transparent", "0px 0px 0px transparent", "0px 0px 0px transparent", "0px 0px 0px transparent", "0px 0px 0px transparent"] }} transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }} className="text-7xl md:text-[12rem] font-black uppercase leading-[0.8] tracking-tighter text-center mix-blend-screen text-white w-full">ENTER<br />THE VOID.</motion.h1>
@@ -230,10 +253,10 @@ export default function NightfallDemo() {
 
       <section className="py-16 md:py-24 px-0 md:px-12 border-b-4 border-white bg-black overflow-hidden">
         <h2 className="text-6xl md:text-9xl font-black uppercase tracking-tighter mb-8 md:mb-16 text-center text-[#FF00FF] px-4">ATMOSPHERE</h2>
-        <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6 max-w-7xl mx-auto px-4 md:px-0">
-          {gallery.map((img, i) => (
-            <div key={i} className="relative break-inside-avoid overflow-hidden group border-4 border-zinc-900 hover:border-[#00FFFF] transition-colors duration-500 cursor-crosshair">
-              <img src={img} alt="Party" className="w-full h-auto object-cover grayscale transition-all duration-700 group-hover:grayscale-0 group-hover:saturate-[2.5] group-hover:scale-110" />
+        <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6 max-w-7xl mx-auto px-4 md:px-0 anime-gallery-container">
+          {gallery.map((grad, i) => (
+            <div key={i} className="anime-gallery-item opacity-0 relative break-inside-avoid overflow-hidden group border-4 border-zinc-900 hover:border-[#00FFFF] transition-colors duration-500 cursor-crosshair">
+              <div className={`w-full h-[300px] md:h-[400px] bg-gradient-to-br ${grad} transition-all duration-700 group-hover:scale-110`} />
               <div className="absolute inset-0 bg-[#FF00FF] mix-blend-overlay opacity-0 group-hover:opacity-30 transition-opacity duration-700" />
             </div>
           ))}

@@ -37,6 +37,29 @@ export default function TitanPrecision() {
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    import('animejs').then((animeModule) => {
+      const anime = animeModule.default;
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            anime({
+              targets: '.anime-metal-item',
+              translateX: [-30, 0],
+              opacity: [0, 1],
+              delay: anime.stagger(150),
+              easing: 'easeOutExpo',
+              duration: 800
+            });
+            observer.disconnect();
+          }
+        });
+      });
+      const el = document.querySelector('.anime-metal-container');
+      if(el) observer.observe(el);
+    });
+  }, []);
+
   const typeWriterText = "INGENIERÍA PARA LA METALURGIA DEL FUTURO.";
   const typeWriterVariants = {
     hidden: { opacity: 0 },
@@ -110,7 +133,7 @@ export default function TitanPrecision() {
       </AnimatePresence>
 
       <section className="relative h-[100svh] flex flex-col justify-center items-center px-4 md:px-6 pt-16 bg-[#0a0a0a]">
-        <div className="absolute inset-0 bg-[url('https://loremflickr.com/1920/1080/metal,industrial/all')] bg-cover bg-center opacity-20 grayscale" />
+        <div className="absolute inset-0 bg-gradient-to-br from-neutral-800 via-[#1a1a1a] to-neutral-900 opacity-20 grayscale" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-[#0a0a0a]" />
         
         <div className="relative z-10 w-full max-w-7xl mx-auto flex flex-col items-start">
@@ -244,31 +267,31 @@ export default function TitanPrecision() {
               <h2 className="text-6xl md:text-8xl font-black uppercase tracking-tighter mb-8 leading-[0.9]">
                 Fabricación<br />Pesada
               </h2>
-              <div className="flex flex-col gap-4 md:gap-6 font-mono text-sm md:text-base text-neutral-400 uppercase tracking-widest">
-                <motion.div whileInView={{ x: 0, opacity: 1 }} initial={{ x: -20, opacity: 0 }} transition={{ delay: 0.1 }} className="flex items-center gap-4 border-b border-white/10 pb-4">
+              <div className="flex flex-col gap-4 md:gap-6 font-mono text-sm md:text-base text-neutral-400 uppercase tracking-widest anime-metal-container">
+                <div className="anime-metal-item opacity-0 flex items-center gap-4 border-b border-white/10 pb-4">
                   <span className="text-[#ff4500] font-black text-lg">01</span>
                   <span>Mecanizado CNC 5 Ejes</span>
-                </motion.div>
-                <motion.div whileInView={{ x: 0, opacity: 1 }} initial={{ x: -20, opacity: 0 }} transition={{ delay: 0.2 }} className="flex items-center gap-4 border-b border-white/10 pb-4">
+                </div>
+                <div className="anime-metal-item opacity-0 flex items-center gap-4 border-b border-white/10 pb-4">
                   <span className="text-[#ff4500] font-black text-lg">02</span>
                   <span>Corte por Plasma</span>
-                </motion.div>
-                <motion.div whileInView={{ x: 0, opacity: 1 }} initial={{ x: -20, opacity: 0 }} transition={{ delay: 0.3 }} className="flex items-center gap-4 border-b border-white/10 pb-4">
+                </div>
+                <div className="anime-metal-item opacity-0 flex items-center gap-4 border-b border-white/10 pb-4">
                   <span className="text-[#ff4500] font-black text-lg">03</span>
                   <span>Soldadura Robótica TIG/MIG</span>
-                </motion.div>
-                <motion.div whileInView={{ x: 0, opacity: 1 }} initial={{ x: -20, opacity: 0 }} transition={{ delay: 0.4 }} className="flex items-center gap-4 border-b border-white/10 pb-4">
+                </div>
+                <div className="anime-metal-item opacity-0 flex items-center gap-4 border-b border-white/10 pb-4">
                   <span className="text-[#ff4500] font-black text-lg">04</span>
                   <span>Aleaciones de Titanio</span>
-                </motion.div>
+                </div>
+                <div className="anime-metal-item opacity-0 flex items-center gap-4 border-b border-white/10 pb-4">
+                  <span className="text-[#ff4500] font-black text-lg">05</span>
+                  <span>Análisis de Tensión Térmica</span>
+                </div>
               </div>
             </div>
             <div className="order-1 lg:order-2 relative aspect-[4/3] md:aspect-[3/4] w-full">
-              <img 
-                src="https://loremflickr.com/800/1000/welding,factory/all" 
-                alt="Proceso de soldadura" 
-                className="w-full h-full object-cover grayscale contrast-125"
-              />
+              <div className="w-full h-full bg-gradient-to-br from-[#111] to-[#333] grayscale contrast-125 border border-white/5" />
               <div className="absolute inset-0 border-2 border-[#ff4500] transform translate-x-3 translate-y-3 md:translate-x-4 md:translate-y-4 -z-10" />
             </div>
           </div>
