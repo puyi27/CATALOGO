@@ -98,11 +98,7 @@ const Hero = ({ mouseX, mouseY }) => {
         }}
         transition={{ type: 'spring', stiffness: 40, damping: 20 }}
       >
-        <img 
-          src="https://loremflickr.com/1920/1080/interior,design?random=1" 
-          alt="Aura Interiors Hero" 
-          className="w-full h-full object-cover opacity-70"
-        />
+        <div className="w-full h-full bg-gradient-to-br from-zinc-200 via-[#e5e5e0] to-[#d5d5d0] opacity-80" />
         <div className="absolute inset-0 bg-black/30 md:bg-black/20" />
       </motion.div>
       <motion.div style={{ y }} className="relative z-10 text-center text-[#F5F5F0] px-4 w-full">
@@ -122,10 +118,10 @@ const Hero = ({ mouseX, mouseY }) => {
 }
 
 const projects = [
-  { id: 1, title: 'Casa Olivo', location: 'Madrid', image: 'https://loremflickr.com/800/1000/architecture,interior?random=2' },
-  { id: 2, title: 'Villa Lumière', location: 'Paris', image: 'https://loremflickr.com/800/1000/architecture,interior?random=3' },
-  { id: 3, title: 'The Atrium', location: 'London', image: 'https://loremflickr.com/800/1000/architecture,interior?random=4' },
-  { id: 4, title: 'Oasis Penthouse', location: 'New York', image: 'https://loremflickr.com/800/1000/architecture,interior?random=5' }
+  { id: 1, title: 'Casa Olivo', location: 'Madrid', gradient: 'from-[#d2cfc4] to-[#bab7a9]' },
+  { id: 2, title: 'Villa Lumière', location: 'Paris', gradient: 'from-[#e1dcd5] to-[#c7c0b6]' },
+  { id: 3, title: 'The Atrium', location: 'London', gradient: 'from-[#cfd1cd] to-[#b3b7b2]' },
+  { id: 4, title: 'Oasis Penthouse', location: 'New York', gradient: 'from-[#d9d4cf] to-[#bfaea3]' }
 ]
 
 const DraggableCarousel = () => {
@@ -163,11 +159,8 @@ const DraggableCarousel = () => {
                 whileTap={{ scale: 0.98 }}
                 transition={{ duration: 0.3 }}
               >
-                <motion.img 
-                  src={project.image} 
-                  alt={project.title} 
-                  className="w-full h-full object-cover transition-transform duration-1000 md:group-hover:scale-105"
-                  draggable={false}
+                <motion.div 
+                  className={`w-full h-full bg-gradient-to-br ${project.gradient} transition-transform duration-1000 md:group-hover:scale-105`}
                 />
               </motion.div>
               <div className="flex justify-between items-center pr-2 md:pr-0">
@@ -244,6 +237,56 @@ const AccordionSection = () => {
   )
 }
 
+const ServicesSection = () => {
+  useEffect(() => {
+    import('animejs').then((animeModule) => {
+      const anime = animeModule.default;
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            anime({
+              targets: '.anime-service-item',
+              translateY: [50, 0],
+              opacity: [0, 1],
+              delay: anime.stagger(200),
+              easing: 'easeOutCubic',
+              duration: 1000
+            });
+            observer.disconnect();
+          }
+        });
+      });
+      const el = document.querySelector('.anime-services-container');
+      if(el) observer.observe(el);
+    });
+  }, []);
+
+  const services = [
+    { title: "Residential Architecture", num: "01" },
+    { title: "Interior Design", num: "02" },
+    { title: "Custom Furniture", num: "03" },
+    { title: "Art Curation", num: "04" },
+    { title: "Landscape Integration", num: "05" },
+    { title: "Spatial Strategy", num: "06" }
+  ];
+
+  return (
+    <section className="py-20 md:py-40 px-4 md:px-12 bg-white text-zinc-900 border-b border-zinc-900/10">
+      <div className="max-w-7xl mx-auto">
+        <h2 className="text-[10px] md:text-sm uppercase tracking-widest mb-10 md:mb-20 text-zinc-500">Expertise</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-y-16 gap-x-12 anime-services-container">
+          {services.map((svc, i) => (
+            <div key={i} className="anime-service-item opacity-0 flex flex-col border-t border-zinc-900/20 pt-6">
+              <span className="font-serif italic text-zinc-400 text-xl mb-4">{svc.num}</span>
+              <h3 className="font-serif text-3xl md:text-4xl leading-tight">{svc.title}</h3>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
 const Footer = () => {
   return (
     <footer className="bg-zinc-900 text-[#F5F5F0] py-20 md:py-40 px-4 md:px-12 flex flex-col items-center justify-center min-h-[60vh] md:min-h-[70vh]">
@@ -291,6 +334,7 @@ export default function Page() {
       <Nav />
       <Hero mouseX={mousePosition.x} mouseY={mousePosition.y} />
       <DraggableCarousel />
+      <ServicesSection />
       <AccordionSection />
       <Footer />
     </main>

@@ -25,6 +25,29 @@ export default function TransporteDemo() {
     return () => window.removeEventListener("mousemove", handleMouseMove)
   }, [])
 
+  useEffect(() => {
+    import('animejs').then((animeModule) => {
+      const anime = animeModule.default;
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            anime({
+              targets: '.anime-tech-item',
+              scale: [0.8, 1],
+              opacity: [0, 1],
+              delay: anime.stagger(150),
+              easing: 'easeOutElastic(1, .8)',
+              duration: 1200
+            });
+            observer.disconnect();
+          }
+        });
+      });
+      const el = document.querySelector('.anime-tech-container');
+      if(el) observer.observe(el);
+    });
+  }, []);
+
   const fleet = [
     { name: "FTR 4000", type: "Furgón Refrigerado", capacity: "4.000 kg", range: "650 km", consumption: "28 L/100km", status: "En ruta", eta: "2h 14m" },
     { name: "MEGA 18T", type: "Tráiler Articulado", capacity: "18.000 kg", range: "1.200 km", consumption: "32 L/100km", status: "Disponible", eta: "—" },
@@ -98,7 +121,7 @@ export default function TransporteDemo() {
 
       <section className="relative h-[100svh] flex flex-col justify-center items-center px-6 pt-20">
         <div className="absolute inset-0 z-0">
-          <img src="https://loremflickr.com/1920/1080/truck,highway/all?lock=1" alt="Fleet" className="w-full h-full object-cover opacity-30 grayscale" />
+          <div className="w-full h-full bg-gradient-to-br from-[#0F172A] via-[#1E293B] to-[#0F172A] opacity-60" />
           <div className="absolute inset-0 bg-gradient-to-b from-[#0F172A]/60 via-transparent to-[#0F172A]" />
         </div>
         <div className="relative z-10 text-center max-w-4xl">
@@ -257,6 +280,28 @@ export default function TransporteDemo() {
                 <div className="text-3xl md:text-4xl font-black tracking-tighter mb-2">{s.value}</div>
                 <div className="text-xs text-white/40 tracking-widest uppercase">{s.label}</div>
               </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="py-24 md:py-32 px-6 border-t border-white/10 relative overflow-hidden">
+        <div className="absolute top-0 right-0 w-[1px] h-32 bg-[#38BDF8]" />
+        <div className="max-w-7xl mx-auto">
+          <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter mb-4">Tecnología Embarcada</h2>
+          <p className="text-sm text-white/40 tracking-widest uppercase font-mono mb-12">Sensores IoT en cada unidad</p>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 anime-tech-container">
+            {[
+              { title: "Control de Frío", value: "-18°C", desc: "Monitorización continua" },
+              { title: "Telemetría", value: "Activo", desc: "Datos OBD2 en tiempo real" },
+              { title: "Dashcam", value: "4K", desc: "Análisis de conducción" },
+              { title: "Rastreador GPS", value: "Sub-metro", desc: "Precisión satelital" }
+            ].map((tech, i) => (
+              <div key={i} className="anime-tech-item opacity-0 p-6 border border-white/10 hover:border-[#38BDF8] bg-white/5 transition-colors">
+                <div className="text-xs text-[#38BDF8] tracking-widest uppercase mb-4">{tech.title}</div>
+                <div className="text-3xl font-black mb-2">{tech.value}</div>
+                <div className="text-xs font-mono text-white/40">{tech.desc}</div>
+              </div>
             ))}
           </div>
         </div>

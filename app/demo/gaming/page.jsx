@@ -37,10 +37,33 @@ export default function GamingDemo() {
   };
 
   const roster = [
-    { id: "r1", name: "V01D", role: "CAPTAIN", img: "https://loremflickr.com/600/800/cyberpunk,face?random=1", code: "7492" },
-    { id: "r2", name: "N3XUS", role: "FRAGGER", img: "https://loremflickr.com/600/800/neon,person?random=2", code: "8134" },
-    { id: "r3", name: "GL1TCH", role: "TACTICIAN", img: "https://loremflickr.com/600/800/gamer,portrait?random=3", code: "2951" }
+    { id: "r1", name: "V01D", role: "CAPTAIN", gradient: "from-cyan-900 via-zinc-900 to-black", code: "7492" },
+    { id: "r2", name: "N3XUS", role: "FRAGGER", gradient: "from-purple-900 via-zinc-900 to-black", code: "8134" },
+    { id: "r3", name: "GL1TCH", role: "TACTICIAN", gradient: "from-emerald-900 via-zinc-900 to-black", code: "2951" }
   ];
+
+  useEffect(() => {
+    import('animejs').then((animeModule) => {
+      const anime = animeModule.default;
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            anime({
+              targets: '.anime-tournament-item',
+              translateX: [-50, 0],
+              opacity: [0, 1],
+              delay: anime.stagger(150),
+              easing: 'easeOutExpo',
+              duration: 800
+            });
+            observer.disconnect();
+          }
+        });
+      });
+      const el = document.querySelector('.anime-tournament-container');
+      if(el) observer.observe(el);
+    });
+  }, []);
 
   return (
     <DemoLayout title="Gaming eSports">
@@ -201,11 +224,7 @@ export default function GamingDemo() {
                 className="w-[280px] shrink-0 snap-center relative border border-zinc-800 p-2 bg-zinc-900/30 rounded-none"
               >
                 <div className="relative aspect-[3/4] overflow-hidden bg-zinc-900 mb-4 rounded-none">
-                  <img
-                    src={member.img}
-                    alt={member.name}
-                    className="w-full h-full object-cover pointer-events-none"
-                  />
+                  <div className={`absolute inset-0 bg-gradient-to-br ${member.gradient} pointer-events-none opacity-80`} />
                   <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-zinc-950 via-zinc-950/80 to-transparent z-20">
                     <div className="text-[10px] text-cyan-400 tracking-widest mb-1 font-bold">{member.role}</div>
                     <div className="text-2xl font-black text-white tracking-tighter">{member.name}</div>
@@ -234,11 +253,7 @@ export default function GamingDemo() {
               >
                 <div className="relative aspect-[3/4] overflow-hidden bg-zinc-900 mb-4 rounded-none">
                   <div className="absolute inset-0 bg-cyan-500/20 mix-blend-overlay z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-                  <img
-                    src={member.img}
-                    alt={member.name}
-                    className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 ease-out"
-                  />
+                  <div className={`absolute inset-0 bg-gradient-to-br ${member.gradient} pointer-events-none opacity-60 group-hover:opacity-100 transition-opacity duration-700 ease-out`} />
                   <div className="absolute bottom-0 left-0 w-full p-6 bg-gradient-to-t from-zinc-950 via-zinc-950/80 to-transparent z-20">
                     <div className="text-xs text-cyan-400 tracking-widest mb-1 font-bold">{member.role}</div>
                     <div className="text-3xl font-black text-white tracking-tighter">{member.name}</div>
@@ -252,6 +267,36 @@ export default function GamingDemo() {
                   <div className="text-[10px] text-zinc-500 tracking-[0.2em]">ID: {member.id.toUpperCase()}-{member.code}</div>
                 </div>
               </motion.div>
+            ))}
+          </div>
+        </section>
+
+        <section className="py-16 sm:py-24 border-t border-zinc-800 overflow-hidden relative">
+          <div className="absolute top-0 right-0 w-1/3 h-[1px] bg-red-500" />
+          <div className="mb-8 sm:mb-12">
+            <h2 className="text-3xl sm:text-4xl font-bold text-white uppercase tracking-tighter flex items-center gap-3 sm:gap-4 mb-2">
+              <Zap className="w-6 h-6 sm:w-8 sm:h-8 text-red-500" />
+              Operations
+            </h2>
+            <p className="text-xs sm:text-sm text-zinc-500 uppercase tracking-widest">Recent Tournaments</p>
+          </div>
+          
+          <div className="flex flex-col gap-4 anime-tournament-container">
+            {[
+              { name: "NEO-TOKYO MASTERS", placement: "1ST PLACE", prize: "$250,000", year: "2025" },
+              { name: "CYBER-LEAGUE FINALS", placement: "2ND PLACE", prize: "$100,000", year: "2025" },
+              { name: "GLOBAL INVITATIONAL", placement: "1ST PLACE", prize: "$500,000", year: "2024" }
+            ].map((tourney, i) => (
+              <div key={i} className="anime-tournament-item opacity-0 flex flex-col sm:flex-row justify-between items-start sm:items-center p-6 bg-zinc-900/40 border border-zinc-800 md:hover:border-red-500 transition-colors">
+                <div>
+                  <div className="text-xs text-red-500 tracking-widest font-bold mb-1">{tourney.year}</div>
+                  <div className="text-xl sm:text-2xl font-black text-white tracking-tighter">{tourney.name}</div>
+                </div>
+                <div className="flex flex-wrap items-center gap-6 mt-4 sm:mt-0">
+                  <div className="text-sm font-bold tracking-widest text-zinc-400">{tourney.placement}</div>
+                  <div className="text-lg font-black text-cyan-500">{tourney.prize}</div>
+                </div>
+              </div>
             ))}
           </div>
         </section>
