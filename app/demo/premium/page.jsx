@@ -22,21 +22,21 @@ const COLLECTIONS = [
     ref:   'Ref. V-1884-LE',
     desc:  'Calíbre manual de 72h de reserva de marcha. Caja de 38mm en platino 950.',
     price: 'desde €28,400',
-    img:   'https://loremflickr.com/600/750/luxury,watch?lock=2',
+    img:   '/images/demo/premium/hero.jpg',
   },
   {
     name:  'ALTITUDE PRO',
     ref:   'Ref. V-2301-AP',
     desc:  'Tourbillon volant con indicador de altitud. Titanio grado 5. Resistente a 300m.',
     price: 'desde €67,800',
-    img:   'https://loremflickr.com/600/750/luxury,watch?lock=3',
+    img:   '/images/demo/premium/2.jpg',
   },
   {
     name:  'NOIR ABSOLU',
     ref:   'Ref. V-2024-NA',
     desc:  'DLC negro mat. Cronógrafo de doble pulsador. Únicamente 88 ejemplares en existencia.',
     price: 'desde €145,000',
-    img:   'https://loremflickr.com/600/750/luxury,watch?lock=4',
+    img:   '/images/demo/premium/3.jpg',
   },
 ]
 
@@ -51,22 +51,22 @@ const SAVOIR = [
   {
     title: 'Guilloché Manual',
     desc:  'Cada esfera se trabaja a mano durante 30+ horas con técnicas del siglo XIX.',
-    img:   'https://loremflickr.com/480/360/watchmaking,craft?lock=5',
+    img:   '/images/demo/premium/4.jpg',
   },
   {
     title: 'Ensamblaje',
     desc:  '212 componentes. Un relojero. Cuatro semanas de trabajo meticuloso.',
-    img:   'https://loremflickr.com/480/360/watchmaking,assembly?lock=6',
+    img:   '/images/demo/premium/5.jpg',
   },
   {
     title: 'Control de Calidad',
     desc:  '28 días de pruebas en seis posiciones antes de dejar nuestros talleres.',
-    img:   'https://loremflickr.com/480/360/precision,quality?lock=7',
+    img:   '/images/demo/premium/6.jpg',
   },
   {
     title: 'Caja y Pulido',
     desc:  'Acabados alternados satinados y pulidos ejecutados a mano por artesanos certificados.',
-    img:   'https://loremflickr.com/480/360/watchcase,polish?lock=8',
+    img:   '/images/demo/premium/2.jpg',
   },
 ]
 
@@ -74,6 +74,20 @@ function CustomCursor() {
   const cursorX = useSpring(0, { stiffness: 500, damping: 40 })
   const cursorY = useSpring(0, { stiffness: 500, damping: 40 })
   const [visible, setVisible] = useState(false)
+
+  useEffect(() => {
+    import("animejs").then((module) => {
+      const anime = module.default;
+      anime({
+        targets: '.anime-item',
+        translateY: [30, 0],
+        opacity: [0, 1],
+        delay: anime.stagger(150, { start: 300 }),
+        easing: 'easeOutExpo',
+        duration: 1000
+      });
+    });
+  }, []);
 
   useEffect(() => {
     const move = (e) => {
@@ -246,7 +260,7 @@ function Hero() {
 
       <div className="relative overflow-hidden h-[50vh] md:h-auto order-1 md:order-2">
         <motion.img
-          src="https://loremflickr.com/900/1100/luxury,watch?lock=1"
+          src="/images/demo/premium/3.jpg"
           alt="Valmont & Co"
           initial={{ scale: 1.08 }}
           animate={{ scale: 1 }}

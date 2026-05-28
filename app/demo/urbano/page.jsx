@@ -63,6 +63,20 @@ function Cursor() {
   const [hovered, setHovered] = useState(false);
 
   useEffect(() => {
+    import("animejs").then((module) => {
+      const anime = module.default;
+      anime({
+        targets: '.anime-item',
+        translateY: [30, 0],
+        opacity: [0, 1],
+        delay: anime.stagger(150, { start: 300 }),
+        easing: 'easeOutExpo',
+        duration: 1000
+      });
+    });
+  }, []);
+
+  useEffect(() => {
     if (window.matchMedia("(hover: none) and (pointer: coarse)").matches) return;
     const move = (e) => setPos({ x: e.clientX, y: e.clientY });
     const over = (e) => {
@@ -290,7 +304,7 @@ export default function DeadstockPage() {
             className="border-b-[2.5px] lg:border-b-0 lg:border-r-[2.5px] border-[#111] overflow-hidden h-[55vh] lg:h-auto min-h-[400px] lg:min-h-[700px] relative"
           >
             <m.img
-              src="https://loremflickr.com/900/900/streetwear,urban,jacket?lock=1"
+              src="/images/demo/urbano/hero.jpg"
               alt="IRON CURTAIN JACKET SS25"
               whileHover={!isMobile ? { scale: 1.05 } : {}}
               transition={{ duration: 0.6 }}
@@ -414,7 +428,7 @@ export default function DeadstockPage() {
                   >
                     <div className="h-[350px] border-b-[2.5px] border-[#111] overflow-hidden relative">
                       <img
-                        src={`https://loremflickr.com/600/800/streetwear,urban,fashion?lock=${item.lock}`}
+                        src={`/images/demo/urbano/2.jpg`}
                         alt={item.name}
                         className="w-full h-full object-cover pointer-events-none"
                       />
@@ -443,7 +457,7 @@ export default function DeadstockPage() {
                 className="col-start-1 col-end-2 row-start-1 row-end-3 border-r-[2.5px] border-[#111] relative overflow-hidden group"
               >
                 <m.img
-                  src={`https://loremflickr.com/700/900/streetwear,hoodie,urban?lock=${COLLECTION[0].lock}`}
+                  src={`/images/demo/urbano/3.jpg`}
                   alt={COLLECTION[0].name}
                   whileHover={{ scale: 1.05 }}
                   transition={{ duration: 0.6 }}
@@ -476,7 +490,7 @@ export default function DeadstockPage() {
                 >
                   <div className="overflow-hidden flex-1 relative">
                     <m.img
-                      src={`https://loremflickr.com/500/400/streetwear,urban,fashion?lock=${item.lock}`}
+                      src={`/images/demo/urbano/4.jpg`}
                       alt={item.name}
                       whileHover={{ scale: 1.06 }}
                       transition={{ duration: 0.5 }}

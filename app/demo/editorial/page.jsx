@@ -36,6 +36,20 @@ export default function VogueEssencePage() {
   const [cursorHover, setCursorHover] = useState(false);
 
   useEffect(() => {
+    import("animejs").then((module) => {
+      const anime = module.default;
+      anime({
+        targets: '.anime-item',
+        translateY: [30, 0],
+        opacity: [0, 1],
+        delay: anime.stagger(150, { start: 300 }),
+        easing: 'easeOutExpo',
+        duration: 1000
+      });
+    });
+  }, []);
+
+  useEffect(() => {
     const move = (e) => setCursor({ x: e.clientX, y: e.clientY });
     window.addEventListener('mousemove', move);
     return () => window.removeEventListener('mousemove', move);
@@ -223,7 +237,7 @@ export default function VogueEssencePage() {
                 }}
               >
                 <motion.img
-                  src={`https://loremflickr.com/1400/900/fashion,editorial?lock=${lock}`}
+                  src={`/images/demo/editorial/hero.jpg`}
                   alt={`Editorial ${i + 1}`}
                   style={{
                     width: '100%',
@@ -328,7 +342,7 @@ export default function VogueEssencePage() {
           onMouseLeave={() => setCursorHover(false)}
         >
           <img
-            src="https://loremflickr.com/900/1100/fashion,editorial?lock=21"
+            src="/images/demo/editorial/2.jpg"
             alt="The New Silence"
             style={{
               width: '100%',
@@ -548,7 +562,7 @@ export default function VogueEssencePage() {
             >
               <div style={{ position: 'relative', overflow: 'hidden' }}>
                 <img
-                  src={`https://loremflickr.com/600/800/fashion,magazine?lock=${item.cover}`}
+                  src={`/images/demo/editorial/3.jpg`}
                   alt={item.theme}
                   style={{
                     width: '100%',
@@ -696,7 +710,7 @@ export default function VogueEssencePage() {
                 }}
               >
                 <img
-                  src={`https://loremflickr.com/400/500/portrait,fashion?lock=${person.img}`}
+                  src={`/images/demo/editorial/4.jpg`}
                   alt={person.name}
                   style={{
                     width: '100%',
