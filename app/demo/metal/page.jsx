@@ -133,7 +133,7 @@ export default function TitanPrecision() {
       </AnimatePresence>
 
       <section className="relative h-[100svh] flex flex-col justify-center items-center px-4 md:px-6 pt-16 bg-[#0a0a0a]">
-        <div className="absolute inset-0 bg-gradient-to-br from-neutral-800 via-[#1a1a1a] to-neutral-900 opacity-20 grayscale" />
+        <img src="/images/demo/metal/hero.jpg" alt="Background" className="absolute inset-0 object-cover opacity-20 grayscale" />
         <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-[#0a0a0a]" />
         
         <div className="relative z-10 w-full max-w-7xl mx-auto flex flex-col items-start">
@@ -291,7 +291,7 @@ export default function TitanPrecision() {
               </div>
             </div>
             <div className="order-1 lg:order-2 relative aspect-[4/3] md:aspect-[3/4] w-full">
-              <div className="w-full h-full bg-gradient-to-br from-[#111] to-[#333] grayscale contrast-125 border border-white/5" />
+              <img src="/images/demo/metal/6.jpg" alt="Background" className="w-full h-full object-cover grayscale contrast-125 border border-white/5" />
               <div className="absolute inset-0 border-2 border-[#ff4500] transform translate-x-3 translate-y-3 md:translate-x-4 md:translate-y-4 -z-10" />
             </div>
           </div>

@@ -67,10 +67,10 @@ export default function CreativoDemo() {
   }, []);
 
   const projects = [
-    { id: 1, title: "LUMINA", category: "ART DIRECTION", year: "2024", gradient: "from-violet-900 via-fuchsia-900 to-black" },
-    { id: 2, title: "AETHER", category: "BRAND IDENTITY", year: "2025", gradient: "from-cyan-900 via-blue-900 to-black" },
-    { id: 3, title: "OBLIVION", category: "DIGITAL EXPERIENCE", year: "2025", gradient: "from-amber-900 via-orange-900 to-black" },
-    { id: 4, title: "CHROMA", category: "SPATIAL DESIGN", year: "2026", gradient: "from-emerald-900 via-teal-900 to-black" },
+    { id: 1, title: "LUMINA", category: "ART DIRECTION", year: "2024", img: "/images/demo/creativo/1.jpg" },
+    { id: 2, title: "AETHER", category: "BRAND IDENTITY", year: "2025", img: "/images/demo/creativo/2.jpg" },
+    { id: 3, title: "OBLIVION", category: "DIGITAL EXPERIENCE", year: "2025", img: "/images/demo/creativo/3.jpg" },
+    { id: 4, title: "CHROMA", category: "SPATIAL DESIGN", year: "2026", img: "/images/demo/creativo/4.jpg" },
   ];
 
   const capabilities = [
@@ -213,7 +213,7 @@ export default function CreativoDemo() {
               className="absolute top-0 left-0 w-full h-full flex items-center justify-center p-4 sm:p-6 md:p-12 will-change-transform">
               <div className="relative w-full h-full max-w-[1400px] max-h-[800px] rounded-[2rem] md:rounded-[3rem] overflow-hidden group"
                 onMouseEnter={() => setHoverState(true)} onMouseLeave={() => setHoverState(false)}>
-                <div className={`absolute inset-0 bg-gradient-to-br ${project.gradient}`} />
+                <img src={project.img} alt="Item" className={`absolute inset-0 object-cover `} />
                 <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/80" />
                 
                 <div className="absolute bottom-0 left-0 w-full p-6 sm:p-8 md:p-16 flex flex-col md:flex-row justify-between items-start md:items-end gap-6 pointer-events-none">

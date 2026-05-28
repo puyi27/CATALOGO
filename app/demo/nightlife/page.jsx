@@ -55,11 +55,11 @@ export default function NightfallDemo() {
   const strobeOpacity = useTransform(scrollY, (y) => (Math.floor(y / 30) % 2 === 0 ? 0 : 0.08))
 
   const lineup = [
-    { id: 1, date: "JUL 12", name: "AMELIE LENS", gradient: "from-[#FF00FF] to-blue-900" },
-    { id: 2, date: "JUL 19", name: "CHARLOTTE DE WITTE", gradient: "from-[#00FFFF] to-purple-900" },
-    { id: 3, date: "AUG 02", name: "TALE OF US", gradient: "from-blue-600 to-black" },
-    { id: 4, date: "AUG 16", name: "PEGGY GOU", gradient: "from-fuchsia-600 to-black" },
-    { id: 5, date: "AUG 30", name: "RICHIE HAWTIN", gradient: "from-red-600 to-black" },
+    { id: 1, date: "JUL 12", name: "AMELIE LENS", img: "/images/demo/nightlife/1.jpg" },
+    { id: 2, date: "JUL 19", name: "CHARLOTTE DE WITTE", img: "/images/demo/nightlife/2.jpg" },
+    { id: 3, date: "AUG 02", name: "TALE OF US", img: "/images/demo/nightlife/3.jpg" },
+    { id: 4, date: "AUG 16", name: "PEGGY GOU", img: "/images/demo/nightlife/4.jpg" },
+    { id: 5, date: "AUG 30", name: "RICHIE HAWTIN", img: "/images/demo/nightlife/5.jpg" },
   ]
 
   const gallery = [
@@ -256,7 +256,7 @@ export default function NightfallDemo() {
         <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6 max-w-7xl mx-auto px-4 md:px-0 anime-gallery-container">
           {gallery.map((grad, i) => (
             <div key={i} className="anime-gallery-item opacity-0 relative break-inside-avoid overflow-hidden group border-4 border-zinc-900 hover:border-[#00FFFF] transition-colors duration-500 cursor-crosshair">
-              <div className={`w-full h-[300px] md:h-[400px] bg-gradient-to-br ${grad} transition-all duration-700 group-hover:scale-110`} />
+              <img src={grad} alt="Item" className={`w-full h-[300px] md:h-[400px] object-cover  transition-all duration-700 group-hover:scale-110`} />
               <div className="absolute inset-0 bg-[#FF00FF] mix-blend-overlay opacity-0 group-hover:opacity-30 transition-opacity duration-700" />
             </div>
           ))}

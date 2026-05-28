@@ -128,7 +128,7 @@ const Hero = () => {
   return (
     <section className="relative w-full h-screen flex flex-col items-center justify-center overflow-hidden">
       <div className="absolute inset-0 z-0">
-        <div className="w-full h-full opacity-40 bg-gradient-to-br from-stone-900 via-neutral-900 to-black" />
+        <img src="/images/demo/restaurante/hero.jpg" alt="Background" className="w-full h-full opacity-40 object-cover" />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black" />
       </div>
       <div className="z-10 text-center flex flex-col items-center w-full px-4">

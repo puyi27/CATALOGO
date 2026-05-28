@@ -43,12 +43,12 @@ export default function BarberShop() {
   }, []);
 
   const products = [
-    { id: 1, name: "CLASSIC FADE", price: 30, gradient: "from-stone-800 to-black", soldOut: false, category: "SERVICE" },
-    { id: 2, name: "BEARD TRIM", price: 20, gradient: "from-zinc-800 to-black", soldOut: false, category: "SERVICE" },
-    { id: 3, name: "MATTE CLAY", price: 25, gradient: "from-neutral-800 to-black", soldOut: false, category: "PRODUCT" },
-    { id: 4, name: "HEAVY HOODIE", price: 60, gradient: "from-gray-800 to-black", soldOut: true, category: "MERCH" },
-    { id: 5, name: "BUZZ CUT", price: 20, gradient: "from-slate-800 to-black", soldOut: false, category: "SERVICE" },
-    { id: 6, name: "SIGNATURE CAP", price: 35, gradient: "from-zinc-900 to-black", soldOut: false, category: "MERCH" }
+    { id: 1, name: "CLASSIC FADE", price: 30, img: "/images/demo/barberia/1.jpg", soldOut: false, category: "SERVICE" },
+    { id: 2, name: "BEARD TRIM", price: 20, img: "/images/demo/barberia/2.jpg", soldOut: false, category: "SERVICE" },
+    { id: 3, name: "MATTE CLAY", price: 25, img: "/images/demo/barberia/3.jpg", soldOut: false, category: "PRODUCT" },
+    { id: 4, name: "HEAVY HOODIE", price: 60, img: "/images/demo/barberia/4.jpg", soldOut: true, category: "MERCH" },
+    { id: 5, name: "BUZZ CUT", price: 20, img: "/images/demo/barberia/5.jpg", soldOut: false, category: "SERVICE" },
+    { id: 6, name: "SIGNATURE CAP", price: 35, img: "/images/demo/barberia/6.jpg", soldOut: false, category: "MERCH" }
   ]
 
   return (
@@ -344,7 +344,7 @@ function CartItem({ gradient, name, details, price }) {
   return (
     <div className="flex gap-4 border-b border-white/10 pb-6 md:pb-8">
       <div className="w-20 md:w-24 h-28 md:h-32 bg-[#222] shrink-0">
-        <div className={`w-full h-full bg-gradient-to-br ${gradient}`} />
+        <img src={gradient} alt="Item" className={`w-full h-full object-cover `} />
       </div>
       <div className="flex-1 flex flex-col justify-between py-1 md:py-2">
         <div>

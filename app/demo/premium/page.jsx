@@ -259,7 +259,7 @@ function Hero() {
           transition={{ duration: 1.2, ease: [0.76, 0, 0.24, 1], delay: 0.2 }}
           className="absolute inset-0 bg-[#FBF9F6] origin-left"
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-[#C3A370]/5 to-transparent pointer-events-none" />
+        <img src="/images/demo/premium/hero.jpg" alt="Background" className="absolute inset-0 object-cover pointer-events-none" />
       </div>
     </section>
   )

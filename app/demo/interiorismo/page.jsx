@@ -98,7 +98,7 @@ const Hero = ({ mouseX, mouseY }) => {
         }}
         transition={{ type: 'spring', stiffness: 40, damping: 20 }}
       >
-        <div className="w-full h-full bg-gradient-to-br from-zinc-200 via-[#e5e5e0] to-[#d5d5d0] opacity-80" />
+        <img src="/images/demo/interiorismo/hero.jpg" alt="Background" className="w-full h-full object-cover opacity-80" />
         <div className="absolute inset-0 bg-black/30 md:bg-black/20" />
       </motion.div>
       <motion.div style={{ y }} className="relative z-10 text-center text-[#F5F5F0] px-4 w-full">
@@ -118,10 +118,10 @@ const Hero = ({ mouseX, mouseY }) => {
 }
 
 const projects = [
-  { id: 1, title: 'Casa Olivo', location: 'Madrid', gradient: 'from-[#d2cfc4] to-[#bab7a9]' },
-  { id: 2, title: 'Villa Lumière', location: 'Paris', gradient: 'from-[#e1dcd5] to-[#c7c0b6]' },
-  { id: 3, title: 'The Atrium', location: 'London', gradient: 'from-[#cfd1cd] to-[#b3b7b2]' },
-  { id: 4, title: 'Oasis Penthouse', location: 'New York', gradient: 'from-[#d9d4cf] to-[#bfaea3]' }
+  { id: 1, title: 'Casa Olivo', location: 'Madrid', img: "/images/demo/interiorismo/1.jpg" },
+  { id: 2, title: 'Villa Lumière', location: 'Paris', img: "/images/demo/interiorismo/2.jpg" },
+  { id: 3, title: 'The Atrium', location: 'London', img: "/images/demo/interiorismo/3.jpg" },
+  { id: 4, title: 'Oasis Penthouse', location: 'New York', img: "/images/demo/interiorismo/4.jpg" }
 ]
 
 const DraggableCarousel = () => {

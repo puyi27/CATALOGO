@@ -99,10 +99,10 @@ export default function AgenciaDemo() {
   }, []);
 
   const projects = [
-    { id: 1, title: 'LUMINA', category: 'FASHION E-COMMERCE', gradient: 'from-indigo-900 via-purple-900 to-black' },
-    { id: 2, title: 'AETHER', category: 'BRAND IDENTITY', gradient: 'from-emerald-900 via-teal-900 to-black' },
-    { id: 3, title: 'SYNTHESIS', category: 'WEB3 PLATFORM', gradient: 'from-orange-900 via-red-900 to-black' },
-    { id: 4, title: 'NOVA', category: 'EDITORIAL DESIGN', gradient: 'from-sky-900 via-blue-900 to-black' }
+    { id: 1, title: 'LUMINA', category: 'FASHION E-COMMERCE', img: "/images/demo/agencia/1.jpg" },
+    { id: 2, title: 'AETHER', category: 'BRAND IDENTITY', img: "/images/demo/agencia/2.jpg" },
+    { id: 3, title: 'SYNTHESIS', category: 'WEB3 PLATFORM', img: "/images/demo/agencia/3.jpg" },
+    { id: 4, title: 'NOVA', category: 'EDITORIAL DESIGN', img: "/images/demo/agencia/4.jpg" }
   ];
 
   const services = [
@@ -188,7 +188,7 @@ export default function AgenciaDemo() {
               <div key={project.id} className="project-card h-screen w-full relative will-change-transform">
                 <div className="project-inner w-full h-full p-2 md:p-4 flex items-center justify-center will-change-transform">
                 <div className="w-full h-full relative overflow-hidden rounded-[2rem] group hover-image">
-                  <div className={`absolute inset-0 bg-gradient-to-br ${project.gradient}`} />
+                  <img src={project.img} alt="Item" className={`absolute inset-0 object-cover `} />
                   <div className="absolute inset-0 bg-black/40 md:bg-black/30 flex flex-col justify-between p-6 md:p-12 text-white">
                     <div className="flex justify-between items-start">
                       <span className="font-mono text-xs md:text-base tracking-widest bg-black/20 md:bg-transparent px-3 py-1 md:p-0 rounded-full md:rounded-none backdrop-blur-sm md:backdrop-blur-none">

@@ -37,9 +37,9 @@ export default function GamingDemo() {
   };
 
   const roster = [
-    { id: "r1", name: "V01D", role: "CAPTAIN", gradient: "from-cyan-900 via-zinc-900 to-black", code: "7492" },
-    { id: "r2", name: "N3XUS", role: "FRAGGER", gradient: "from-purple-900 via-zinc-900 to-black", code: "8134" },
-    { id: "r3", name: "GL1TCH", role: "TACTICIAN", gradient: "from-emerald-900 via-zinc-900 to-black", code: "2951" }
+    { id: "r1", name: "V01D", role: "CAPTAIN", img: "/images/demo/gaming/1.jpg", code: "7492" },
+    { id: "r2", name: "N3XUS", role: "FRAGGER", img: "/images/demo/gaming/2.jpg", code: "8134" },
+    { id: "r3", name: "GL1TCH", role: "TACTICIAN", img: "/images/demo/gaming/3.jpg", code: "2951" }
   ];
 
   useEffect(() => {
@@ -224,7 +224,7 @@ export default function GamingDemo() {
                 className="w-[280px] shrink-0 snap-center relative border border-zinc-800 p-2 bg-zinc-900/30 rounded-none"
               >
                 <div className="relative aspect-[3/4] overflow-hidden bg-zinc-900 mb-4 rounded-none">
-                  <div className={`absolute inset-0 bg-gradient-to-br ${member.gradient} pointer-events-none opacity-80`} />
+                  <img src={member.img} alt="Item" className={`absolute inset-0 object-cover  pointer-events-none opacity-80`} />
                   <div className="absolute bottom-0 left-0 w-full p-4 bg-gradient-to-t from-zinc-950 via-zinc-950/80 to-transparent z-20">
                     <div className="text-[10px] text-cyan-400 tracking-widest mb-1 font-bold">{member.role}</div>
                     <div className="text-2xl font-black text-white tracking-tighter">{member.name}</div>
@@ -253,7 +253,7 @@ export default function GamingDemo() {
               >
                 <div className="relative aspect-[3/4] overflow-hidden bg-zinc-900 mb-4 rounded-none">
                   <div className="absolute inset-0 bg-cyan-500/20 mix-blend-overlay z-10 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-                  <div className={`absolute inset-0 bg-gradient-to-br ${member.gradient} pointer-events-none opacity-60 group-hover:opacity-100 transition-opacity duration-700 ease-out`} />
+                  <img src={member.img} alt="Item" className={`absolute inset-0 object-cover  pointer-events-none opacity-60 group-hover:opacity-100 transition-opacity duration-700 ease-out`} />
                   <div className="absolute bottom-0 left-0 w-full p-6 bg-gradient-to-t from-zinc-950 via-zinc-950/80 to-transparent z-20">
                     <div className="text-xs text-cyan-400 tracking-widest mb-1 font-bold">{member.role}</div>
                     <div className="text-3xl font-black text-white tracking-tighter">{member.name}</div>

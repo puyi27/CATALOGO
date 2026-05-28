@@ -48,16 +48,16 @@ export default function Panaderia() {
   }, []);
 
   const processSteps = [
-    { title: "La Mezcla", desc: "Agua, harina, sal y nuestra masa madre centenaria.", gradient: "from-[#6A3E1E] to-orange-200" },
-    { title: "El Reposo", desc: "Fermentación lenta en frío durante 48 horas.", gradient: "from-[#E6C280] to-yellow-100" },
-    { title: "El Fuego", desc: "Horneado en piedra a 250 grados para una corteza perfecta.", gradient: "from-orange-800 to-red-200" }
+    { title: "La Mezcla", desc: "Agua, harina, sal y nuestra masa madre centenaria.", img: "/images/demo/panaderia/1.jpg" },
+    { title: "El Reposo", desc: "Fermentación lenta en frío durante 48 horas.", img: "/images/demo/panaderia/2.jpg" },
+    { title: "El Fuego", desc: "Horneado en piedra a 250 grados para una corteza perfecta.", img: "/images/demo/panaderia/3.jpg" }
   ]
 
   const products = [
-    { name: "Pain de Campagne", price: "4.00€", gradient: "from-[#E6C280] to-orange-100" },
-    { name: "Croissant au Beurre", price: "2.50€", gradient: "from-yellow-700 to-yellow-200" },
-    { name: "Fougasse aux Olives", price: "3.50€", gradient: "from-orange-700 to-yellow-100" },
-    { name: "Baguette Tradition", price: "1.50€", gradient: "from-[#6A3E1E] to-orange-200" }
+    { name: "Pain de Campagne", price: "4.00€", img: "/images/demo/panaderia/4.jpg" },
+    { name: "Croissant au Beurre", price: "2.50€", img: "/images/demo/panaderia/5.jpg" },
+    { name: "Fougasse aux Olives", price: "3.50€", img: "/images/demo/panaderia/6.jpg" },
+    { name: "Baguette Tradition", price: "1.50€", img: "/images/demo/panaderia/1.jpg" }
   ]
 
   return (
@@ -137,7 +137,7 @@ export default function Panaderia() {
           style={{ y: yHero, opacity: opacityHero }}
         >
           <div className="absolute inset-0 bg-black/40 z-10" />
-          <div className="w-full h-full bg-gradient-to-br from-[#6A3E1E] via-[#8C4A26] to-[#E6C280] opacity-80" />
+          <img src="/images/demo/panaderia/hero.jpg" alt="Background" className="w-full h-full object-cover opacity-80" />
         </motion.div>
 
         <div className="relative z-10 text-center text-[#FAF9F6] flex flex-col items-center px-4 w-full">
@@ -200,7 +200,7 @@ export default function Panaderia() {
               >
                 <div className="overflow-hidden mb-6 aspect-[4/5] relative">
                   <div className="absolute inset-0 bg-[#6A3E1E]/20 z-10 opacity-0 md:group-hover:opacity-100 transition-opacity duration-500" />
-                  <div className={`w-full h-full bg-gradient-to-br ${step.gradient} md:scale-105 md:group-hover:scale-100 transition-transform duration-700 ease-out md:grayscale md:group-hover:grayscale-0`} />
+                  <img src={step.img} alt="Item" className={`w-full h-full object-cover  md:scale-105 md:group-hover:scale-100 transition-transform duration-700 ease-out md:grayscale md:group-hover:grayscale-0`} />
                   <div className="absolute top-4 left-4 z-20 text-[#FAF9F6] text-xl font-serif italic md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-500">
                     0{i + 1}.
                   </div>
@@ -246,7 +246,7 @@ export default function Panaderia() {
               >
                 <div className="aspect-[3/4] overflow-hidden mb-4 border border-transparent md:group-hover:border-[#E6C280] transition-colors duration-500 p-2">
                   <div className="w-full h-full overflow-hidden">
-                    <div className={`w-full h-full bg-gradient-to-br ${product.gradient} scale-100 md:group-hover:scale-110 transition-transform duration-700`} />
+                    <img src={product.img} alt="Item" className={`w-full h-full object-cover  scale-100 md:group-hover:scale-110 transition-transform duration-700`} />
                   </div>
                 </div>
                 <div className="flex justify-between items-start pt-2">
@@ -261,7 +261,7 @@ export default function Panaderia() {
 
       <section className="py-32 md:py-40 px-6 bg-[#2C2C2C] text-center relative overflow-hidden flex items-center justify-center min-h-[60vh] md:min-h-[70vh]">
         <div className="absolute inset-0 opacity-10 pointer-events-none">
-          <div className="w-full h-full bg-gradient-to-br from-black to-zinc-900 opacity-20" />
+          <img src="/images/demo/panaderia/6.jpg" alt="Background" className="w-full h-full object-cover opacity-20" />
         </div>
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
@@ -285,7 +285,7 @@ export default function Panaderia() {
 
       <section className="flex flex-col md:flex-row min-h-[100dvh] md:min-h-screen bg-[#FAF9F6]">
         <div className="w-full md:w-1/2 relative h-[40vh] md:h-screen">
-          <div className="w-full h-full bg-gradient-to-br from-[#6A3E1E] to-[#E6C280] opacity-80" />
+          <img src="/images/demo/panaderia/6.jpg" alt="Background" className="w-full h-full object-cover opacity-80" />
         </div>
         <div className="w-full md:w-1/2 flex items-center justify-center p-8 md:p-24 py-16 md:py-0">
           <motion.div 

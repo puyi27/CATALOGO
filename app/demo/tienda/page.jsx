@@ -7,12 +7,12 @@ import { ShoppingCart, X, ArrowLeft, ArrowRight, Zap, Target, Shield, Globe, Sta
 import DemoLayout from "@/components/DemoLayout";
 
 const products = [
-  { id: 1, name: "HEAVYWEIGHT TEE", color: "BLACK / ONYX", price: "€55", status: "NEW", gradient: "from-zinc-800 to-zinc-950", sizes: ["S","M","L","XL"] },
-  { id: 2, name: "CARGO PANTS", color: "NIGHT SHADOW", price: "€120", status: null, gradient: "from-zinc-900 to-black", sizes: ["28","30","32","34","36"] },
-  { id: 3, name: "TACTICAL VEST", color: "GRAPHITE", price: "€85", status: "SOLD OUT", gradient: "from-zinc-700 to-zinc-900", sizes: [] },
-  { id: 4, name: "FIELD HOODIE", color: "VOID BLACK", price: "€95", status: "NEW", gradient: "from-zinc-800 to-black", sizes: ["S","M","L","XL","XXL"] },
-  { id: 5, name: "STEALTH CAP", color: "PHANTOM", price: "€38", status: null, gradient: "from-zinc-850 to-zinc-950", sizes: ["ONE SIZE"] },
-  { id: 6, name: "UTILITY BAG", color: "ASH", price: "€65", status: "LOW STOCK", gradient: "from-zinc-700 to-zinc-800", sizes: ["ONE SIZE"] },
+  { id: 1, name: "HEAVYWEIGHT TEE", color: "BLACK / ONYX", price: "€55", status: "NEW", img: "/images/demo/tienda/1.jpg", sizes: ["S","M","L","XL"] },
+  { id: 2, name: "CARGO PANTS", color: "NIGHT SHADOW", price: "€120", status: null, img: "/images/demo/tienda/2.jpg", sizes: ["28","30","32","34","36"] },
+  { id: 3, name: "TACTICAL VEST", color: "GRAPHITE", price: "€85", status: "SOLD OUT", img: "/images/demo/tienda/3.jpg", sizes: [] },
+  { id: 4, name: "FIELD HOODIE", color: "VOID BLACK", price: "€95", status: "NEW", img: "/images/demo/tienda/4.jpg", sizes: ["S","M","L","XL","XXL"] },
+  { id: 5, name: "STEALTH CAP", color: "PHANTOM", price: "€38", status: null, img: "/images/demo/tienda/5.jpg", sizes: ["ONE SIZE"] },
+  { id: 6, name: "UTILITY BAG", color: "ASH", price: "€65", status: "LOW STOCK", img: "/images/demo/tienda/6.jpg", sizes: ["ONE SIZE"] },
 ];
 
 const reviews = [
@@ -87,7 +87,7 @@ export default function ObsidianApparel() {
       {/* ═══ HERO ═══ */}
       <header className="relative h-[100svh] w-full flex flex-col justify-end overflow-hidden pt-24">
         <div className="absolute inset-0 z-0">
-           <div className="absolute inset-0 bg-gradient-to-br from-zinc-900 via-black to-zinc-900" />
+           <img src="/images/demo/tienda/hero.jpg" alt="Background" className="absolute inset-0 object-cover" />
            <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_40%,_#00FF00_0%,_transparent_50%)] opacity-[0.03]" />
            <div className="absolute inset-0 bg-black/40"></div>
         </div>
@@ -137,7 +137,7 @@ export default function ObsidianApparel() {
                 className={`group cursor-pointer ${p.status === 'SOLD OUT' ? 'opacity-50 cursor-not-allowed' : ''}`}
                 onClick={() => p.status !== 'SOLD OUT' && setSelectedProduct(p)}>
                 <div className="relative aspect-[3/4] overflow-hidden bg-zinc-900 border border-white/10 md:group-hover:border-[#00FF00] transition-colors">
-                  <div className={`absolute inset-0 bg-gradient-to-br ${p.gradient}`} />
+                  <img src={p.img} alt="Item" className={`absolute inset-0 object-cover `} />
                   {p.status && (
                     <div className={`absolute top-3 left-3 text-[8px] md:text-[10px] font-black px-2 py-1 tracking-widest ${
                       p.status === 'SOLD OUT' ? 'bg-white/10 text-white/40' :
@@ -173,7 +173,7 @@ export default function ObsidianApparel() {
                 transition={{ type: "spring", damping: 25, stiffness: 200 }}
                 className="fixed top-0 right-0 bottom-0 w-full md:w-[500px] bg-[#050505] z-[101] overflow-y-auto p-6 md:p-10 border-l border-[#00FF00]/20">
                 <button onClick={() => setSelectedProduct(null)} className="absolute top-6 right-6"><X className="w-5 h-5 text-[#00FF00]" /></button>
-                <div className={`aspect-[3/4] bg-gradient-to-br ${selectedProduct.gradient} mb-8`} />
+                <img src={selectedProduct.img} alt="Item" className={`aspect-[3/4] object-cover  mb-8`} />
                 {selectedProduct.status && selectedProduct.status !== 'SOLD OUT' && (
                   <span className="text-[10px] font-black tracking-widest bg-[#00FF00] text-black px-2 py-1">{selectedProduct.status}</span>
                 )}
@@ -262,7 +262,7 @@ export default function ObsidianApparel() {
         {/* ═══ NEWSLETTER ═══ */}
         <section id="syndicate" className="py-24 md:py-40 relative flex items-center justify-center overflow-hidden">
           <div className="absolute inset-0 z-0">
-            <div className="absolute inset-0 bg-gradient-to-br from-black via-zinc-950 to-black" />
+            <img src="/images/demo/tienda/6.jpg" alt="Background" className="absolute inset-0 object-cover" />
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_50%,_#00FF00_0%,_transparent_50%)] opacity-[0.03]" />
           </div>
           <div className="relative z-10 text-center px-4 max-w-4xl mx-auto">

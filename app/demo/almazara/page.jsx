@@ -39,19 +39,19 @@ export default function FincaLaAlmazara() {
       name: "Picual Reserva",
       price: "24€",
       notes: "Notas de tomate verde, higuera y hierba recién cortada.",
-      gradient: "from-[#5a6b3a] via-[#3B4F2D] to-[#2a3a1e]"
+      img: "/images/demo/almazara/1.jpg"
     },
     {
       name: "Arbequina Suave",
       price: "22€",
       notes: "Aromas a manzana, plátano y almendra dulce.",
-      gradient: "from-[#8a9a5a] via-[#6a7a4a] to-[#3B4F2D]"
+      img: "/images/demo/almazara/2.jpg"
     },
     {
       name: "Blend Familiar",
       price: "28€",
       notes: "Equilibrio perfecto con toques de alcachofa y nuez.",
-      gradient: "from-[#4a5a2e] via-[#3B4F2D] to-[#1f2b18]"
+      img: "/images/demo/almazara/3.jpg"
     }
   ]
 
@@ -125,7 +125,7 @@ export default function FincaLaAlmazara() {
           className="absolute inset-0 z-0"
           style={{ y: useTransform(scrollYProgress, [0, 1], ["0%", "50%"]) }}
         >
-          <div className="w-full h-full bg-gradient-to-br from-[#5a6b3a] via-[#3B4F2D] to-[#1f2b18] scale-105 pointer-events-none" />
+          <img src="/images/demo/almazara/hero.jpg" alt="Background" className="w-full h-full object-cover scale-105 pointer-events-none" />
           <div className="absolute inset-0 bg-black/20 pointer-events-none" />
         </motion.div>
         
@@ -206,7 +206,7 @@ export default function FincaLaAlmazara() {
                   className="w-full group relative flex flex-col items-center transition-transform"
                 >
                   <div className="w-full aspect-[3/4] overflow-hidden bg-black/10 relative mb-8 rounded-sm md:rounded-none">
-                    <div className={`w-full h-full bg-gradient-to-br ${oil.gradient} transition-transform duration-1000 md:group-hover:scale-105`} />
+                    <img src={oil.img} alt="Item" className={`w-full h-full object-cover  transition-transform duration-1000 md:group-hover:scale-105`} />
                     <div className="flex absolute inset-0 bg-[#3B4F2D]/90 opacity-0 hover:opacity-100 active:opacity-100 md:group-hover:opacity-100 transition-opacity duration-500 items-center justify-center p-8 text-center pointer-events-none">
                       <p className="font-sans font-light text-[clamp(1rem,3vw,1.125rem)]">{oil.notes}</p>
                     </div>

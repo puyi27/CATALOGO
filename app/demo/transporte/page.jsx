@@ -121,7 +121,7 @@ export default function TransporteDemo() {
 
       <section className="relative h-[100svh] flex flex-col justify-center items-center px-6 pt-20">
         <div className="absolute inset-0 z-0">
-          <div className="w-full h-full bg-gradient-to-br from-[#0F172A] via-[#1E293B] to-[#0F172A] opacity-60" />
+          <img src="/images/demo/transporte/hero.jpg" alt="Background" className="w-full h-full object-cover opacity-60" />
           <div className="absolute inset-0 bg-gradient-to-b from-[#0F172A]/60 via-transparent to-[#0F172A]" />
         </div>
         <div className="relative z-10 text-center max-w-4xl">

@@ -131,7 +131,7 @@ export default function LuminaAesthetics() {
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={() => setIsHovering(false)}
         >
-          <div className="w-full h-full bg-gradient-to-br from-stone-200 via-neutral-100 to-stone-300" />
+          <img src="/images/demo/clinica/hero.jpg" alt="Background" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-black/10" />
         </motion.div>
         
@@ -182,12 +182,7 @@ export default function LuminaAesthetics() {
                 onMouseLeave={() => setIsHovering(false)}
               >
                 <div className="w-full aspect-[3/4] mb-6 overflow-hidden bg-zinc-100 rounded-sm">
-                  <div
-                    className="w-full h-full filter md:grayscale transition-all duration-700 md:group-hover:grayscale-0 md:group-hover:scale-105"
-                    style={{
-                      background: `linear-gradient(135deg, hsl(${30 + idx * 45}, 20%, 90%), hsl(${50 + idx * 45}, 30%, 85%))`
-                    }}
-                  />
+                  <img src="/images/demo/clinica/2.jpg" alt="Item" className="w-full h-full filter md:grayscale transition-all duration-700 md:group-hover:grayscale-0 md:group-hover:scale-105 object-cover" />
                 </div>
                 <h3 className="text-lg md:text-xl font-light mb-2">{service.name}</h3>
                 <div className="flex justify-between text-xs md:text-sm text-zinc-500">
@@ -209,12 +204,7 @@ export default function LuminaAesthetics() {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
             {["Precision", "Elegance", "Science", "Harmony"].map((word, i) => (
               <div key={i} className="anime-stagger-item opacity-0 p-8 border border-zinc-100 bg-white shadow-sm flex flex-col items-center justify-center gap-6 hover:shadow-lg transition-all duration-500 rounded-sm hover:-translate-y-1">
-                <div 
-                  className="w-16 h-16 rounded-full"
-                  style={{
-                    background: `linear-gradient(135deg, hsl(${40 + i * 40}, 20%, 90%), hsl(${60 + i * 40}, 30%, 85%))`
-                  }}
-                />
+                <img src="/images/demo/clinica/2.jpg" alt="Item" className="w-16 h-16 rounded-full object-cover" />
                 <span className="text-sm tracking-widest uppercase text-zinc-500">{word}</span>
               </div>
             ))}

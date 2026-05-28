@@ -117,7 +117,7 @@ export default function GastronomiaDemo() {
       {/* HERO */}
       <section className="relative h-screen flex flex-col justify-end pb-20 px-6 md:px-12 overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <div className="w-full h-full bg-gradient-to-br from-[#2a1b15] via-[#1a1209] to-[#0a0806]" />
+          <img src="/images/demo/gastronomia/hero.jpg" alt="Background" className="w-full h-full object-cover" />
           <div className="absolute inset-0 bg-gradient-to-t from-[#0f0d0b] via-[#0f0d0b]/60 to-transparent" />
         </div>
 
@@ -207,7 +207,7 @@ export default function GastronomiaDemo() {
                 className="group border border-white/5 p-6 md:p-8 flex flex-col md:flex-row md:items-center gap-6 hover:bg-white/5 transition-colors cursor-none menu-item-anime opacity-0"
               >
                 <div className="w-full md:w-32 h-24 md:h-20 rounded overflow-hidden flex-shrink-0">
-                  <div className={`w-full h-full bg-gradient-to-br ${item.img} transition-all duration-700 scale-110 group-hover:scale-100`} />
+                  <img src={item.img} alt="Item" className={`w-full h-full object-cover  transition-all duration-700 scale-110 group-hover:scale-100`} />
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-1">
@@ -281,7 +281,7 @@ export default function GastronomiaDemo() {
             </div>
           </div>
           <div className="relative aspect-square rounded-2xl overflow-hidden">
-            <div className="w-full h-full bg-gradient-to-br from-[#3a2015] to-[#120a06]" />
+            <img src="/images/demo/gastronomia/6.jpg" alt="Background" className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-[#0f0d0b]/80 to-transparent" />
             <div className="absolute bottom-8 left-8">
               <p className="text-xs font-mono text-zinc-400 uppercase tracking-widest mb-1">Nuestra sala</p>

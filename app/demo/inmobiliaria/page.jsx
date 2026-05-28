@@ -139,10 +139,10 @@ export default function VantageRealEstate() {
     }, []);
 
     const properties = [
-        { id: 1, title: "Villa Nova", price: "€4.5M", location: "Marbella, Spain", gradient: "bg-gradient-to-br from-blue-900 to-indigo-900" },
-        { id: 2, title: "The Penthouse", price: "€2.1M", location: "Dubai, UAE", gradient: "bg-gradient-to-br from-indigo-900 to-purple-900" },
-        { id: 3, title: "Coastal Estate", price: "€8.9M", location: "Malibu, USA", gradient: "bg-gradient-to-br from-slate-800 to-blue-900" },
-        { id: 4, title: "Alpine Retreat", price: "€6.2M", location: "St. Moritz, CH", gradient: "bg-gradient-to-br from-zinc-800 to-slate-800" }
+        { id: 1, title: "Villa Nova", price: "€4.5M", location: "Marbella, Spain", img: "/images/demo/inmobiliaria/1.jpg" },
+        { id: 2, title: "The Penthouse", price: "€2.1M", location: "Dubai, UAE", img: "/images/demo/inmobiliaria/2.jpg" },
+        { id: 3, title: "Coastal Estate", price: "€8.9M", location: "Malibu, USA", img: "/images/demo/inmobiliaria/3.jpg" },
+        { id: 4, title: "Alpine Retreat", price: "€6.2M", location: "St. Moritz, CH", img: "/images/demo/inmobiliaria/4.jpg" }
     ];
 
     const accordionData = [
@@ -190,7 +190,7 @@ export default function VantageRealEstate() {
                     transition={{ duration: 2, ease: "easeOut" }}
                     className="absolute inset-0 z-0"
                 >
-                    <div className="w-full h-full bg-gradient-to-br from-[#0A1128] via-indigo-950 to-blue-950 opacity-60" />
+                    <img src="/images/demo/inmobiliaria/hero.jpg" alt="Background" className="w-full h-full object-cover opacity-60" />
                     <div className="absolute inset-0 bg-gradient-to-b from-[#0A1128]/60 md:from-[#0A1128]/40 via-transparent to-[#0A1128]"></div>
                 </motion.div>
                 <div className="relative z-10 flex flex-col items-center text-center px-4 mt-20 w-full">
@@ -272,7 +272,7 @@ export default function VantageRealEstate() {
                         transition={{ duration: 1 }}
                         className="relative aspect-[4/5] w-full"
                     >
-                        <div className="w-full h-full bg-gradient-to-br from-[#0A1128] to-slate-900" />
+                        <img src="/images/demo/inmobiliaria/6.jpg" alt="Background" className="w-full h-full object-cover" />
                         <motion.div 
                             initial={{ scale: 0 }}
                             whileInView={{ scale: 1 }}

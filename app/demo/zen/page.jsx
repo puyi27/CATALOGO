@@ -105,7 +105,7 @@ export default function SatoriRetreat() {
 
       <section className="relative h-[100svh] flex flex-col justify-center items-center px-6">
         <div className="absolute inset-0 z-0">
-          <div className="w-full h-full bg-gradient-to-br from-[#8C9A8E] via-[#A8B5A9] to-[#E3E8E3] opacity-60 mix-blend-multiply" />
+          <img src="/images/demo/zen/hero.jpg" alt="Background" className="w-full h-full object-cover opacity-60 mix-blend-multiply" />
           <div className="absolute inset-0 bg-[#F5EFEB]/30" />
         </div>
         
