@@ -19,13 +19,36 @@ export default function BarberShop() {
     return () => window.removeEventListener("mousemove", updateMousePosition)
   }, [])
 
+  useEffect(() => {
+    import('animejs').then((animeModule) => {
+      const anime = animeModule.default;
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            anime({
+              targets: '.anime-barber-item',
+              scale: [0.95, 1],
+              opacity: [0, 1],
+              delay: anime.stagger(100),
+              easing: 'easeOutExpo',
+              duration: 800
+            });
+            observer.disconnect();
+          }
+        });
+      });
+      const el = document.querySelector('.anime-barber-container');
+      if(el) observer.observe(el);
+    });
+  }, []);
+
   const products = [
-    { id: 1, name: "CLASSIC FADE", price: 30, image: "https://loremflickr.com/600/800/barber,fade", soldOut: false, category: "SERVICE" },
-    { id: 2, name: "BEARD TRIM", price: 20, image: "https://loremflickr.com/600/800/beard,trim", soldOut: false, category: "SERVICE" },
-    { id: 3, name: "MATTE CLAY", price: 25, image: "https://loremflickr.com/600/800/pomade", soldOut: false, category: "PRODUCT" },
-    { id: 4, name: "HEAVY HOODIE", price: 60, image: "https://loremflickr.com/600/800/hoodie,black", soldOut: true, category: "MERCH" },
-    { id: 5, name: "BUZZ CUT", price: 20, image: "https://loremflickr.com/600/800/buzzcut", soldOut: false, category: "SERVICE" },
-    { id: 6, name: "SIGNATURE CAP", price: 35, image: "https://loremflickr.com/600/800/snapback,cap", soldOut: false, category: "MERCH" }
+    { id: 1, name: "CLASSIC FADE", price: 30, gradient: "from-stone-800 to-black", soldOut: false, category: "SERVICE" },
+    { id: 2, name: "BEARD TRIM", price: 20, gradient: "from-zinc-800 to-black", soldOut: false, category: "SERVICE" },
+    { id: 3, name: "MATTE CLAY", price: 25, gradient: "from-neutral-800 to-black", soldOut: false, category: "PRODUCT" },
+    { id: 4, name: "HEAVY HOODIE", price: 60, gradient: "from-gray-800 to-black", soldOut: true, category: "MERCH" },
+    { id: 5, name: "BUZZ CUT", price: 20, gradient: "from-slate-800 to-black", soldOut: false, category: "SERVICE" },
+    { id: 6, name: "SIGNATURE CAP", price: 35, gradient: "from-zinc-900 to-black", soldOut: false, category: "MERCH" }
   ]
 
   return (
@@ -88,13 +111,11 @@ export default function BarberShop() {
 
       <section className="relative h-[100svh] w-full flex flex-col justify-end p-6 md:p-12 overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <motion.img 
+          <motion.div 
             initial={{ scale: 1.1 }}
             animate={{ scale: 1 }}
             transition={{ duration: 1.5, ease: "easeOut" }}
-            src="https://loremflickr.com/1920/1080/barber,gritty" 
-            alt="Barber Shop" 
-            className="w-full h-full object-cover opacity-60 grayscale"
+            className="w-full h-full bg-gradient-to-br from-zinc-900 to-black opacity-60"
           />
           <div className="absolute inset-0 bg-gradient-to-t from-[#09090b] via-transparent to-transparent"></div>
         </div>
@@ -131,9 +152,11 @@ export default function BarberShop() {
           </div>
         </div>
 
-        <div className="hidden md:grid grid-cols-2 lg:grid-cols-3 gap-8 px-12">
+        <div className="hidden md:grid grid-cols-2 lg:grid-cols-3 gap-8 px-12 anime-barber-container">
           {products.map((product) => (
-            <DesktopProductCard key={product.id} product={product} />
+            <div key={product.id} className="anime-barber-item opacity-0">
+              <DesktopProductCard product={product} />
+            </div>
           ))}
         </div>
 
@@ -226,13 +249,13 @@ export default function BarberShop() {
               
               <div className="flex-1 overflow-y-auto p-6 md:p-8 flex flex-col gap-6 md:gap-8 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
                 <CartItem 
-                  image="https://loremflickr.com/600/800/pomade" 
+                  gradient="from-neutral-800 to-black" 
                   name="MATTE CLAY" 
                   details="QTY: 1" 
                   price="€25" 
                 />
                 <CartItem 
-                  image="https://loremflickr.com/600/800/beard,trim" 
+                  gradient="from-zinc-800 to-black" 
                   name="BEARD TRIM" 
                   details="NOV 24, 2:30 PM" 
                   price="€20" 
@@ -266,10 +289,8 @@ function DesktopProductCard({ product }) {
       className="group relative cursor-none"
     >
       <div className="relative aspect-[3/4] overflow-hidden bg-[#111] mb-6">
-        <img 
-          src={product.image} 
-          alt={product.name}
-          className={`w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-105 ${product.soldOut ? "grayscale opacity-50" : "grayscale hover:grayscale-0"}`}
+        <div 
+          className={`w-full h-full bg-gradient-to-br ${product.gradient} transition-transform duration-700 ease-out group-hover:scale-105 ${product.soldOut ? "opacity-50" : ""}`}
         />
         <div className={`absolute inset-0 border-[0px] border-white transition-all duration-300 ease-out pointer-events-none ${!product.soldOut ? "group-hover:border-[8px]" : ""}`}></div>
         {product.soldOut && (
@@ -296,10 +317,8 @@ function MobileProductCard({ product }) {
   return (
     <div className="min-w-[260px] w-[260px] flex flex-col snap-center active:scale-[0.98] transition-transform">
       <div className="relative aspect-[3/4] overflow-hidden bg-[#111] mb-4">
-        <img 
-          src={product.image} 
-          alt={product.name}
-          className={`w-full h-full object-cover pointer-events-none ${product.soldOut ? "grayscale opacity-50" : "grayscale"}`}
+        <div 
+          className={`w-full h-full bg-gradient-to-br ${product.gradient} pointer-events-none ${product.soldOut ? "opacity-50" : ""}`}
         />
         {product.soldOut && (
           <div className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm pointer-events-none">
@@ -321,11 +340,11 @@ function MobileProductCard({ product }) {
   )
 }
 
-function CartItem({ image, name, details, price }) {
+function CartItem({ gradient, name, details, price }) {
   return (
     <div className="flex gap-4 border-b border-white/10 pb-6 md:pb-8">
       <div className="w-20 md:w-24 h-28 md:h-32 bg-[#222] shrink-0">
-        <img src={image} alt={name} className="w-full h-full object-cover grayscale" />
+        <div className={`w-full h-full bg-gradient-to-br ${gradient}`} />
       </div>
       <div className="flex-1 flex flex-col justify-between py-1 md:py-2">
         <div>

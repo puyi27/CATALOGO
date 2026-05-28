@@ -139,6 +139,19 @@ export default function SaasDemo() {
     };
   }, []);
 
+  useEffect(() => {
+    import("animejs").then((module) => {
+      const anime = module.default;
+      anime({
+        targets: '.anime-node-item',
+        translateX: [-20, 0],
+        opacity: [0, 1],
+        delay: anime.stagger(100, {start: 500}),
+        easing: 'easeOutExpo'
+      });
+    });
+  }, []);
+
   const getLatencyCard = (idSuffix) => (
     <BentoBox className="col-span-1 md:col-span-2 lg:col-span-2 row-span-2 h-[320px] md:h-auto" delay={0.1}>
       <div className="flex justify-between items-start mb-2">
@@ -222,7 +235,7 @@ export default function SaasDemo() {
       </div>
       <div className="flex-1 flex flex-col gap-2 md:gap-3 justify-center">
         {nodes.map((node, i) => (
-          <div key={i} className="flex items-center justify-between p-2 md:p-3 rounded-xl bg-white/[0.03] border border-white/5">
+          <div key={i} className="anime-node-item opacity-0 flex items-center justify-between p-2 md:p-3 rounded-xl bg-white/[0.03] border border-white/5">
             <div className="flex items-center gap-3">
               <div className={`w-2 h-2 rounded-full ${node.status === 'ok' ? 'bg-emerald-500' : 'bg-rose-500'}`} />
               <div>

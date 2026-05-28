@@ -10,17 +10,17 @@ const menuSections = [
     id: 'carnes',
     label: 'Carnes a la Brasa',
     items: [
-      { name: 'Chuletón Rubia Gallega', desc: '90 días de maduración en cámara propia. Sal de Añana, aceite de oliva virgen extra.', price: '€58', badge: 'Firma', img: 'https://loremflickr.com/1000/1000/finedining,plating/all?lock=1', maduración: '90 días', origen: 'Galicia', peso: '~800g' },
-      { name: 'Entrecot de Wagyu A5', desc: 'Grado máximo de infiltración grasa. Plancha de piedra volcánica en mesa. 250g.', price: '€72', badge: 'Premium', img: 'https://loremflickr.com/1000/1000/finedining,plating/all?lock=2', maduración: 'Sin madurar', origen: 'Japón', peso: '250g' },
-      { name: 'Costillar Ibérico 12h', desc: 'Cerdo ibérico de bellota. Cocción lenta 12 horas a 80°C. Braseado al momento.', price: '€38', badge: 'Lento', img: 'https://loremflickr.com/1000/1000/finedining,plating/all?lock=3', maduración: '—', origen: 'Extremadura', peso: '~600g' },
+      { name: 'Chuletón Rubia Gallega', desc: '90 días de maduración en cámara propia. Sal de Añana, aceite de oliva virgen extra.', price: '€58', badge: 'Firma', img: 'from-[#3a2015] to-[#120a06]', maduración: '90 días', origen: 'Galicia', peso: '~800g' },
+      { name: 'Entrecot de Wagyu A5', desc: 'Grado máximo de infiltración grasa. Plancha de piedra volcánica en mesa. 250g.', price: '€72', badge: 'Premium', img: 'from-[#422518] to-[#1a0f0a]', maduración: 'Sin madurar', origen: 'Japón', peso: '250g' },
+      { name: 'Costillar Ibérico 12h', desc: 'Cerdo ibérico de bellota. Cocción lenta 12 horas a 80°C. Braseado al momento.', price: '€38', badge: 'Lento', img: 'from-[#2d1810] to-[#0f0805]', maduración: '—', origen: 'Extremadura', peso: '~600g' },
     ]
   },
   {
     id: 'entrantes',
     label: 'Entrantes',
     items: [
-      { name: 'Tataki de Atún Rojo', desc: 'Almadraba de Barbate. Soja negra, jengibre, sésamo tostado y brotes de shiso.', price: '€22', badge: '', img: 'https://loremflickr.com/1000/1000/finedining,plating/all?lock=4', maduración: '—', origen: 'Cádiz', peso: '180g' },
-      { name: 'Burrata Nómada', desc: 'Burrata fresca de Puglia, tomate cherry confitado, pistachos y pesto de rúcula.', price: '€16', badge: '', img: 'https://loremflickr.com/1000/1000/finedining,plating/all?lock=5', maduración: '—', origen: 'Italia', peso: '—' },
+      { name: 'Tataki de Atún Rojo', desc: 'Almadraba de Barbate. Soja negra, jengibre, sésamo tostado y brotes de shiso.', price: '€22', badge: '', img: 'from-[#4a1c15] to-[#170a08]', maduración: '—', origen: 'Cádiz', peso: '180g' },
+      { name: 'Burrata Nómada', desc: 'Burrata fresca de Puglia, tomate cherry confitado, pistachos y pesto de rúcula.', price: '€16', badge: '', img: 'from-[#3d2b1f] to-[#140e0a]', maduración: '—', origen: 'Italia', peso: '—' },
     ]
   },
 ];
@@ -65,6 +65,19 @@ export default function GastronomiaDemo() {
 
   const currentSection = menuSections.find(s => s.id === activeSection);
 
+  useEffect(() => {
+    import('animejs').then((anime) => {
+      anime.default({
+        targets: '.menu-item-anime',
+        translateX: [-40, 0],
+        opacity: [0, 1],
+        delay: anime.default.stagger(150),
+        easing: 'easeOutElastic(1, .8)',
+        duration: 1000
+      });
+    });
+  }, [activeSection]);
+
   return (
     <DemoLayout title="Restaurante Gastronómico">
     <div className="text-[#e8dac1] font-sans selection:bg-[#8b2615] overflow-x-hidden cursor-none">
@@ -104,7 +117,7 @@ export default function GastronomiaDemo() {
       {/* HERO */}
       <section className="relative h-screen flex flex-col justify-end pb-20 px-6 md:px-12 overflow-hidden">
         <div className="absolute inset-0 z-0">
-          <div className="w-full h-full bg-[url('https://loremflickr.com/1000/1000/finedining,plating/all?lock=6')] bg-cover bg-center" />
+          <div className="w-full h-full bg-gradient-to-br from-[#2a1b15] via-[#1a1209] to-[#0a0806]" />
           <div className="absolute inset-0 bg-gradient-to-t from-[#0f0d0b] via-[#0f0d0b]/60 to-transparent" />
         </div>
 
@@ -186,18 +199,15 @@ export default function GastronomiaDemo() {
 
           <div className="space-y-1">
             {currentSection.items.map((item, i) => (
-              <motion.div
-                key={item.name}
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: i * 0.1 }}
+              <div
+                key={item.name + activeSection}
                 onMouseEnter={() => setHoveredItem(item.name)}
                 onMouseLeave={() => setHoveredItem(null)}
                 onClick={() => setSelectedItem(item)}
-                className="group border border-white/5 p-6 md:p-8 flex flex-col md:flex-row md:items-center gap-6 hover:bg-white/5 transition-colors cursor-none"
+                className="group border border-white/5 p-6 md:p-8 flex flex-col md:flex-row md:items-center gap-6 hover:bg-white/5 transition-colors cursor-none menu-item-anime opacity-0"
               >
                 <div className="w-full md:w-32 h-24 md:h-20 rounded overflow-hidden flex-shrink-0">
-                  <img src={item.img} alt={item.name} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 scale-110 group-hover:scale-100" />
+                  <div className={`w-full h-full bg-gradient-to-br ${item.img} transition-all duration-700 scale-110 group-hover:scale-100`} />
                 </div>
                 <div className="flex-1">
                   <div className="flex items-center gap-3 mb-1">
@@ -215,7 +225,7 @@ export default function GastronomiaDemo() {
                   <span className="text-2xl font-bold text-[#d4af37] font-serif">{item.price}</span>
                   <ChevronRight className="w-4 h-4 text-zinc-600 group-hover:text-[#d4af37] transition-colors group-hover:translate-x-1 transform" />
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -271,7 +281,7 @@ export default function GastronomiaDemo() {
             </div>
           </div>
           <div className="relative aspect-square rounded-2xl overflow-hidden">
-            <img src="https://loremflickr.com/1000/1000/finedining,plating/all?lock=7" alt="Restaurante" className="w-full h-full object-cover grayscale" />
+            <div className="w-full h-full bg-gradient-to-br from-[#3a2015] to-[#120a06]" />
             <div className="absolute inset-0 bg-gradient-to-t from-[#0f0d0b]/80 to-transparent" />
             <div className="absolute bottom-8 left-8">
               <p className="text-xs font-mono text-zinc-400 uppercase tracking-widest mb-1">Nuestra sala</p>

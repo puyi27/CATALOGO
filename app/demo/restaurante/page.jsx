@@ -128,11 +128,7 @@ const Hero = () => {
   return (
     <section className="relative w-full h-screen flex flex-col items-center justify-center overflow-hidden">
       <div className="absolute inset-0 z-0">
-        <img
-          src="https://loremflickr.com/1920/1080/finedining,plating?lock=40"
-          alt="Aura plating"
-          className="w-full h-full object-cover opacity-40"
-        />
+        <div className="w-full h-full opacity-40 bg-gradient-to-br from-stone-900 via-neutral-900 to-black" />
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black" />
       </div>
       <div className="z-10 text-center flex flex-col items-center w-full px-4">
@@ -162,10 +158,10 @@ const Hero = () => {
 }
 
 const menuItems = [
-  { name: "Preludio del Mar", img: "https://loremflickr.com/1920/1080/seafood,plating?lock=41" },
-  { name: "Tierra Quemada", img: "https://loremflickr.com/1920/1080/meat,smoke?lock=42" },
-  { name: "Texturas de Bosque", img: "https://loremflickr.com/1920/1080/mushrooms,foraging?lock=43" },
-  { name: "El Origen", img: "https://loremflickr.com/1920/1080/dessert,minimal?lock=44" }
+  { name: "Preludio del Mar", bg: "bg-gradient-to-br from-cyan-950 via-slate-900 to-black" },
+  { name: "Tierra Quemada", bg: "bg-gradient-to-br from-orange-950 via-stone-900 to-black" },
+  { name: "Texturas de Bosque", bg: "bg-gradient-to-br from-emerald-950 via-zinc-900 to-black" },
+  { name: "El Origen", bg: "bg-gradient-to-br from-indigo-950 via-neutral-900 to-black" }
 ]
 
 const Experience = () => {
@@ -175,14 +171,13 @@ const Experience = () => {
     <section className="relative w-full min-h-screen py-24 md:py-32 flex flex-col items-center justify-center bg-black overflow-hidden">
       <div className="absolute inset-0 z-0">
         <AnimatePresence mode="wait">
-          <motion.img
+          <motion.div
             key={activeItem}
-            src={menuItems[activeItem].img}
             initial={{ opacity: 0, scale: 1.05 }}
             animate={{ opacity: 0.25, scale: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.8 }}
-            className="absolute inset-0 w-full h-full object-cover"
+            className={`absolute inset-0 w-full h-full ${menuItems[activeItem].bg}`}
           />
         </AnimatePresence>
         <div className="absolute inset-0 bg-black/40" />
@@ -202,7 +197,19 @@ const Experience = () => {
           {menuItems.map((item, index) => (
             <motion.div
               key={index}
-              onMouseEnter={() => setActiveItem(index)}
+              onMouseEnter={() => {
+                setActiveItem(index);
+                import('animejs').then((animeModule) => {
+                  const anime = animeModule.default;
+                  anime({
+                    targets: `.aura-menu-item-${index}`,
+                    translateX: 10,
+                    direction: 'alternate',
+                    duration: 300,
+                    easing: 'easeOutSine'
+                  });
+                });
+              }}
               onClick={() => setActiveItem(index)}
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -210,7 +217,7 @@ const Experience = () => {
               transition={{ delay: index * 0.1 }}
               className="group cursor-pointer py-8 w-full text-center border-b border-white/5 last:border-0 relative"
             >
-              <h3 className={`text-3xl md:text-6xl font-serif transition-colors duration-500 tracking-wide relative z-10 ${activeItem === index ? 'text-white' : 'text-white/30 group-hover:text-white'}`}>
+              <h3 className={`aura-menu-item-${index} text-3xl md:text-6xl font-serif transition-colors duration-500 tracking-wide relative z-10 ${activeItem === index ? 'text-white' : 'text-white/30 group-hover:text-white'}`}>
                 {item.name}
               </h3>
             </motion.div>
@@ -231,11 +238,7 @@ const Chef = () => {
         transition={{ duration: 1 }}
         className="w-full md:w-5/12 aspect-[3/4] relative"
       >
-        <img
-          src="https://loremflickr.com/800/1200/chef,portrait?lock=45"
-          alt="Chef portrait"
-          className="w-full h-full object-cover md:grayscale opacity-90"
-        />
+        <div className="w-full h-full opacity-90 bg-gradient-to-tr from-neutral-800 to-stone-900" />
         <div className="absolute inset-0 border border-white/10 -translate-x-4 translate-y-4 pointer-events-none" />
       </motion.div>
       <div className="w-full md:w-6/12 flex flex-col justify-center text-center md:text-left">
@@ -272,9 +275,9 @@ const Cellar = () => {
   const x = useTransform(scrollYProgress, [0, 1], ["0%", "-66%"])
   
   const wines = [
-    { title: "Terroir", img: "https://loremflickr.com/600/800/wineglass?lock=50" },
-    { title: "Añada", img: "https://loremflickr.com/600/800/vineyard,dark?lock=51" },
-    { title: "Equilibrio", img: "https://loremflickr.com/600/800/winecellar?lock=52" }
+    { title: "Terroir", bg: "bg-gradient-to-b from-stone-800 to-black" },
+    { title: "Añada", bg: "bg-gradient-to-br from-rose-950 to-black" },
+    { title: "Equilibrio", bg: "bg-gradient-to-bl from-amber-950 to-black" }
   ]
 
   return (
@@ -287,10 +290,8 @@ const Cellar = () => {
           {wines.map((wine, idx) => (
             <div key={idx} className="w-[75vw] md:w-[35vw] h-[50vh] md:h-[60vh] shrink-0 relative group">
               <div className="w-full h-full overflow-hidden">
-                <img
-                  src={wine.img}
-                  className="w-full h-full object-cover grayscale opacity-50 group-hover:grayscale-0 group-hover:scale-105 group-hover:opacity-100 transition-all duration-700"
-                  alt={wine.title}
+                <div
+                  className={`w-full h-full opacity-50 group-hover:scale-105 group-hover:opacity-100 transition-all duration-700 ${wine.bg}`}
                 />
               </div>
               <h3 className="absolute bottom-8 left-8 text-2xl md:text-3xl font-serif text-white tracking-widest uppercase">
@@ -339,6 +340,53 @@ const Footer = () => {
   )
 }
 
+const Ingredients = () => {
+  const gridRef = useRef(null)
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          import("animejs").then((module) => {
+            const anime = module.default
+            anime({
+              targets: ".ingredient-item",
+              translateY: [50, 0],
+              opacity: [0, 1],
+              delay: anime.stagger(150),
+              easing: "easeOutExpo",
+              duration: 1000,
+            })
+          })
+          observer.disconnect()
+        }
+      },
+      { threshold: 0.2 }
+    )
+
+    if (gridRef.current) {
+      observer.observe(gridRef.current)
+    }
+
+    return () => observer.disconnect()
+  }, [])
+
+  const items = ["Fuego", "Tierra", "Mar", "Aire", "Tiempo", "Pasión"]
+
+  return (
+    <section ref={gridRef} className="w-full py-24 bg-black flex flex-col items-center">
+      <h2 className="text-gray-500 uppercase tracking-[0.4em] text-sm md:text-base mb-16">La Esencia</h2>
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-8 md:gap-16 w-full max-w-4xl px-6">
+        {items.map((item, i) => (
+          <div key={i} className="ingredient-item opacity-0 flex items-center justify-center p-8 border border-white/5 bg-gradient-to-br from-white/5 to-transparent backdrop-blur-sm shadow-[inset_0_0_20px_rgba(255,255,255,0.02)]">
+            <span className="font-serif text-xl md:text-3xl text-white/80 tracking-widest uppercase">{item}</span>
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}
+
 export default function RestauranteDemo() {
   const [cursorPos, setCursorPos] = useState({ x: -100, y: -100 })
   const [isClient, setIsClient] = useState(false)
@@ -365,6 +413,7 @@ export default function RestauranteDemo() {
       <Nav />
       <Hero />
       <Experience />
+      <Ingredients />
       <Chef />
       <Cellar />
       <Reservation />

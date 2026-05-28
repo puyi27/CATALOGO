@@ -26,6 +26,20 @@ export default function LuminaAesthetics() {
   }, []);
 
   useEffect(() => {
+    import("animejs").then((module) => {
+      const anime = module.default;
+      anime({
+        targets: '.anime-stagger-item',
+        translateY: [40, 0],
+        opacity: [0, 1],
+        delay: anime.stagger(150, { start: 600 }),
+        easing: 'easeOutExpo',
+        duration: 1200
+      });
+    });
+  }, []);
+
+  useEffect(() => {
     if (carouselRef.current) {
       const updateWidth = () => {
         setCarouselWidth(Math.max(0, carouselRef.current.scrollWidth - carouselRef.current.offsetWidth));
@@ -117,11 +131,7 @@ export default function LuminaAesthetics() {
           onMouseEnter={() => setIsHovering(true)}
           onMouseLeave={() => setIsHovering(false)}
         >
-          <img
-            src="https://loremflickr.com/1600/900/skincare,clean?random=1"
-            alt="Lumina Aesthetics"
-            className="w-full h-full object-cover"
-          />
+          <div className="w-full h-full bg-gradient-to-br from-stone-200 via-neutral-100 to-stone-300" />
           <div className="absolute inset-0 bg-black/10" />
         </motion.div>
         
@@ -172,11 +182,11 @@ export default function LuminaAesthetics() {
                 onMouseLeave={() => setIsHovering(false)}
               >
                 <div className="w-full aspect-[3/4] mb-6 overflow-hidden bg-zinc-100 rounded-sm">
-                  <img
-                    src={`https://loremflickr.com/600/800/skincare,clean?random=${idx + 2}`}
-                    alt={service.name}
-                    className="w-full h-full object-cover filter md:grayscale transition-all duration-700 md:group-hover:grayscale-0 md:group-hover:scale-105"
-                    draggable="false"
+                  <div
+                    className="w-full h-full filter md:grayscale transition-all duration-700 md:group-hover:grayscale-0 md:group-hover:scale-105"
+                    style={{
+                      background: `linear-gradient(135deg, hsl(${30 + idx * 45}, 20%, 90%), hsl(${50 + idx * 45}, 30%, 85%))`
+                    }}
                   />
                 </div>
                 <h3 className="text-lg md:text-xl font-light mb-2">{service.name}</h3>
@@ -187,6 +197,28 @@ export default function LuminaAesthetics() {
               </motion.div>
             ))}
           </motion.div>
+        </div>
+      </section>
+
+      <section className="w-full py-24 md:py-32 bg-zinc-50 overflow-hidden flex flex-col items-center">
+        <div className="w-full max-w-5xl px-6 md:px-8">
+          <div className="mb-16 flex flex-col items-center">
+            <h2 className="text-2xl md:text-3xl font-light tracking-tight mb-4">The Experience</h2>
+            <div className="w-12 h-px bg-zinc-300" />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6 md:gap-8">
+            {["Precision", "Elegance", "Science", "Harmony"].map((word, i) => (
+              <div key={i} className="anime-stagger-item opacity-0 p-8 border border-zinc-100 bg-white shadow-sm flex flex-col items-center justify-center gap-6 hover:shadow-lg transition-all duration-500 rounded-sm hover:-translate-y-1">
+                <div 
+                  className="w-16 h-16 rounded-full"
+                  style={{
+                    background: `linear-gradient(135deg, hsl(${40 + i * 40}, 20%, 90%), hsl(${60 + i * 40}, 30%, 85%))`
+                  }}
+                />
+                <span className="text-sm tracking-widest uppercase text-zinc-500">{word}</span>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 

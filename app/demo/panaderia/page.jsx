@@ -23,17 +23,41 @@ export default function Panaderia() {
     return () => window.removeEventListener('mousemove', handleMouseMove)
   }, [])
 
+  useEffect(() => {
+    import('animejs').then((animeModule) => {
+      const anime = animeModule.default;
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            anime({
+              targets: '.anime-pan-item',
+              scale: [0.95, 1],
+              translateY: [40, 0],
+              opacity: [0, 1],
+              delay: anime.stagger(150),
+              easing: 'easeOutQuart',
+              duration: 1000
+            });
+            observer.disconnect();
+          }
+        });
+      });
+      const el = document.querySelector('.anime-pan-container');
+      if(el) observer.observe(el);
+    });
+  }, []);
+
   const processSteps = [
-    { title: "La Mezcla", desc: "Agua, harina, sal y nuestra masa madre centenaria.", img: "https://loremflickr.com/800/1000/dough,mixing?lock=21" },
-    { title: "El Reposo", desc: "Fermentación lenta en frío durante 48 horas.", img: "https://loremflickr.com/800/1000/bread,dough?lock=22" },
-    { title: "El Fuego", desc: "Horneado en piedra a 250 grados para una corteza perfecta.", img: "https://loremflickr.com/800/1000/oven,baking?lock=23" }
+    { title: "La Mezcla", desc: "Agua, harina, sal y nuestra masa madre centenaria.", gradient: "from-[#6A3E1E] to-orange-200" },
+    { title: "El Reposo", desc: "Fermentación lenta en frío durante 48 horas.", gradient: "from-[#E6C280] to-yellow-100" },
+    { title: "El Fuego", desc: "Horneado en piedra a 250 grados para una corteza perfecta.", gradient: "from-orange-800 to-red-200" }
   ]
 
   const products = [
-    { name: "Pain de Campagne", price: "4.00€", img: "https://loremflickr.com/600/800/sourdough,bread?lock=31" },
-    { name: "Croissant au Beurre", price: "2.50€", img: "https://loremflickr.com/600/800/croissant,pastry?lock=32" },
-    { name: "Fougasse aux Olives", price: "3.50€", img: "https://loremflickr.com/600/800/focaccia,olive?lock=33" },
-    { name: "Baguette Tradition", price: "1.50€", img: "https://loremflickr.com/600/800/baguette,bread?lock=34" }
+    { name: "Pain de Campagne", price: "4.00€", gradient: "from-[#E6C280] to-orange-100" },
+    { name: "Croissant au Beurre", price: "2.50€", gradient: "from-yellow-700 to-yellow-200" },
+    { name: "Fougasse aux Olives", price: "3.50€", gradient: "from-orange-700 to-yellow-100" },
+    { name: "Baguette Tradition", price: "1.50€", gradient: "from-[#6A3E1E] to-orange-200" }
   ]
 
   return (
@@ -113,11 +137,7 @@ export default function Panaderia() {
           style={{ y: yHero, opacity: opacityHero }}
         >
           <div className="absolute inset-0 bg-black/40 z-10" />
-          <img 
-            src="https://loremflickr.com/1920/1080/bakery,flour,hands?lock=20" 
-            alt="Bakery" 
-            className="w-full h-full object-cover"
-          />
+          <div className="w-full h-full bg-gradient-to-br from-[#6A3E1E] via-[#8C4A26] to-[#E6C280] opacity-80" />
         </motion.div>
 
         <div className="relative z-10 text-center text-[#FAF9F6] flex flex-col items-center px-4 w-full">
@@ -180,11 +200,7 @@ export default function Panaderia() {
               >
                 <div className="overflow-hidden mb-6 aspect-[4/5] relative">
                   <div className="absolute inset-0 bg-[#6A3E1E]/20 z-10 opacity-0 md:group-hover:opacity-100 transition-opacity duration-500" />
-                  <img 
-                    src={step.img} 
-                    alt={step.title}
-                    className="w-full h-full object-cover md:scale-105 md:group-hover:scale-100 transition-transform duration-700 ease-out md:grayscale md:group-hover:grayscale-0"
-                  />
+                  <div className={`w-full h-full bg-gradient-to-br ${step.gradient} md:scale-105 md:group-hover:scale-100 transition-transform duration-700 ease-out md:grayscale md:group-hover:grayscale-0`} />
                   <div className="absolute top-4 left-4 z-20 text-[#FAF9F6] text-xl font-serif italic md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-500">
                     0{i + 1}.
                   </div>
@@ -220,32 +236,24 @@ export default function Panaderia() {
             </motion.button>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 px-6 md:px-20">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 px-6 md:px-20 anime-pan-container">
             {products.map((product, i) => (
-              <motion.div 
+              <div 
                 key={i}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1, duration: 0.6 }}
-                className="group relative"
+                className="anime-pan-item opacity-0 group relative"
                 onMouseEnter={() => setIsHovering(true)}
                 onMouseLeave={() => setIsHovering(false)}
               >
                 <div className="aspect-[3/4] overflow-hidden mb-4 border border-transparent md:group-hover:border-[#E6C280] transition-colors duration-500 p-2">
                   <div className="w-full h-full overflow-hidden">
-                    <img 
-                      src={product.img} 
-                      alt={product.name}
-                      className="w-full h-full object-cover scale-100 md:group-hover:scale-110 transition-transform duration-700"
-                    />
+                    <div className={`w-full h-full bg-gradient-to-br ${product.gradient} scale-100 md:group-hover:scale-110 transition-transform duration-700`} />
                   </div>
                 </div>
                 <div className="flex justify-between items-start pt-2">
                   <h3 className="text-lg uppercase tracking-wide w-2/3">{product.name}</h3>
                   <span className="text-[#E6C280] font-medium">{product.price}</span>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -253,7 +261,7 @@ export default function Panaderia() {
 
       <section className="py-32 md:py-40 px-6 bg-[#2C2C2C] text-center relative overflow-hidden flex items-center justify-center min-h-[60vh] md:min-h-[70vh]">
         <div className="absolute inset-0 opacity-10 pointer-events-none">
-          <img src="https://loremflickr.com/1920/1080/texture,paper?lock=50" alt="texture" className="w-full h-full object-cover" />
+          <div className="w-full h-full bg-gradient-to-br from-black to-zinc-900 opacity-20" />
         </div>
         <motion.div 
           initial={{ opacity: 0, y: 30 }}
@@ -277,11 +285,7 @@ export default function Panaderia() {
 
       <section className="flex flex-col md:flex-row min-h-[100dvh] md:min-h-screen bg-[#FAF9F6]">
         <div className="w-full md:w-1/2 relative h-[40vh] md:h-screen">
-          <img 
-            src="https://loremflickr.com/1000/1500/storefront,bakery?lock=41" 
-            alt="Storefront"
-            className="w-full h-full object-cover"
-          />
+          <div className="w-full h-full bg-gradient-to-br from-[#6A3E1E] to-[#E6C280] opacity-80" />
         </div>
         <div className="w-full md:w-1/2 flex items-center justify-center p-8 md:p-24 py-16 md:py-0">
           <motion.div 

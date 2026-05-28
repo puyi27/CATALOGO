@@ -115,11 +115,34 @@ export default function VantageRealEstate() {
         return () => window.removeEventListener("resize", updateWidth);
     }, []);
 
+    useEffect(() => {
+        import("animejs").then((module) => {
+            const anime = module.default;
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        anime({
+                            targets: '.anime-stat-item',
+                            translateY: [20, 0],
+                            opacity: [0, 1],
+                            delay: anime.stagger(100),
+                            easing: 'easeOutQuad',
+                            duration: 800
+                        });
+                        observer.disconnect();
+                    }
+                });
+            });
+            const el = document.querySelector('.anime-stats-container');
+            if(el) observer.observe(el);
+        });
+    }, []);
+
     const properties = [
-        { id: 1, title: "Villa Nova", price: "€4.5M", location: "Marbella, Spain", img: "https://loremflickr.com/1200/1600/mansion,luxury?random=1" },
-        { id: 2, title: "The Penthouse", price: "€2.1M", location: "Dubai, UAE", img: "https://loremflickr.com/1200/1600/mansion,luxury?random=2" },
-        { id: 3, title: "Coastal Estate", price: "€8.9M", location: "Malibu, USA", img: "https://loremflickr.com/1200/1600/mansion,luxury?random=3" },
-        { id: 4, title: "Alpine Retreat", price: "€6.2M", location: "St. Moritz, CH", img: "https://loremflickr.com/1200/1600/mansion,luxury?random=4" }
+        { id: 1, title: "Villa Nova", price: "€4.5M", location: "Marbella, Spain", gradient: "bg-gradient-to-br from-blue-900 to-indigo-900" },
+        { id: 2, title: "The Penthouse", price: "€2.1M", location: "Dubai, UAE", gradient: "bg-gradient-to-br from-indigo-900 to-purple-900" },
+        { id: 3, title: "Coastal Estate", price: "€8.9M", location: "Malibu, USA", gradient: "bg-gradient-to-br from-slate-800 to-blue-900" },
+        { id: 4, title: "Alpine Retreat", price: "€6.2M", location: "St. Moritz, CH", gradient: "bg-gradient-to-br from-zinc-800 to-slate-800" }
     ];
 
     const accordionData = [
@@ -167,7 +190,7 @@ export default function VantageRealEstate() {
                     transition={{ duration: 2, ease: "easeOut" }}
                     className="absolute inset-0 z-0"
                 >
-                    <img src="https://loremflickr.com/1920/1080/mansion,luxury?random=hero" alt="Luxury Mansion" className="w-full h-full object-cover opacity-60" />
+                    <div className="w-full h-full bg-gradient-to-br from-[#0A1128] via-indigo-950 to-blue-950 opacity-60" />
                     <div className="absolute inset-0 bg-gradient-to-b from-[#0A1128]/60 md:from-[#0A1128]/40 via-transparent to-[#0A1128]"></div>
                 </motion.div>
                 <div className="relative z-10 flex flex-col items-center text-center px-4 mt-20 w-full">
@@ -218,13 +241,10 @@ export default function VantageRealEstate() {
                                 className="relative w-[85vw] md:w-[40vw] h-[55vh] md:h-[70vh] flex-shrink-0 group overflow-hidden touch-pan-y"
                             >
                                 <div className="absolute inset-0 bg-[#0A1128]/40 md:bg-[#0A1128]/20 md:group-hover:bg-transparent transition-colors duration-700 z-10 pointer-events-none" />
-                                <motion.img
+                                <motion.div
                                     whileHover={{ scale: 1.05 }}
                                     transition={{ duration: 0.8, ease: "easeOut" }}
-                                    src={prop.img}
-                                    alt={prop.title}
-                                    className="w-full h-full object-cover grayscale-[20%] md:grayscale-[30%] md:group-hover:grayscale-0 transition-all duration-700"
-                                    draggable={false}
+                                    className={`w-full h-full ${prop.gradient} grayscale-[20%] md:grayscale-[30%] md:group-hover:grayscale-0 transition-all duration-700`}
                                 />
                                 <div className="absolute bottom-0 left-0 w-full p-6 md:p-8 z-20 bg-gradient-to-t from-[#0A1128] via-[#0A1128]/80 to-transparent pointer-events-none">
                                     <div className="flex flex-col md:flex-row md:justify-between md:items-end gap-2 md:gap-0">
@@ -252,7 +272,7 @@ export default function VantageRealEstate() {
                         transition={{ duration: 1 }}
                         className="relative aspect-[4/5] w-full"
                     >
-                        <img src="https://loremflickr.com/1000/1200/mansion,interior?random=details" alt="Interior" className="w-full h-full object-cover" />
+                        <div className="w-full h-full bg-gradient-to-br from-[#0A1128] to-slate-900" />
                         <motion.div 
                             initial={{ scale: 0 }}
                             whileInView={{ scale: 1 }}
@@ -293,19 +313,19 @@ export default function VantageRealEstate() {
                             whileInView={{ opacity: 1 }}
                             viewport={{ once: true }}
                             transition={{ duration: 1, delay: 0.3 }}
-                            className="mt-12 md:mt-16 grid grid-cols-3 gap-4 md:gap-6 border-t border-[#D4AF37]/20 pt-8 md:pt-12"
+                            className="mt-12 md:mt-16 grid grid-cols-3 gap-4 md:gap-6 border-t border-[#D4AF37]/20 pt-8 md:pt-12 anime-stats-container"
                         >
-                            <div className="flex flex-col gap-1 md:gap-2">
+                            <div className="flex flex-col gap-1 md:gap-2 anime-stat-item opacity-0">
                                 <Bed className="w-5 h-5 md:w-6 md:h-6 text-[#D4AF37]" />
                                 <span className="text-2xl md:text-3xl font-light text-white">6</span>
                                 <span className="text-[0.6rem] md:text-xs uppercase tracking-widest text-white/50">Bedrooms</span>
                             </div>
-                            <div className="flex flex-col gap-1 md:gap-2">
+                            <div className="flex flex-col gap-1 md:gap-2 anime-stat-item opacity-0">
                                 <Bath className="w-5 h-5 md:w-6 md:h-6 text-[#D4AF37]" />
                                 <span className="text-2xl md:text-3xl font-light text-white">8</span>
                                 <span className="text-[0.6rem] md:text-xs uppercase tracking-widest text-white/50">Bathrooms</span>
                             </div>
-                            <div className="flex flex-col gap-1 md:gap-2">
+                            <div className="flex flex-col gap-1 md:gap-2 anime-stat-item opacity-0">
                                 <Square className="w-5 h-5 md:w-6 md:h-6 text-[#D4AF37]" />
                                 <span className="text-2xl md:text-3xl font-light text-white">1.2k</span>
                                 <span className="text-[0.6rem] md:text-xs uppercase tracking-widest text-white/50">Sq. Meters</span>
