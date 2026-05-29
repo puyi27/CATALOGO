@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import { motion, useScroll, useTransform, AnimatePresence, useSpring, useMotionValue } from "framer-motion";
 import Link from "next/link";
 import { ArrowLeft, Menu, X, Play, MapPin, ArrowRight, Clock } from "lucide-react";
 import DemoLayout from "@/components/DemoLayout";
@@ -27,12 +27,24 @@ function useMousePosition() {
 /* -------------------------------------------------------------------------- */
 
 const Cursor = () => {
-  const { x, y } = useMousePosition();
+  const cursorX = useMotionValue(-100);
+  const cursorY = useMotionValue(-100);
+  const cursorXSpring = useSpring(cursorX, { stiffness: 500, damping: 28 });
+  const cursorYSpring = useSpring(cursorY, { stiffness: 500, damping: 28 });
+
+  useEffect(() => {
+    const updateMousePosition = (e) => {
+      cursorX.set(e.clientX - 6);
+      cursorY.set(e.clientY - 6);
+    };
+    window.addEventListener("mousemove", updateMousePosition);
+    return () => window.removeEventListener("mousemove", updateMousePosition);
+  }, [cursorX, cursorY]);
+
   return (
     <motion.div
       className="hidden md:block fixed top-0 left-0 w-3 h-3 bg-[#D4AF37] rounded-full pointer-events-none z-[9999] mix-blend-difference"
-      animate={{ x: x - 6, y: y - 6 }}
-      transition={{ type: "tween", ease: "backOut", duration: 0.15 }}
+      style={{ x: cursorXSpring, y: cursorYSpring }}
     />
   );
 };

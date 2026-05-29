@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import { motion, useScroll, useTransform, AnimatePresence, useSpring, useMotionValue } from "framer-motion";
 import Link from "next/link";
 import { ArrowRight, Leaf, Sun, Wind, Battery, ArrowUpRight, Globe, Users, Menu, X, Check } from "lucide-react";
 import DemoLayout from "@/components/DemoLayout";
@@ -25,16 +25,20 @@ export default function EcoNovaDemo() {
   const heroY = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
   
   // Custom Cursor
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const cursorX = useMotionValue(-100);
+  const cursorY = useMotionValue(-100);
+  const cursorXSpring = useSpring(cursorX, { damping: 28, stiffness: 500 });
+  const cursorYSpring = useSpring(cursorY, { damping: 28, stiffness: 500 });
   const [isHovering, setIsHovering] = useState(false);
 
   useEffect(() => {
     const updateMousePosition = (e) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
+      cursorX.set(e.clientX - 8);
+      cursorY.set(e.clientY - 8);
     };
     window.addEventListener("mousemove", updateMousePosition);
     return () => window.removeEventListener("mousemove", updateMousePosition);
-  }, []);
+  }, [cursorX, cursorY]);
 
   const initiatives = [
     { title: "Solar Microgrids", desc: "Empowering rural communities with decentralized, renewable solar energy networks.", icon: Sun, img: "1.jpg" },
@@ -57,9 +61,8 @@ export default function EcoNovaDemo() {
         {/* Custom Cursor */}
         <motion.div
           className="hidden md:flex fixed top-0 left-0 w-4 h-4 rounded-full bg-[#2E7D32] mix-blend-difference pointer-events-none z-[100] items-center justify-center transition-transform duration-100 ease-out"
+          style={{ x: cursorXSpring, y: cursorYSpring }}
           animate={{
-            x: mousePosition.x - 8,
-            y: mousePosition.y - 8,
             scale: isHovering ? 2.5 : 1,
             opacity: isMenuOpen ? 0 : 1
           }}

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { motion, useScroll, useTransform, AnimatePresence, useSpring } from "framer-motion";
+import { motion, useScroll, useTransform, AnimatePresence, useSpring, useMotionValue } from "framer-motion";
 import Link from "next/link";
 import { ArrowUpRight, MapPin, Menu, X, ChevronRight, Bed, Bath, Square, Compass, Play, ArrowLeft } from "lucide-react";
 import DemoLayout from '@/components/DemoLayout';
@@ -21,12 +21,26 @@ function useMousePosition() {
 
 /* --- COMPONENTS --- */
 const Cursor = () => {
-  const { x, y } = useMousePosition();
+  const cursorX = useMotionValue(-100);
+  const cursorY = useMotionValue(-100);
+
+  const springConfig = { damping: 28, stiffness: 500, mass: 0.5 };
+  const cursorXSpring = useSpring(cursorX, springConfig);
+  const cursorYSpring = useSpring(cursorY, springConfig);
+
+  useEffect(() => {
+    const updateMousePosition = (e) => {
+      cursorX.set(e.clientX - 16);
+      cursorY.set(e.clientY - 16);
+    };
+    window.addEventListener("mousemove", updateMousePosition);
+    return () => window.removeEventListener("mousemove", updateMousePosition);
+  }, [cursorX, cursorY]);
+
   return (
     <motion.div
       className="hidden md:flex fixed top-0 left-0 w-8 h-8 rounded-full border border-white pointer-events-none z-[100] mix-blend-difference items-center justify-center"
-      animate={{ x: x - 16, y: y - 16 }}
-      transition={{ type: "spring", stiffness: 500, damping: 28, mass: 0.5 }}
+      style={{ x: cursorXSpring, y: cursorYSpring }}
     >
       <div className="w-1 h-1 bg-white rounded-full" />
     </motion.div>

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from "react";
-import { motion, useScroll, useTransform, AnimatePresence, useSpring } from "framer-motion";
+import { motion, useScroll, useTransform, AnimatePresence, useSpring, useMotionValue } from "framer-motion";
 import Link from "next/link";
 import { ArrowLeft, Menu, X, ArrowUpRight, Plus, Minus } from "lucide-react";
 import DemoLayout from "@/components/DemoLayout";
@@ -40,9 +40,10 @@ function useWindowSize() {
 /* -------------------------------------------------------------------------- */
 
 const Cursor = () => {
-  const { x, y } = useMousePosition();
-  const cursorX = useSpring(x, { stiffness: 1000, damping: 50, mass: 0.1 });
-  const cursorY = useSpring(y, { stiffness: 1000, damping: 50, mass: 0.1 });
+  const mX = useMotionValue(-100);
+  const mY = useMotionValue(-100);
+  const cursorX = useSpring(mX, { stiffness: 300, damping: 20 });
+  const cursorY = useSpring(mY, { stiffness: 300, damping: 20 });
   const [isHovering, setIsHovering] = useState(false);
 
   useEffect(() => {
@@ -53,19 +54,30 @@ const Cursor = () => {
         setIsHovering(false);
       }
     };
+    const updateMousePosition = (e) => {
+      mX.set(e.clientX);
+      mY.set(e.clientY);
+    };
     window.addEventListener('mouseover', handleMouseOver);
-    return () => window.removeEventListener('mouseover', handleMouseOver);
+    window.addEventListener('mousemove', updateMousePosition);
+    return () => {
+      window.removeEventListener('mouseover', handleMouseOver);
+      window.removeEventListener('mousemove', updateMousePosition);
+    };
   }, []);
 
   return (
     <motion.div
       className="hidden md:flex fixed top-0 left-0 rounded-full pointer-events-none z-[9999] mix-blend-difference items-center justify-center bg-white"
-      style={{ x: cursorX, y: cursorY }}
+      style={{ 
+        x: cursorX, 
+        y: cursorY,
+        translateX: "-50%",
+        translateY: "-50%"
+      }}
       animate={{
         width: isHovering ? 64 : 16,
         height: isHovering ? 64 : 16,
-        x: x - (isHovering ? 32 : 8),
-        y: y - (isHovering ? 32 : 8),
       }}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
     >

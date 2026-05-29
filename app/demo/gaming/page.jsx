@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+import { motion, AnimatePresence, useScroll, useTransform, useMotionValue, useSpring } from 'framer-motion';
 import Link from 'next/link';
 import { 
   Terminal, Crosshair, Cpu, Shield, Zap, RefreshCw, ChevronLeft, 
@@ -21,7 +21,13 @@ export default function GamingDemo() {
     { id: "p7", name: "VENOM", role: "FLEX", kd: "1.25", score: 7800, ping: 16 }
   ]);
   const [isSimulating, setIsSimulating] = useState(false);
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const cursorX = useMotionValue(-100);
+  const cursorY = useMotionValue(-100);
+  
+  const springConfig = { damping: 28, stiffness: 500, mass: 0.5 };
+  const cursorXSpring = useSpring(cursorX, springConfig);
+  const cursorYSpring = useSpring(cursorY, springConfig);
+
   const [menuOpen, setMenuOpen] = useState(false);
   const [activeFaq, setActiveFaq] = useState(null);
 
@@ -30,11 +36,12 @@ export default function GamingDemo() {
 
   useEffect(() => {
     const handleMouseMove = (e) => {
-      setMousePosition({ x: e.clientX, y: e.clientY });
+      cursorX.set(e.clientX - 16);
+      cursorY.set(e.clientY - 16);
     };
     window.addEventListener("mousemove", handleMouseMove);
     return () => window.removeEventListener("mousemove", handleMouseMove);
-  }, []);
+  }, [cursorX, cursorY]);
 
   const simulateMatch = () => {
     setIsSimulating(true);
@@ -97,8 +104,7 @@ export default function GamingDemo() {
       {/* Custom Cursor */}
       <motion.div
         className="fixed top-0 left-0 w-8 h-8 border border-cyan-500 rounded-none pointer-events-none z-50 mix-blend-difference items-center justify-center hidden md:flex"
-        animate={{ x: mousePosition.x - 16, y: mousePosition.y - 16 }}
-        transition={{ type: "spring", stiffness: 500, damping: 28, mass: 0.5 }}
+        style={{ x: cursorXSpring, y: cursorYSpring }}
       >
         <div className="w-1 h-1 bg-red-500 rounded-none" />
       </motion.div>
