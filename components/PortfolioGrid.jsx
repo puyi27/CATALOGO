@@ -110,12 +110,31 @@ export default function PortfolioGrid() {
                     onMouseEnter={(e) => e.currentTarget.style.boxShadow = `0 20px 40px -10px ${demo.color}40, inset 0 0 20px ${demo.color}10`}
                     onMouseLeave={(e) => e.currentTarget.style.boxShadow = `0 0 0px ${demo.color}00`}
                   >
-                    <img
-                      src={demo.img}
-                      alt={demo.nombre}
-                      className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700 scale-105 group-hover:scale-100"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+                    {/* Generative CSS Background */}
+                    <div className="absolute inset-0 bg-[#050505] overflow-hidden">
+                      {/* Abstract Gradient Blob */}
+                      <div 
+                        className="absolute top-1/2 left-1/2 w-[150%] h-[150%] opacity-20 group-hover:opacity-60 transition-all duration-1000 ease-out blur-[60px] -translate-x-1/2 -translate-y-1/2 scale-100 group-hover:scale-125 group-hover:rotate-12"
+                        style={{
+                          background: `radial-gradient(circle at center, ${demo.color} 0%, transparent 55%)`
+                        }}
+                      />
+                      
+                      {/* Typographic Art (Big Background Text) */}
+                      <div className="absolute inset-0 flex items-center justify-center p-4">
+                        <span className={`text-6xl lg:text-7xl text-white/5 group-hover:text-white/20 transition-all duration-700 ease-out scale-90 group-hover:scale-105 ${demo.fontClass || ''} break-all text-center leading-none select-none`}>
+                          {demo.id.toUpperCase()}
+                        </span>
+                      </div>
+
+                      {/* Grid Pattern Overlay */}
+                      <div className="absolute inset-0 opacity-10 group-hover:opacity-30 transition-opacity duration-700" 
+                           style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.2) 1px, transparent 1px)', backgroundSize: '30px 30px' }} 
+                      />
+
+                      {/* Bottom Fade for Text Readability */}
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/60 to-transparent opacity-90" />
+                    </div>
 
                     <div className="absolute top-3 left-3">
                       <span
