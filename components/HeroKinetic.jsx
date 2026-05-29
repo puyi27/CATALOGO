@@ -13,7 +13,7 @@ function Starfield(props) {
   const [sphere] = useState(() => {
     if (typeof window === 'undefined') return new Float32Array(0);
     const random = require('maath/random/dist/maath-random.esm');
-    return random.inSphere(new Float32Array(5000), { radius: 1.5 });
+    return random.inSphere(new Float32Array(1500), { radius: 1.5 });
   });
 
   useEffect(() => {

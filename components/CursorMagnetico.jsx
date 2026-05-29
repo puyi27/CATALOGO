@@ -42,7 +42,6 @@ export default function CursorMagnetico() {
           transform: 'translate3d(-100px, -100px, 0)',
           transition: 'transform 0.12s ease-out',
           willChange: 'transform',
-          mixBlendMode: 'difference',
         }}
       />
       {/* Cursor dot - pequeño */}
