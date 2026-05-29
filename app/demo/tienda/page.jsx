@@ -18,7 +18,7 @@ const products = [
   { id: 6, name: "CONJUNTO RAYAS", color: "AZUL NOCHE", price: "€52", status: "ÚLTIMAS", img: "/images/demo/tienda/6.jpg", sizes: ["18M","24M"], specs: "RAYAS MARINERAS. ESTILO CASUAL CHIC." },
 ];
 
-export default function LunaKidsApparel() {
+export default function BoutiqueApparel() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [cart, setCart] = useState([]);
@@ -51,7 +51,7 @@ export default function LunaKidsApparel() {
   const cartTotal = cart.reduce((total, item) => total + parseInt(item.price.replace('€', '')), 0);
 
   return (
-    <DemoLayout title="Luna Kids">
+    <DemoLayout title="Boutique Infantil">
     <div className="text-[#4a4a4a] font-sans selection:bg-[#FBCFE8] selection:text-[#333] md:cursor-none bg-[#FAFAF9] min-h-screen">
       
       <motion.div
@@ -81,7 +81,7 @@ export default function LunaKidsApparel() {
               <Sparkles size={14} /> Nueva Colección
             </h2>
             <h1 className="text-6xl md:text-8xl lg:text-[140px] font-serif font-light text-[#333] leading-[0.85] tracking-tight mb-8">
-              Luna<br/><span className="text-[#f472b6] italic">Kids</span>
+              Tu<br/><span className="text-[#f472b6] italic">Marca</span>
             </h1>
             <p className="text-[#666] font-medium text-lg md:text-xl max-w-md leading-relaxed mb-12">
               Vistiendo la magia de la infancia. Una propuesta visual que combina la dulzura de la niñez con tendencias contemporáneas.
@@ -103,7 +103,7 @@ export default function LunaKidsApparel() {
             className="w-full h-full max-w-md overflow-hidden relative shadow-2xl"
             style={{ borderRadius: "250px 250px 0 0" }}
           >
-            <img src="/images/demo/tienda/hero.jpg" alt="Niños con ropa Luna Kids" className="w-full h-full object-cover" />
+            <img src="/images/demo/tienda/hero.jpg" alt="Niños con ropa" className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
           </motion.div>
           <motion.div 
@@ -278,7 +278,7 @@ export default function LunaKidsApparel() {
       <section className="bg-white py-24 border-t border-gray-100 overflow-hidden">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-serif text-[#333] mb-2 flex items-center justify-center gap-3">
-            <Instagram className="text-[#f472b6]" /> @ModaInfantilLunaKids
+            <Instagram className="text-[#f472b6]" /> @TuMarcaInfantil
           </h2>
           <p className="text-[#666]">Únete a nuestra pequeña gran familia</p>
         </div>
@@ -296,9 +296,9 @@ export default function LunaKidsApparel() {
 
       <footer className="bg-white pt-24 pb-12 border-t border-gray-100 text-center relative overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-px bg-gradient-to-r from-transparent via-pink-200 to-transparent"></div>
-        <h2 className="text-6xl font-serif font-light text-[#f472b6] mb-6">Luna <span className="italic">Kids</span></h2>
+        <h2 className="text-6xl font-serif font-light text-[#f472b6] mb-6">Tu <span className="italic">Marca</span></h2>
         <p className="text-[#888] max-w-md mx-auto mb-12 font-medium">Cada conjunto está diseñado para crear hermosos recuerdos visuales. Magia atemporal.</p>
-        <p className="text-sm text-gray-400">© 2026 LUNA KIDS. Todos los derechos reservados.</p>
+        <p className="text-sm text-gray-400">© 2026 TU MARCA. Todos los derechos reservados.</p>
       </footer>
 
       <AnimatePresence>
