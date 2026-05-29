@@ -114,20 +114,22 @@ export default function PortfolioGrid() {
                     <img
                       src={demo.img}
                       alt={demo.nombre}
-                      className="absolute inset-0 w-full h-full object-cover grayscale opacity-70 group-hover:grayscale-0 transition-all duration-700 scale-105 group-hover:scale-100 z-0"
+                      loading="lazy"
+                      decoding="async"
+                      className="absolute inset-0 w-full h-full object-cover grayscale opacity-70 group-hover:grayscale-0 transition-all duration-700 transform-gpu will-change-transform scale-105 group-hover:scale-100 z-0"
                     />
 
                     {/* Generative Hover Background overlay */}
                     <div className="absolute inset-0 z-10 pointer-events-none">
                       <div 
-                        className="absolute top-1/2 left-1/2 w-[150%] h-[150%] opacity-0 group-hover:opacity-40 transition-all duration-1000 ease-out blur-[60px] -translate-x-1/2 -translate-y-1/2 scale-100 group-hover:scale-125 group-hover:rotate-12 mix-blend-screen"
+                        className="absolute top-1/2 left-1/2 w-[150%] h-[150%] opacity-0 group-hover:opacity-40 transition-all duration-1000 ease-out transform-gpu will-change-transform -translate-x-1/2 -translate-y-1/2 scale-100 group-hover:scale-125 group-hover:rotate-12 mix-blend-screen"
                         style={{
                           background: `radial-gradient(circle at center, ${demo.color} 0%, transparent 55%)`
                         }}
                       />
                       
                       {/* Grid Pattern Overlay */}
-                      <div className="absolute inset-0 opacity-10 group-hover:opacity-30 transition-opacity duration-700 mix-blend-overlay" 
+                      <div className="absolute inset-0 opacity-10 group-hover:opacity-30 transition-opacity duration-700 mix-blend-overlay transform-gpu" 
                            style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.2) 1px, transparent 1px)', backgroundSize: '30px 30px' }} 
                       />
 

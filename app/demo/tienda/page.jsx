@@ -109,11 +109,11 @@ export default function LunaKidsApparel() {
       {/* HERO SECTION */}
       <header className="relative h-[100svh] w-full flex flex-col justify-center items-center overflow-hidden pt-24 bg-[#FFF5F8]">
         {/* Soft Blobs Background */}
-        <motion.div style={{ opacity: opacityHero }} className="absolute inset-0 z-0 overflow-hidden">
-           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#FBCFE8] rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob" />
-           <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-[#BAE6FD] rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000" />
-           <div className="absolute -bottom-8 left-1/3 w-96 h-96 bg-[#FEF08A] rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-4000" />
-           <div className="absolute inset-0 bg-white/40 backdrop-blur-[2px]" />
+        <motion.div style={{ opacity: opacityHero }} className="absolute inset-0 z-0 overflow-hidden transform-gpu">
+           <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-[#FBCFE8] rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob transform-gpu will-change-transform" />
+           <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-[#BAE6FD] rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-2000 transform-gpu will-change-transform" />
+           <div className="absolute -bottom-8 left-1/3 w-96 h-96 bg-[#FEF08A] rounded-full mix-blend-multiply filter blur-3xl opacity-70 animate-blob animation-delay-4000 transform-gpu will-change-transform" />
+           <div className="absolute inset-0 bg-white/40 backdrop-blur-[2px] transform-gpu" />
         </motion.div>
         
         <div className="relative z-10 px-6 md:px-12 pb-12 w-full max-w-5xl mx-auto flex flex-col items-center text-center gap-8 mt-12">
