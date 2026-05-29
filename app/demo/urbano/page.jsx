@@ -95,7 +95,7 @@ export default function UrbanoDemo() {
 
   return (
     <DemoLayout title="URBANO — Streetwear">
-      <div className="bg-[#050505] text-[#f4f4f4] font-sans selection:bg-red-600 selection:text-white cursor-none overflow-x-hidden">
+      <div className="bg-[#050505] text-[#f4f4f4] font-sans selection:bg-red-600 selection:text-white cursor-none">
         
         {/* Scroll Progress */}
         <motion.div className="fixed top-0 left-0 right-0 h-1.5 bg-red-600 origin-left z-[100]" style={{ scaleX }} />

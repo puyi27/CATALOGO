@@ -65,7 +65,7 @@ export default function CreativoDemo() {
 
   return (
     <DemoLayout title="Creativo — Artist Portfolio">
-      <div className="bg-[#0f0f0f] text-[#f4f4f0] font-sans overflow-x-hidden md:cursor-none selection:bg-[#ccff00] selection:text-black">
+      <div className="bg-[#0f0f0f] text-[#f4f4f0] font-sans md:cursor-none selection:bg-[#ccff00] selection:text-black">
         
         {/* Progress Bar */}
         <motion.div className="fixed top-0 left-0 right-0 h-1 bg-[#ccff00] origin-left z-[100]" style={{ scaleX }} />

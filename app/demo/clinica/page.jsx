@@ -53,7 +53,7 @@ export default function ClinicaDemo() {
 
   return (
     <DemoLayout title="Lumina Clinic">
-      <div className="bg-zinc-50 text-zinc-900 font-sans selection:bg-zinc-900 selection:text-white md:cursor-none min-h-screen overflow-x-hidden">
+      <div className="bg-zinc-50 text-zinc-900 font-sans selection:bg-zinc-900 selection:text-white md:cursor-none min-h-screen">
         
         {/* Custom Cursor */}
         <motion.div

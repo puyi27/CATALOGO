@@ -83,7 +83,7 @@ export default function BarberShop() {
 
   return (
     <DemoLayout title="Fade & Co.">
-      <div className="text-stone-900 bg-[#E8E6E1] selection:bg-black selection:text-white font-sans uppercase md:cursor-none overflow-x-hidden min-h-screen">
+      <div className="text-stone-900 bg-[#E8E6E1] selection:bg-black selection:text-white font-sans uppercase md:cursor-none min-h-screen">
         
         {/* Custom Cursor */}
         <motion.div

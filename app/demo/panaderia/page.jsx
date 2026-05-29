@@ -36,7 +36,7 @@ export default function PanaderiaDemo() {
 
   return (
     <DemoLayout title="Panadería - Artisan Bakery">
-      <div className="bg-[#FCF9F2] text-[#4A3C31] font-sans selection:bg-[#E5C7A3] selection:text-[#4A3C31] overflow-hidden">
+      <div className="bg-[#FCF9F2] text-[#4A3C31] font-sans selection:bg-[#E5C7A3] selection:text-[#4A3C31]">
         
         {/* Navigation */}
         <nav className="absolute w-full px-6 py-6 flex justify-between items-center z-50">

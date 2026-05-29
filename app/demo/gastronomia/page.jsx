@@ -78,7 +78,7 @@ export default function GastronomiaDemo() {
   
   return (
     <DemoLayout title="Gastronomía - Michelin Star">
-      <div className="bg-[#1C1A17] text-[#E8E3D9] font-sans selection:bg-[#C4A47C] selection:text-[#1C1A17] overflow-hidden">
+      <div className="bg-[#1C1A17] text-[#E8E3D9] font-sans selection:bg-[#C4A47C] selection:text-[#1C1A17]">
         
         {/* Navigation */}
         <nav className="fixed w-full px-6 md:px-12 py-6 flex justify-between items-center z-50 mix-blend-difference">

@@ -484,7 +484,7 @@ export default function SaasDemo() {
     <DemoLayout title="SaaS Core Platform">
       <LazyMotion features={domAnimation}>
         <style dangerouslySetInnerHTML={{__html: `@media (pointer: fine) { body { cursor: none !important; } }`}} />
-        <div className="bg-black text-neutral-100 font-sans selection:bg-purple-500/30 overflow-x-hidden min-h-screen">
+        <div className="bg-black text-neutral-100 font-sans selection:bg-purple-500/30 min-h-screen">
           <CustomCursor />
           
           <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/5 bg-black/50 backdrop-blur-md">

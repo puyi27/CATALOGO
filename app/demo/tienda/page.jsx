@@ -75,7 +75,7 @@ export default function ObsidianApparel() {
 
   return (
     <DemoLayout title="Tienda Dystopia">
-    <div className="text-white font-sans uppercase selection:bg-[#00FF00] selection:text-black md:cursor-none overflow-x-hidden bg-[#050505] min-h-screen">
+    <div className="text-white font-sans uppercase selection:bg-[#00FF00] selection:text-black md:cursor-none bg-[#050505] min-h-screen">
       
       {/* CUSTOM CURSOR */}
       <motion.div

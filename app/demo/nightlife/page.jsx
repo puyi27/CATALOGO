@@ -111,7 +111,7 @@ export default function NightfallDemo() {
 
   return (
     <DemoLayout title="Nightfall">
-    <div className="text-white font-sans selection:bg-[#FF00FF] selection:text-black overflow-x-hidden relative bg-black min-h-screen">
+    <div className="text-white font-sans selection:bg-[#FF00FF] selection:text-black relative bg-black min-h-screen">
       
       {/* Background Strobe & Noise */}
       <motion.div className="fixed inset-0 pointer-events-none z-[100] mix-blend-screen bg-white" style={{ opacity: strobeOpacity }} />

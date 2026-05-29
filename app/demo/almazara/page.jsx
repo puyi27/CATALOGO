@@ -36,7 +36,7 @@ export default function AlmazaraDemo() {
 
   return (
     <DemoLayout title="Almazara - Olive Oil Estate">
-      <div className="bg-[#F7F8F3] text-[#2C3E2D] font-sans selection:bg-[#B5C18E] selection:text-[#1A251B] overflow-x-hidden">
+      <div className="bg-[#F7F8F3] text-[#2C3E2D] font-sans selection:bg-[#B5C18E] selection:text-[#1A251B]">
         
         {/* Navigation */}
         <nav className="fixed w-full px-6 md:px-12 py-6 flex justify-between items-center z-50 mix-blend-difference text-[#F7F8F3]">

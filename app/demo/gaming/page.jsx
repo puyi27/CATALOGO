@@ -99,7 +99,7 @@ export default function GamingDemo() {
 
   return (
     <DemoLayout title="Gaming eSports">
-      <div className="text-zinc-300 font-mono selection:bg-cyan-500 selection:text-zinc-950 overflow-x-hidden relative md:cursor-none bg-zinc-950 min-h-screen">
+      <div className="text-zinc-300 font-mono selection:bg-cyan-500 selection:text-zinc-950 relative md:cursor-none bg-zinc-950 min-h-screen">
       
       {/* Custom Cursor */}
       <motion.div

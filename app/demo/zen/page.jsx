@@ -54,7 +54,7 @@ export default function ZenRetreatDemo() {
 
   return (
     <DemoLayout title="Satori Retreat">
-      <div className="bg-[#EBE9E4] text-[#2C302E] font-serif selection:bg-[#4A5D4E] selection:text-white md:cursor-none min-h-screen overflow-x-hidden">
+      <div className="bg-[#EBE9E4] text-[#2C302E] font-serif selection:bg-[#4A5D4E] selection:text-white md:cursor-none min-h-screen">
         
         {/* Custom Cursor */}
         <motion.div

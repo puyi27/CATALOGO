@@ -56,7 +56,7 @@ export default function EcoNovaDemo() {
 
   return (
     <DemoLayout title="EcoNova NGO">
-      <div className="bg-[#F4F4F4] text-[#1A1A1A] font-sans selection:bg-[#2E7D32] selection:text-white md:cursor-none min-h-screen overflow-x-hidden">
+      <div className="bg-[#F4F4F4] text-[#1A1A1A] font-sans selection:bg-[#2E7D32] selection:text-white md:cursor-none min-h-screen">
         
         {/* Custom Cursor */}
         <motion.div

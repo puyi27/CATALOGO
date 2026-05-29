@@ -53,7 +53,7 @@ export default function AgenciaDemo() {
 
   return (
     <DemoLayout title="Agencia — Creative & Bold">
-      <div className="bg-[#e3e3e3] text-[#111] font-sans selection:bg-[#111] selection:text-[#e3e3e3] overflow-hidden cursor-none">
+      <div className="bg-[#e3e3e3] text-[#111] font-sans selection:bg-[#111] selection:text-[#e3e3e3] cursor-none">
         
         {/* Custom Cursor */}
         <motion.div 
