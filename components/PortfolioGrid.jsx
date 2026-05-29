@@ -6,28 +6,28 @@ import Link from 'next/link';
 import { ArrowUpRight, LayoutGrid, Filter } from 'lucide-react';
 
 const demos = [
-  { id: 'metal', color: '#ff4500', nombre: 'INDUSTRIA PESADA', path: '/demo/metal', tags: ['industrial', 'backend'], img: '/previews/metal.jpg', fontClass: 'font-mono font-black uppercase tracking-tighter' },
-  { id: 'panaderia', color: '#d4a373', nombre: 'OBRADOR ARTESANO', path: '/demo/panaderia', tags: ['alimentación', 'ecommerce'], img: '/previews/panaderia.jpg', fontClass: 'font-serif italic tracking-wide' },
-  { id: 'interiorismo', color: '#e5e7eb', nombre: 'ARQUITECTURA', path: '/demo/interiorismo', tags: ['construcción', 'portfolio'], img: '/previews/interiorismo.jpg', fontClass: 'font-sans font-light tracking-[0.2em]' },
-  { id: 'almazara', color: '#4E6840', nombre: 'AGROTECH', path: '/demo/almazara', tags: ['agro', 'backend'], img: '/previews/almazara.jpg', fontClass: 'font-serif tracking-tight' },
-  { id: 'clinica', color: '#008080', nombre: 'CLÍNICA DENTAL', path: '/demo/clinica', tags: ['salud', 'crm'], img: '/previews/clinica.jpg', fontClass: 'font-sans font-medium tracking-tight' },
-  { id: 'restaurante', color: '#1a1a1a', nombre: 'ALTA GASTRONOMÍA', path: '/demo/restaurante', tags: ['alimentación', 'portfolio'], img: '/previews/restaurante.jpg', fontClass: 'font-serif tracking-widest' },
-  { id: 'agencia', color: '#ff00ff', nombre: 'AGENCIA CREATIVA', path: '/demo/agencia', tags: ['portfolio', 'branding'], img: '/previews/agencia.jpg', fontClass: 'font-serif italic tracking-tighter' },
-  { id: 'barberia', color: '#b91c1c', nombre: 'BARBERÍA VINTAGE', path: '/demo/barberia', tags: ['servicios', 'ecommerce'], img: '/previews/barberia.jpg', fontClass: 'font-serif font-black uppercase' },
-  { id: 'gaming', color: '#8b5cf6', nombre: 'E-SPORTS', path: '/demo/gaming', tags: ['entretenimiento', 'backend'], img: '/previews/gaming.jpg', fontClass: 'font-mono font-black italic tracking-tighter' },
-  { id: 'inmobiliaria', color: '#3b82f6', nombre: 'REAL ESTATE', path: '/demo/inmobiliaria', tags: ['inmobiliaria', 'vr'], img: '/previews/inmobiliaria.jpg', fontClass: 'font-sans font-light tracking-[0.15em]' },
-  { id: 'saas', color: '#0ea5e9', nombre: 'SAAS B2B', path: '/demo/saas', tags: ['tecnología', 'backend'], img: '/previews/saas.jpg', fontClass: 'font-sans font-black tracking-tighter' },
-  { id: 'tienda', color: '#ec4899', nombre: 'ALTA JOYERÍA', path: '/demo/tienda', tags: ['ecommerce', 'lujo'], img: '/previews/tienda.jpg', fontClass: 'font-serif tracking-[0.25em]' },
-  { id: 'tech', color: '#06b6d4', nombre: 'SOFTWARE HOUSE', path: '/demo/tech', tags: ['tecnología', 'backend'], img: '/previews/tech.jpg', fontClass: 'font-mono font-bold tracking-tight' },
-  { id: 'creativo', color: '#f97316', nombre: 'ESTUDIO CREATIVO', path: '/demo/creativo', tags: ['portfolio', 'branding'], img: '/previews/creativo.jpg', fontClass: 'font-sans font-black italic uppercase' },
-  { id: 'editorial', color: '#a855f7', nombre: 'REVISTA DIGITAL', path: '/demo/editorial', tags: ['portfolio', 'branding'], img: '/previews/editorial.jpg', fontClass: 'font-serif font-light tracking-wide' },
-  { id: 'gastronomia', color: '#ef4444', nombre: 'CHEF ESTRELLA', path: '/demo/gastronomia', tags: ['alimentación', 'portfolio'], img: '/previews/gastronomia.jpg', fontClass: 'font-serif italic' },
-  { id: 'premium', color: '#fbbf24', nombre: 'RELOJERÍA SUIZA', path: '/demo/premium', tags: ['lujo', 'ecommerce'], img: '/previews/premium.jpg', fontClass: 'font-serif tracking-widest uppercase' },
-  { id: 'sostenibilidad', color: '#22c55e', nombre: 'ENERGÍA VERDE', path: '/demo/sostenibilidad', tags: ['agro', 'backend'], img: '/previews/sostenibilidad.jpg', fontClass: 'font-sans font-medium tracking-tight' },
-  { id: 'urbano', color: '#f43f5e', nombre: 'STREETWEAR', path: '/demo/urbano', tags: ['ecommerce', 'lujo'], img: '/previews/urbano.jpg', fontClass: 'font-sans font-black italic tracking-tighter' },
-  { id: 'zen', color: '#a3e635', nombre: 'RETIRO WELLNESS', path: '/demo/zen', tags: ['servicios', 'crm'], img: '/previews/zen.jpg', fontClass: 'font-serif font-light tracking-[0.1em]' },
-  { id: 'nightlife', color: '#e879f9', nombre: 'CLUB & NIGHTLIFE', path: '/demo/nightlife', tags: ['entretenimiento', 'backend'], img: '/previews/nightlife.jpg', fontClass: 'font-sans font-black tracking-tighter uppercase' },
-  { id: 'transporte', color: '#38bdf8', nombre: 'LOGÍSTICA & FLOTA', path: '/demo/transporte', tags: ['industrial', 'backend'], img: '/previews/transporte.jpg', fontClass: 'font-mono font-bold tracking-tight' },
+  { id: 'metal', color: '#ff4500', nombre: 'INDUSTRIA PESADA', path: '/demo/metal', tags: ['industrial', 'backend'], img: '/previews/metal.jpg', fontClass: 'font-mono font-black uppercase tracking-tighter', styleDesc: 'Brutalismo Neón B2B' },
+  { id: 'panaderia', color: '#d4a373', nombre: 'OBRADOR ARTESANO', path: '/demo/panaderia', tags: ['alimentación', 'ecommerce'], img: '/previews/panaderia.jpg', fontClass: 'font-serif italic tracking-wide', styleDesc: 'Cálido y Orgánico' },
+  { id: 'interiorismo', color: '#e5e7eb', nombre: 'ARQUITECTURA', path: '/demo/interiorismo', tags: ['construcción', 'portfolio'], img: '/previews/interiorismo.jpg', fontClass: 'font-sans font-light tracking-[0.2em]', styleDesc: 'Espacial y Minimalista' },
+  { id: 'almazara', color: '#4E6840', nombre: 'AGROTECH', path: '/demo/almazara', tags: ['agro', 'backend'], img: '/previews/almazara.jpg', fontClass: 'font-serif tracking-tight', styleDesc: 'Terrenal y Elegante' },
+  { id: 'clinica', color: '#008080', nombre: 'CLÍNICA DENTAL', path: '/demo/clinica', tags: ['salud', 'crm'], img: '/previews/clinica.jpg', fontClass: 'font-sans font-medium tracking-tight', styleDesc: 'Clínico e Inmaculado' },
+  { id: 'restaurante', color: '#1a1a1a', nombre: 'ALTA GASTRONOMÍA', path: '/demo/restaurante', tags: ['alimentación', 'portfolio'], img: '/previews/restaurante.jpg', fontClass: 'font-serif tracking-widest', styleDesc: 'Oscuro y Premium' },
+  { id: 'agencia', color: '#ff00ff', nombre: 'AGENCIA CREATIVA', path: '/demo/agencia', tags: ['portfolio', 'branding'], img: '/previews/agencia.jpg', fontClass: 'font-serif italic tracking-tighter', styleDesc: 'Awwwards Brutalism' },
+  { id: 'barberia', color: '#b91c1c', nombre: 'BARBERÍA VINTAGE', path: '/demo/barberia', tags: ['servicios', 'ecommerce'], img: '/previews/barberia.jpg', fontClass: 'font-serif font-black uppercase', styleDesc: 'Vintage & Raw' },
+  { id: 'gaming', color: '#8b5cf6', nombre: 'E-SPORTS', path: '/demo/gaming', tags: ['entretenimiento', 'backend'], img: '/previews/gaming.jpg', fontClass: 'font-mono font-black italic tracking-tighter', styleDesc: 'Cyberpunk Neón' },
+  { id: 'inmobiliaria', color: '#3b82f6', nombre: 'REAL ESTATE', path: '/demo/inmobiliaria', tags: ['inmobiliaria', 'vr'], img: '/previews/inmobiliaria.jpg', fontClass: 'font-sans font-light tracking-[0.15em]', styleDesc: 'Ultra Lujo Cinematográfico' },
+  { id: 'saas', color: '#0ea5e9', nombre: 'SAAS B2B', path: '/demo/saas', tags: ['tecnología', 'backend'], img: '/previews/saas.jpg', fontClass: 'font-sans font-black tracking-tighter', styleDesc: 'High-Tech Dashboard' },
+  { id: 'tienda', color: '#ec4899', nombre: 'ALTA JOYERÍA', path: '/demo/tienda', tags: ['ecommerce', 'lujo'], img: '/previews/tienda.jpg', fontClass: 'font-serif tracking-[0.25em]', styleDesc: 'Moda Editorial' },
+  { id: 'tech', color: '#06b6d4', nombre: 'SOFTWARE HOUSE', path: '/demo/tech', tags: ['tecnología', 'backend'], img: '/previews/tech.jpg', fontClass: 'font-mono font-bold tracking-tight', styleDesc: 'Futurista y Limpio' },
+  { id: 'creativo', color: '#f97316', nombre: 'ESTUDIO CREATIVO', path: '/demo/creativo', tags: ['portfolio', 'branding'], img: '/previews/creativo.jpg', fontClass: 'font-sans font-black italic uppercase', styleDesc: 'Ácido y Cinético' },
+  { id: 'editorial', color: '#a855f7', nombre: 'REVISTA DIGITAL', path: '/demo/editorial', tags: ['portfolio', 'branding'], img: '/previews/editorial.jpg', fontClass: 'font-serif font-light tracking-wide', styleDesc: 'Avant-Garde Magazine' },
+  { id: 'gastronomia', color: '#ef4444', nombre: 'CHEF ESTRELLA', path: '/demo/gastronomia', tags: ['alimentación', 'portfolio'], img: '/previews/gastronomia.jpg', fontClass: 'font-serif italic', styleDesc: 'Clásico y Sutil' },
+  { id: 'premium', color: '#fbbf24', nombre: 'RELOJERÍA SUIZA', path: '/demo/premium', tags: ['lujo', 'ecommerce'], img: '/previews/premium.jpg', fontClass: 'font-serif tracking-widest uppercase', styleDesc: 'Sofisticación Heritage' },
+  { id: 'sostenibilidad', color: '#22c55e', nombre: 'ENERGÍA VERDE', path: '/demo/sostenibilidad', tags: ['agro', 'backend'], img: '/previews/sostenibilidad.jpg', fontClass: 'font-sans font-medium tracking-tight', styleDesc: 'Ecológico Transparente' },
+  { id: 'urbano', color: '#f43f5e', nombre: 'STREETWEAR', path: '/demo/urbano', tags: ['ecommerce', 'lujo'], img: '/previews/urbano.jpg', fontClass: 'font-sans font-black italic tracking-tighter', styleDesc: 'Street Culture' },
+  { id: 'zen', color: '#a3e635', nombre: 'RETIRO WELLNESS', path: '/demo/zen', tags: ['servicios', 'crm'], img: '/previews/zen.jpg', fontClass: 'font-serif font-light tracking-[0.1em]', styleDesc: 'Paz Visual y Whitespace' },
+  { id: 'nightlife', color: '#e879f9', nombre: 'CLUB & NIGHTLIFE', path: '/demo/nightlife', tags: ['entretenimiento', 'backend'], img: '/previews/nightlife.jpg', fontClass: 'font-sans font-black tracking-tighter uppercase', styleDesc: 'Dark Clubbing' },
+  { id: 'transporte', color: '#38bdf8', nombre: 'LOGÍSTICA & FLOTA', path: '/demo/transporte', tags: ['industrial', 'backend'], img: '/previews/transporte.jpg', fontClass: 'font-mono font-bold tracking-tight', styleDesc: 'Industrial Dashboard' },
 ];
 
 const allTags = [...new Set(demos.flatMap((d) => d.tags))];
@@ -110,33 +110,32 @@ export default function PortfolioGrid() {
                     onMouseEnter={(e) => e.currentTarget.style.boxShadow = `0 20px 40px -10px ${demo.color}40, inset 0 0 20px ${demo.color}10`}
                     onMouseLeave={(e) => e.currentTarget.style.boxShadow = `0 0 0px ${demo.color}00`}
                   >
-                    {/* Generative CSS Background */}
-                    <div className="absolute inset-0 bg-[#050505] overflow-hidden">
-                      {/* Abstract Gradient Blob */}
+                    {/* The new automated screenshot */}
+                    <img
+                      src={demo.img}
+                      alt={demo.nombre}
+                      className="absolute inset-0 w-full h-full object-cover grayscale opacity-70 group-hover:grayscale-0 transition-all duration-700 scale-105 group-hover:scale-100 z-0"
+                    />
+
+                    {/* Generative Hover Background overlay */}
+                    <div className="absolute inset-0 z-10 pointer-events-none">
                       <div 
-                        className="absolute top-1/2 left-1/2 w-[150%] h-[150%] opacity-20 group-hover:opacity-60 transition-all duration-1000 ease-out blur-[60px] -translate-x-1/2 -translate-y-1/2 scale-100 group-hover:scale-125 group-hover:rotate-12"
+                        className="absolute top-1/2 left-1/2 w-[150%] h-[150%] opacity-0 group-hover:opacity-40 transition-all duration-1000 ease-out blur-[60px] -translate-x-1/2 -translate-y-1/2 scale-100 group-hover:scale-125 group-hover:rotate-12 mix-blend-screen"
                         style={{
                           background: `radial-gradient(circle at center, ${demo.color} 0%, transparent 55%)`
                         }}
                       />
                       
-                      {/* Typographic Art (Big Background Text) */}
-                      <div className="absolute inset-0 flex items-center justify-center p-4">
-                        <span className={`text-6xl lg:text-7xl text-white/5 group-hover:text-white/20 transition-all duration-700 ease-out scale-90 group-hover:scale-105 ${demo.fontClass || ''} break-all text-center leading-none select-none`}>
-                          {demo.id.toUpperCase()}
-                        </span>
-                      </div>
-
                       {/* Grid Pattern Overlay */}
-                      <div className="absolute inset-0 opacity-10 group-hover:opacity-30 transition-opacity duration-700" 
+                      <div className="absolute inset-0 opacity-10 group-hover:opacity-30 transition-opacity duration-700 mix-blend-overlay" 
                            style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,0.2) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.2) 1px, transparent 1px)', backgroundSize: '30px 30px' }} 
                       />
 
                       {/* Bottom Fade for Text Readability */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/60 to-transparent opacity-90" />
+                      <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/70 to-transparent opacity-90 group-hover:opacity-100 transition-opacity" />
                     </div>
 
-                    <div className="absolute top-3 left-3">
+                    <div className="absolute top-3 left-3 z-20">
                       <span
                         className="text-[10px] font-mono uppercase tracking-widest px-2 py-1 rounded"
                         style={{ backgroundColor: `${demo.color}20`, color: demo.color, border: `1px solid ${demo.color}40` }}
@@ -145,17 +144,23 @@ export default function PortfolioGrid() {
                       </span>
                     </div>
 
-                    <div className="absolute bottom-0 left-0 right-0 p-5">
-                      <div className="flex items-center justify-between">
-                        <h3 className={`text-xl md:text-2xl text-white ${demo.fontClass || 'font-black uppercase tracking-tighter'}`}>
-                          {demo.nombre}
-                        </h3>
-                        <div
-                          className="w-10 h-10 rounded-full flex items-center justify-center border-2 opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-x-2 group-hover:translate-x-0"
-                          style={{ borderColor: demo.color }}
-                        >
-                          <ArrowUpRight className="w-5 h-5" style={{ color: demo.color }} />
+                    <div className="absolute bottom-0 left-0 right-0 p-5 z-20">
+                      <div className="flex flex-col gap-1">
+                        <div className="flex items-center justify-between">
+                          <h3 className={`text-xl md:text-2xl text-white ${demo.fontClass || 'font-black uppercase tracking-tighter'}`}>
+                            {demo.nombre}
+                          </h3>
+                          <div
+                            className="w-10 h-10 rounded-full flex items-center justify-center border-2 opacity-0 group-hover:opacity-100 transition-all duration-300 -translate-x-2 group-hover:translate-x-0"
+                            style={{ borderColor: demo.color }}
+                          >
+                            <ArrowUpRight className="w-5 h-5" style={{ color: demo.color }} />
+                          </div>
                         </div>
+                        {/* Style Description */}
+                        <p className="text-xs text-white/50 font-mono tracking-widest uppercase mt-1 opacity-70 group-hover:opacity-100 transition-opacity" style={{ color: demo.color }}>
+                          {demo.styleDesc}
+                        </p>
                       </div>
                     </div>
                   </Link>
