@@ -1,332 +1,295 @@
-"use client"
+"use client";
+import React, { useState } from 'react';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+import { Droplet, Sun, Leaf, Wind, MapPin, Phone, Mail, ArrowRight, Check, Play, ChevronDown, ChevronRight } from 'lucide-react';
+import Link from 'next/link';
+import DemoLayout from '@/components/DemoLayout';
 
-import { useState, useEffect, useRef } from "react"
-import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion"
-import Link from "next/link"
-import { Menu, ArrowLeft, Droplet, Sun, Sprout, X } from "lucide-react"
-import DemoLayout from "@/components/DemoLayout"
+const fadeUp = {
+  hidden: { opacity: 0, y: 40 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
+};
 
-export default function FincaLaAlmazara() {
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 })
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const containerRef = useRef(null)
-  
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"]
-  })
+const products = [
+  { id: 1, name: "Reserva Familiar", type: "Picual Extra Virgin", notes: "Intense, green tomato, artichoke, peppery finish", price: "€28", vol: "500ml", img: "/images/demo/almazara/1.jpg" },
+  { id: 2, name: "Cosecha Temprana", type: "Arbequina Extra Virgin", notes: "Smooth, green apple, almond, sweet finish", price: "€24", vol: "500ml", img: "/images/demo/almazara/2.jpg" },
+  { id: 3, name: "Eco Blend", type: "Organic Coupage", notes: "Balanced, fresh grass, subtle bitterness", price: "€22", vol: "500ml", img: "/images/demo/almazara/3.jpg" },
+];
 
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      setMousePos({ x: e.clientX, y: e.clientY })
-    }
-    window.addEventListener("mousemove", handleMouseMove)
-    return () => window.removeEventListener("mousemove", handleMouseMove)
-  }, [])
+const processes = [
+  { title: "Early Harvest", desc: "We harvest in October when olives are still green, yielding less oil but exceptionally higher polyphenol content and intense flavor profiles.", icon: <Sun className="w-6 h-6" /> },
+  { title: "Cold Extraction", desc: "Milled within 2 hours of harvesting at temperatures below 22°C (71°F) to preserve volatile aromatic compounds and antioxidants.", icon: <Droplet className="w-6 h-6" /> },
+  { title: "Sustainable Tech", desc: "Our mill runs on solar power, and olive pits are repurposed as biomass for heating, ensuring a zero-waste production cycle.", icon: <Leaf className="w-6 h-6" /> }
+];
 
-  const navVariants = {
-    hidden: { y: -100, opacity: 0 },
-    visible: { y: 0, opacity: 1, transition: { duration: 0.8, ease: [0.16, 1, 0.3, 1] } }
-  }
+const faqs = [
+  { q: "What does 'Cold Extracted' mean?", a: "Cold extraction means the olive paste is never heated above 27°C (we keep ours under 22°C) during the milling process. Heat increases oil yield but degrades the delicate flavors and health benefits of the oil." },
+  { q: "How should I store Extra Virgin Olive Oil?", a: "EVOO has three enemies: light, heat, and oxygen. Store your bottles in a cool, dark cupboard away from the stove. Once opened, consume within 2-3 months for optimal flavor." },
+  { q: "Can I use your EVOO for cooking and frying?", a: "Yes! High-quality EVOO with high polyphenol content (like our Picual) has a smoke point of around 210°C (410°F), making it perfectly safe and healthy for sautéing, baking, and even frying." },
+  { q: "Do you ship internationally?", a: "We currently ship throughout Europe and North America. Shipping costs are calculated at checkout based on the weight of the order." }
+];
 
-  const textReveal = {
-    hidden: { y: 100, opacity: 0 },
-    visible: { y: 0, opacity: 1, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } }
-  }
-
-  const oils = [
-    {
-      name: "Picual Reserva",
-      price: "24€",
-      notes: "Notas de tomate verde, higuera y hierba recién cortada.",
-      img: "/images/demo/almazara/1.jpg"
-    },
-    {
-      name: "Arbequina Suave",
-      price: "22€",
-      notes: "Aromas a manzana, plátano y almendra dulce.",
-      img: "/images/demo/almazara/2.jpg"
-    },
-    {
-      name: "Blend Familiar",
-      price: "28€",
-      notes: "Equilibrio perfecto con toques de alcachofa y nuez.",
-      img: "/images/demo/almazara/3.jpg"
-    }
-  ]
-
-  const timeline = [
-    { year: "1890", text: "Don Manuel Romero planta los primeros 200 olivos en la Sierra Sur de Sevilla." },
-    { year: "1932", text: "Se construye la almazara de piedra que aún conservamos como museo." },
-    { year: "1978", text: "Tercera generación. Se introduce el prensado en frío con prensa hidráulica." },
-    { year: "2015", text: "Certificación ecológica y transición a energía solar 100%." },
-    { year: "2024", text: "Quinta generación. 12.000 olivos. Exportación a 8 países." },
-  ]
-
-  const testimonials = [
-    { name: "Marta G.", text: "El Picual Reserva tiene una intensidad que no he encontrado en ningún otro aceite. Puro campo andaluz.", loc: "Madrid" },
-    { name: "Pierre D.", text: "J'utilise l'Arbequina pour tous mes plats. C'est extraordinaire. La qualité est incomparable.", loc: "Lyon, Francia" },
-    { name: "Elena R.", text: "Visité la finca con mi familia. La experiencia es inolvidable. Volvemos cada otoño a la recolección.", loc: "Sevilla" },
-  ]
-
-  const stats = [
-    { value: "0", label: "Huella de Carbono", icon: Droplet },
-    { value: "100%", label: "Energía Solar", icon: Sun },
-    { value: "100%", label: "Riego Inteligente", icon: Sprout }
-  ]
-
-  const menuItems = ["La Finca", "Nuestros Aceites", "Sostenibilidad", "Contacto"]
+export default function AlmazaraDemo() {
+  const [activeFaq, setActiveFaq] = useState(null);
+  const { scrollYProgress } = useScroll();
+  const yBg = useTransform(scrollYProgress, [0, 1], ["0%", "20%"]);
 
   return (
-    <DemoLayout title="La Almazara">
-      <div ref={containerRef} className="relative text-[#3B4F2D] font-serif overflow-hidden md:cursor-none">
-        <motion.div 
-          className="fixed top-0 left-0 w-6 h-6 border border-[#3B4F2D] rounded-full pointer-events-none z-50 mix-blend-difference hidden md:block"
-          animate={{ x: mousePos.x - 12, y: mousePos.y - 12 }}
-          transition={{ type: "spring", stiffness: 150, damping: 15, mass: 0.1 }}
-        />
-
-      <AnimatePresence>
-        {isMenuOpen && (
-          <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed inset-0 bg-[#3B4F2D] z-50 flex flex-col items-center justify-center text-[#F5F5E1] px-4"
-          >
-            <button 
-              onClick={() => setIsMenuOpen(false)}
-              className="absolute top-6 right-6 md:top-8 md:right-8 p-2 active:scale-90 md:active:scale-100 hover:opacity-70 transition-all"
-            >
-              <X size={32} />
-            </button>
-            <div className="flex flex-col gap-6 md:gap-8 text-center w-full max-w-md">
-              {menuItems.map((item, i) => (
-                <motion.span 
-                  key={item}
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: 30 }}
-                  transition={{ delay: i * 0.1, duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-                  className="text-[clamp(2.25rem,6vw,3.75rem)] font-light tracking-widest active:scale-95 md:active:scale-100 hover:text-white/70 transition-all cursor-pointer"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {item}
-                </motion.span>
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <section className="relative h-[100svh] w-full flex flex-col items-center justify-center overflow-hidden">
-        <motion.div 
-          className="absolute inset-0 z-0"
-          style={{ y: useTransform(scrollYProgress, [0, 1], ["0%", "50%"]) }}
-        >
-          <img src="/images/demo/almazara/hero.jpg" alt="Background" className="w-full h-full object-cover scale-105 pointer-events-none" />
-          <div className="absolute inset-0 bg-black/20 pointer-events-none" />
-        </motion.div>
+    <DemoLayout title="Almazara - Olive Oil Estate">
+      <div className="bg-[#F7F8F3] text-[#2C3E2D] font-sans selection:bg-[#B5C18E] selection:text-[#1A251B] overflow-x-hidden">
         
-        <div className="relative z-10 text-center text-[#F5F5E1] flex flex-col items-center px-4 w-full">
-          <div className="overflow-hidden mb-4 md:mb-6 w-full">
-            <motion.h1 
-              variants={textReveal}
-              initial="hidden"
-              animate="visible"
-              className="text-6xl md:text-9xl leading-[0.9] font-light tracking-tighter"
-            >
-              Oro líquido.
-            </motion.h1>
+        {/* Navigation */}
+        <nav className="fixed w-full px-6 md:px-12 py-6 flex justify-between items-center z-50 mix-blend-difference text-[#F7F8F3]">
+          <Link href="/" className="font-mono text-sm tracking-widest uppercase hover:text-[#B5C18E] transition-colors">
+            ← Catálogo
+          </Link>
+          <div className="font-serif text-2xl tracking-widest uppercase">
+            Finca Olea
           </div>
-          <div className="overflow-hidden w-full">
-            <motion.p 
-              variants={textReveal}
-              initial="hidden"
-              animate="visible"
-              transition={{ delay: 0.2 }}
-              className="text-[clamp(0.875rem,3vw,1.5rem)] font-light tracking-[0.2em] md:tracking-widest uppercase"
-            >
-              Prensado en frío desde 1890
-            </motion.p>
-          </div>
-        </div>
-      </section>
+          <button className="border border-[#F7F8F3] px-6 py-2 uppercase tracking-widest text-xs hover:bg-[#F7F8F3] hover:text-[#2C3E2D] transition-all duration-300">
+            Shop Oil
+          </button>
+        </nav>
 
-      <section className="relative w-full bg-[#F5F5E1] flex flex-col md:flex-row overflow-hidden">
-        <div className="w-full md:w-1/2 p-8 md:p-24 md:sticky md:top-0 h-auto md:h-screen flex flex-col justify-center z-10 bg-[#F5F5E1]">
-          <motion.div
-            initial={{ opacity: 0, x: -50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            transition={{ duration: 1 }}
+        {/* 1. Hero Section */}
+        <section className="relative h-screen flex flex-col items-center justify-center overflow-hidden bg-[#1A251B]">
+          <motion.div className="absolute inset-0 z-0 opacity-70" style={{ y: yBg }}>
+            <img src="/images/demo/almazara/hero.jpg" alt="Olive groves at sunset" className="w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#1A251B] via-transparent to-transparent" />
+          </motion.div>
+          <motion.div 
+            className="relative z-10 text-center px-4"
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1.2, delay: 0.2 }}
           >
-            <h2 className="text-6xl md:text-8xl font-light mb-6 md:mb-8 leading-tight tracking-tighter">La Cosecha<br/>Manual.</h2>
-            <p className="text-lg md:text-xl font-sans font-light leading-relaxed max-w-md opacity-80">
-              Respetamos los tiempos de la naturaleza. Cada oliva es seleccionada a mano en su punto óptimo de maduración, garantizando la máxima expresión de sabor y pureza en cada gota de nuestro aceite.
+            <span className="font-mono text-[#B5C18E] text-xs uppercase tracking-[0.3em] mb-6 block">Est. 1924 · Andalucía</span>
+            <h1 className="text-6xl md:text-9xl font-serif font-light text-[#F7F8F3] mb-6 tracking-tighter">
+              Liquid Gold.
+            </h1>
+            <p className="text-lg md:text-xl font-light text-[#F7F8F3]/80 max-w-2xl mx-auto">
+              Single-estate Extra Virgin Olive Oil. Crafted where ancient terroir meets modern precision.
             </p>
           </motion.div>
-        </div>
-        
-        <div className="w-full md:w-1/2 block">
-          <div className="h-[60vh] md:h-screen w-full relative">
-            <div className="w-full h-full bg-gradient-to-b from-[#6a7a4a] to-[#3B4F2D] pointer-events-none" />
-          </div>
-          <div className="h-[60vh] md:h-screen w-full relative">
-            <div className="w-full h-full bg-gradient-to-b from-[#3B4F2D] to-[#5a6b3a] pointer-events-none" />
-          </div>
-          <div className="h-[60vh] md:h-screen w-full relative">
-            <div className="w-full h-full bg-gradient-to-b from-[#4a5a2e] to-[#1f2b18] pointer-events-none" />
-          </div>
-        </div>
-      </section>
-
-      <section className="py-24 md:py-32 bg-[#3B4F2D] text-[#F5F5E1] overflow-hidden">
-        <div className="max-w-7xl mx-auto flex flex-col">
-          <motion.h2 
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1 }}
-            className="text-5xl md:text-7xl tracking-tighter font-light text-center mb-16 md:mb-24 px-6"
+          <motion.div 
+            className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 text-[#F7F8F3]/50"
+            animate={{ y: [0, 10, 0] }}
+            transition={{ repeat: Infinity, duration: 2 }}
           >
-            Nuestros Aceites
-          </motion.h2>
-          
-          <div className="w-full overflow-hidden md:cursor-none">
-            <div className="grid grid-cols-1 md:grid-cols-3 w-full gap-12 px-6">
-              {oils.map((oil, idx) => (
+            <ChevronDown className="w-8 h-8" />
+          </motion.div>
+        </section>
+
+        {/* 2. The Estate / Heritage */}
+        <section className="py-24 md:py-32 px-6 md:px-12 relative bg-[#F7F8F3]">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="order-2 md:order-1 relative">
+              <div className="aspect-[4/5] overflow-hidden rounded-sm">
+                <img src="/images/demo/almazara/4.jpg" alt="Centenary olive tree" className="w-full h-full object-cover hover:scale-105 transition-transform duration-1000" />
+              </div>
+              <div className="absolute -bottom-8 -right-8 bg-[#2C3E2D] text-[#F7F8F3] p-8 max-w-xs hidden md:block">
+                <div className="text-4xl font-serif mb-2">100+</div>
+                <div className="font-mono text-xs uppercase tracking-widest text-[#B5C18E]">Years of heritage</div>
+              </div>
+            </motion.div>
+            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} className="order-1 md:order-2 space-y-8">
+              <h2 className="text-sm font-mono text-[#4A5D4E] uppercase tracking-[0.3em]">The Estate</h2>
+              <h3 className="text-4xl md:text-6xl font-serif leading-tight text-[#1A251B]">
+                Rooted in tradition, guided by nature.
+              </h3>
+              <p className="text-[#4A5D4E] text-lg leading-relaxed font-light">
+                Our estate spans 200 hectares of rolling hills, where centenary trees thrive in calcareous soil under the Mediterranean sun. We view ourselves merely as stewards of this land, working organically to foster biodiversity.
+              </p>
+              <button className="flex items-center gap-2 font-mono uppercase tracking-widest text-sm text-[#2C3E2D] hover:text-[#7A8B78] transition-colors border-b border-current pb-1 pt-4">
+                Discover our history <ArrowRight className="w-4 h-4" />
+              </button>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* 3. The Process / Agrotech */}
+        <section className="py-24 bg-[#2C3E2D] text-[#F7F8F3]">
+          <div className="max-w-7xl mx-auto px-6 md:px-12">
+            <div className="text-center mb-16">
+              <h2 className="text-sm font-mono text-[#B5C18E] uppercase tracking-[0.3em] mb-4">Innovation</h2>
+              <h3 className="text-4xl md:text-5xl font-serif">From Branch to Bottle</h3>
+              <p className="text-[#B5C18E]/80 max-w-2xl mx-auto mt-6 font-light text-lg">Our state-of-the-art eco-mill operates strictly via optical sorting and cold extraction, capturing the pristine essence of the fruit.</p>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
+              {processes.map((proc, idx) => (
                 <motion.div 
                   key={idx}
-                  initial={{ opacity: 0, y: 50 }}
+                  initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ duration: 0.8, delay: idx * 0.1 }}
-                  className="w-full group relative flex flex-col items-center transition-transform"
+                  transition={{ delay: idx * 0.2 }}
+                  className="bg-[#1A251B] p-10 border border-[#B5C18E]/20"
                 >
-                  <div className="w-full aspect-[3/4] overflow-hidden bg-black/10 relative mb-8 rounded-sm md:rounded-none">
-                    <img src={oil.img} alt="Item" className={`w-full h-full object-cover  transition-transform duration-1000 md:group-hover:scale-105`} />
-                    <div className="flex absolute inset-0 bg-[#3B4F2D]/90 opacity-0 hover:opacity-100 active:opacity-100 md:group-hover:opacity-100 transition-opacity duration-500 items-center justify-center p-8 text-center pointer-events-none">
-                      <p className="font-sans font-light text-[clamp(1rem,3vw,1.125rem)]">{oil.notes}</p>
-                    </div>
-                  </div>
-                  <h3 className="text-[clamp(1.25rem,4vw,1.5rem)] tracking-widest mb-2 text-center">{oil.name}</h3>
-                  <span className="font-sans font-light opacity-70 mb-3 text-[clamp(0.875rem,2.5vw,1rem)]">{oil.price}</span>
+                  <div className="text-[#B5C18E] mb-6">{proc.icon}</div>
+                  <h4 className="text-2xl font-serif mb-4">{proc.title}</h4>
+                  <p className="font-light text-[#F7F8F3]/70 leading-relaxed">{proc.desc}</p>
                 </motion.div>
               ))}
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section className="py-24 md:py-32 px-6 bg-[#F5F5E1]">
-        <div className="max-w-6xl mx-auto">
-          <motion.div 
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ duration: 1 }}
-            className="text-center mb-16 md:mb-20"
-          >
-            <h2 className="text-5xl md:text-7xl tracking-tighter font-light mb-6">Compromiso Vital</h2>
-            <p className="font-sans font-light max-w-2xl mx-auto opacity-80 text-lg md:text-xl">
-              La tierra nos da todo. Nuestra responsabilidad es devolverle el favor mediante prácticas que aseguran el futuro de nuestro entorno.
+        {/* 4. Our Oils / Products */}
+        <section className="py-24 md:py-32 px-6 md:px-12 bg-[#F7F8F3]">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
+              <div>
+                <h2 className="text-sm font-mono text-[#4A5D4E] uppercase tracking-[0.3em] mb-4">The Collection</h2>
+                <h3 className="text-4xl md:text-6xl font-serif text-[#1A251B]">Harvest 2024</h3>
+              </div>
+              <button className="font-mono uppercase tracking-widest text-sm border border-[#2C3E2D] px-6 py-3 hover:bg-[#2C3E2D] hover:text-[#F7F8F3] transition-colors">
+                View All Oils
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {products.map((prod, idx) => (
+                <motion.div 
+                  key={prod.id}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: idx * 0.15 }}
+                  className="group relative"
+                >
+                  <div className="bg-[#EBECE1] aspect-[3/4] p-8 flex items-center justify-center mb-6 overflow-hidden">
+                    <img src={prod.img} alt={prod.name} className="h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-500" />
+                  </div>
+                  <div>
+                    <div className="flex justify-between items-start mb-2">
+                      <h4 className="text-2xl font-serif text-[#1A251B]">{prod.name}</h4>
+                      <span className="font-mono text-lg">{prod.price}</span>
+                    </div>
+                    <p className="font-mono text-xs uppercase tracking-widest text-[#4A5D4E] mb-2">{prod.type} · {prod.vol}</p>
+                    <p className="text-sm text-[#4A5D4E]/80 font-light italic mb-4">Tasting notes: {prod.notes}</p>
+                    <button className="w-full py-3 bg-transparent border border-[#2C3E2D] text-[#2C3E2D] uppercase tracking-widest text-xs font-mono group-hover:bg-[#2C3E2D] group-hover:text-[#F7F8F3] transition-colors">
+                      Add to Cart
+                    </button>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* 5. Tasting Tours Banner */}
+        <section className="py-0 flex flex-col lg:flex-row bg-[#1A251B] text-[#F7F8F3]">
+          <div className="w-full lg:w-1/2 p-12 md:p-24 flex flex-col justify-center border-b lg:border-b-0 lg:border-r border-white/10">
+            <span className="font-mono text-[#B5C18E] tracking-[0.2em] uppercase text-sm mb-4 block">Oleotourism</span>
+            <h2 className="text-4xl md:text-5xl font-serif mb-6 leading-tight">Experience the Grove.</h2>
+            <p className="text-[#F7F8F3]/70 text-lg leading-relaxed mb-10 font-light">
+              Join our master miller for an immersive walk through the olive groves, followed by a guided tasting session in our 19th-century cellar. Learn to taste oil like a professional.
             </p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-12">
-            {stats.map((stat, idx) => (
-              <motion.div 
-                key={idx}
-                initial={{ opacity: 0, scale: 0.9 }}
-                whileInView={{ opacity: 1, scale: 1 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, delay: idx * 0.1 }}
-                className="flex flex-col items-center text-center p-8 border border-[#3B4F2D]/20 rounded-3xl md:rounded-full aspect-auto md:aspect-square justify-center bg-white/30 md:bg-transparent"
-              >
-                <stat.icon size={40} strokeWidth={1} className="mb-4 md:mb-6 opacity-70" />
-                <span className="text-[clamp(2.25rem,5vw,3rem)] font-light mb-2 md:mb-4">{stat.value}</span>
-                <span className="font-sans font-light tracking-widest uppercase text-[clamp(0.75rem,2vw,0.875rem)] opacity-80">{stat.label}</span>
-              </motion.div>
-            ))}
+            <button className="self-start bg-[#B5C18E] text-[#1A251B] px-8 py-4 font-mono text-xs uppercase tracking-widest hover:bg-white transition-colors">
+              Book a Tasting
+            </button>
           </div>
-        </div>
-      </section>
-
-      {/* ═══ HISTORIA ═══ */}
-      <section className="py-24 md:py-32 px-6 bg-[#F5F5E1]">
-        <div className="max-w-4xl mx-auto">
-          <h2 className="text-5xl md:text-7xl tracking-tighter font-light text-center mb-16 md:mb-20">Cinco Generaciones</h2>
-          <div className="space-y-8">
-            {timeline.map((t, i) => (
-              <motion.div key={i} initial={{ opacity: 0, x: -20 }} whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }} transition={{ delay: i * 0.1 }}
-                className="flex items-start gap-6 md:gap-8 border-b border-[#3B4F2D]/10 pb-8">
-                <span className="text-3xl md:text-4xl font-light text-[#3B4F2D]/30 shrink-0 w-20">{t.year}</span>
-                <p className="font-sans font-light text-base md:text-lg opacity-70 leading-relaxed">{t.text}</p>
-              </motion.div>
-            ))}
+          <div className="w-full lg:w-1/2 min-h-[400px] lg:min-h-0 relative group cursor-pointer overflow-hidden">
+            <img src="/images/demo/almazara/5.jpg" alt="Tasting setup" className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-80" />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-20 h-20 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/30 group-hover:bg-white/20 transition-colors">
+                <Play className="w-8 h-8 fill-white text-white ml-1" />
+              </div>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ═══ TESTIMONIOS ═══ */}
-      <section className="py-24 md:py-32 px-6 bg-[#3B4F2D] text-[#F5F5E1]">
-        <div className="max-w-5xl mx-auto">
-          <h2 className="text-5xl md:text-7xl tracking-tighter font-light text-center mb-16 md:mb-20">Lo Dicen Ellos</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {testimonials.map((t, i) => (
-              <motion.div key={i} initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }} transition={{ delay: i * 0.15 }}
-                className="border-l-2 border-[#F5F5E1]/20 pl-6">
-                <p className="font-sans font-light text-base leading-relaxed opacity-80 mb-4">"{t.text}"</p>
-                <p className="font-sans text-sm">{t.name}</p>
-                <p className="font-sans text-xs opacity-40">{t.loc}</p>
-              </motion.div>
-            ))}
+        {/* 6. FAQ Section */}
+        <section className="py-24 md:py-32 px-6 md:px-12 bg-[#EBECE1]">
+          <div className="max-w-3xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl md:text-5xl font-serif text-[#1A251B] mb-4">Oil Education</h2>
+            </div>
+            
+            <div className="border-t border-[#2C3E2D]/20">
+              {faqs.map((faq, idx) => (
+                <div key={idx} className="border-b border-[#2C3E2D]/20">
+                  <button 
+                    onClick={() => setActiveFaq(activeFaq === idx ? null : idx)}
+                    className="w-full py-6 flex justify-between items-center text-left text-[#1A251B] hover:text-[#4A5D4E] transition-colors"
+                  >
+                    <span className="font-serif text-xl md:text-2xl">{faq.q}</span>
+                    <motion.div animate={{ rotate: activeFaq === idx ? 180 : 0 }}>
+                      <ChevronDown className="w-6 h-6 text-[#4A5D4E]" />
+                    </motion.div>
+                  </button>
+                  <AnimatePresence>
+                    {activeFaq === idx && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        className="overflow-hidden"
+                      >
+                        <p className="pb-8 text-[#4A5D4E] font-light leading-relaxed text-lg">
+                          {faq.a}
+                        </p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      {/* ═══ CTA ═══ */}
-      <section className="py-32 md:py-40 px-6 bg-[#F5F5E1] flex flex-col items-center text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 1 }}
-          className="w-full max-w-2xl"
-        >
-          <h2 className="text-6xl md:text-9xl tracking-tighter font-light mb-6 md:mb-8 leading-none">Vive la Finca</h2>
-          <p className="font-sans font-light text-lg md:text-xl mx-auto mb-12 md:mb-16 opacity-80">
-            Pasea entre olivos centenarios, conoce la almazara desde dentro y degusta nuestra historia.
-          </p>
+        {/* 7. Footer */}
+        <footer className="bg-[#1A251B] text-[#F7F8F3] pt-24 pb-12 px-6 md:px-12">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-24">
+            <div className="lg:col-span-2">
+              <h3 className="font-serif text-3xl mb-6">Finca Olea</h3>
+              <p className="text-[#F7F8F3]/60 font-light max-w-md mb-8 leading-relaxed">
+                Be the first to know about our limited early harvest releases and estate news.
+              </p>
+              <div className="flex border-b border-[#F7F8F3]/30 pb-2 max-w-sm focus-within:border-[#B5C18E] transition-colors">
+                <input 
+                  type="email" 
+                  placeholder="Enter your email" 
+                  className="bg-transparent border-none outline-none text-sm w-full placeholder:text-[#F7F8F3]/30"
+                />
+                <button className="text-[#B5C18E] hover:text-white transition-colors uppercase font-mono text-xs tracking-widest px-4">
+                  Join
+                </button>
+              </div>
+            </div>
+            
+            <div>
+              <h4 className="font-mono text-xs uppercase tracking-widest text-[#B5C18E] mb-6">The Estate</h4>
+              <ul className="space-y-4 text-sm font-light text-[#F7F8F3]/70">
+                <li className="flex items-start gap-3"><MapPin className="w-4 h-4 mt-0.5 text-[#B5C18E]" /> Camino de los Olivos s/n<br/>23001 Jaén, Spain</li>
+                <li className="flex items-center gap-3"><Phone className="w-4 h-4 text-[#B5C18E]" /> +34 953 000 000</li>
+                <li className="flex items-center gap-3"><Mail className="w-4 h-4 text-[#B5C18E]" /> info@fincaolea.es</li>
+              </ul>
+            </div>
+            
+            <div>
+              <h4 className="font-mono text-xs uppercase tracking-widest text-[#B5C18E] mb-6">Explore</h4>
+              <ul className="space-y-4 text-sm font-light text-[#F7F8F3]/70">
+                <li><a href="#" className="hover:text-white transition-colors">Shop Oils</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Our Story</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Book a Tour</a></li>
+                <li><a href="#" className="hover:text-white transition-colors">Wholesale</a></li>
+              </ul>
+            </div>
+          </div>
           
-          <button className="w-full md:w-auto group relative inline-flex items-center justify-center px-8 md:px-12 py-5 md:py-6 border border-[#3B4F2D] overflow-hidden text-[clamp(1rem,3vw,1.125rem)] tracking-widest uppercase active:scale-95 transition-transform">
-            <div className="absolute inset-0 w-0 bg-[#3B4F2D] transition-all duration-[600ms] ease-out md:group-hover:w-full" />
-            <span className="relative text-[#3B4F2D] md:group-hover:text-[#F5F5E1] transition-colors duration-300">
-              Reservar Visita
-            </span>
-          </button>
-
-          <div className="mt-16 grid grid-cols-1 md:grid-cols-3 gap-8 font-sans text-sm">
-            <div><p className="opacity-40 mb-1">Dirección</p><p>Ctra. de Carmona km 12<br/>Alcalá de Guadaíra, Sevilla</p></div>
-            <div><p className="opacity-40 mb-1">Teléfono</p><p>+34 955 678 123</p></div>
-            <div><p className="opacity-40 mb-1">Horario Visitas</p><p>Sáb-Dom 10:00-14:00<br/>Oct-Feb: también Vie</p></div>
+          <div className="max-w-7xl mx-auto border-t border-[#F7F8F3]/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-mono text-[#F7F8F3]/40 uppercase tracking-widest">
+            <p>© {new Date().getFullYear()} Finca Olea. All rights reserved.</p>
+            <div className="flex gap-6">
+              <a href="#" className="hover:text-white transition-colors">Instagram</a>
+              <a href="#" className="hover:text-white transition-colors">Facebook</a>
+              <a href="#" className="hover:text-white transition-colors">Terms</a>
+            </div>
           </div>
-        </motion.div>
-      </section>
-
-      <footer className="bg-[#1f2b18] text-[#F5F5E1] py-12 px-6 flex flex-col md:flex-row justify-between items-center font-sans font-light text-[clamp(0.75rem,2vw,0.875rem)] tracking-widest opacity-80 gap-8 md:gap-0">
-        <div>© 2024 FINCA LA ALMAZARA</div>
-        <div className="flex flex-col md:flex-row gap-6 md:gap-8 items-center">
-          <span className="active:opacity-50 md:hover:opacity-100 cursor-pointer transition-opacity">INSTAGRAM</span>
-          <span className="active:opacity-50 md:hover:opacity-100 cursor-pointer transition-opacity">TIENDA</span>
-          <span className="active:opacity-50 md:hover:opacity-100 cursor-pointer transition-opacity">LEGAL</span>
-        </div>
-      </footer>
+        </footer>
+        
       </div>
     </DemoLayout>
-  )
+  );
 }

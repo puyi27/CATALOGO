@@ -1,329 +1,335 @@
-'use client'
+"use client";
 
-import React, { useEffect, useRef } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import Link from 'next/link';
-import { ArrowLeft, ArrowUpRight, Code, Palette, Zap, BarChart3, Users, Mail, Phone, MapPin } from 'lucide-react';
-import DemoLayout from '@/components/DemoLayout';
+import React, { useEffect, useRef, useState } from "react";
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import Link from "next/link";
+import { ArrowDownRight, ArrowRight, X, Menu, Globe, Star, Zap } from "lucide-react";
+import DemoLayout from "@/components/DemoLayout";
+import clsx from "clsx";
+import { twMerge } from "tailwind-merge";
+
+function cn(...inputs) {
+  return twMerge(clsx(inputs));
+}
+
+const projects = [
+  { id: 1, client: "ZENITH", type: "Rebrand", year: "2026", img: "/images/demo/agencia/1.jpg" },
+  { id: 2, client: "AURA", type: "E-Commerce", year: "2025", img: "/images/demo/agencia/2.jpg" },
+  { id: 3, client: "NEXUS", type: "Platform", year: "2025", img: "/images/demo/agencia/3.jpg" },
+  { id: 4, client: "VERTEX", type: "Campaign", year: "2024", img: "/images/demo/agencia/4.jpg" },
+  { id: 5, client: "CHROMA", type: "Identity", year: "2024", img: "/images/demo/agencia/5.jpg" },
+];
+
+const services = [
+  { num: "01", title: "STRATEGY", desc: "Brand positioning, user research, and comprehensive digital roadmaps to ensure long-term market dominance." },
+  { num: "02", title: "IDENTITY", desc: "Crafting memorable visual systems, typography, and brand guidelines that resonate with your core audience." },
+  { num: "03", title: "DIGITAL", desc: "High-performance web applications, immersive 3D experiences, and e-commerce platforms built for scale." },
+  { num: "04", title: "CONTENT", desc: "Art direction, 3D motion design, and copywriting that tells a cohesive story across all touchpoints." },
+];
 
 export default function AgenciaDemo() {
-  const containerRef = useRef(null);
-  const cursorRef = useRef(null);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isHovered, setIsHovered] = useState(false);
+  const [menuOpen, setMenuOpen] = useState(false);
+  const scrollRef = useRef(null);
 
   useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
-
-    const cursor = cursorRef.current;
-    
-    gsap.set(cursor, { xPercent: -50, yPercent: -50 });
-    
-    const xTo = gsap.quickTo(cursor, "x", {duration: 0.3, ease: "power3"});
-    const yTo = gsap.quickTo(cursor, "y", {duration: 0.3, ease: "power3"});
-
     const handleMouseMove = (e) => {
-      if (window.innerWidth >= 768) {
-        xTo(e.clientX);
-        yTo(e.clientY);
-      }
+      setMousePosition({ x: e.clientX, y: e.clientY });
     };
-    
-    window.addEventListener('mousemove', handleMouseMove);
-
-    const ctx = gsap.context(() => {
-      const projectsArray = gsap.utils.toArray('.project-card');
-      
-      projectsArray.forEach((project, i) => {
-        if (i !== projectsArray.length - 1) {
-          const nextProject = projectsArray[i + 1];
-          gsap.to(project.querySelector('.project-inner'), {
-            scale: 0.95,
-            opacity: 0.5,
-            scrollTrigger: {
-              trigger: nextProject,
-              start: "top bottom",
-              end: "top top",
-              scrub: 1.5,
-            }
-          });
-
-          ScrollTrigger.create({
-            trigger: project,
-            start: "top top",
-            pin: true,
-            pinSpacing: false,
-            endTrigger: '.projects-container',
-            end: "bottom bottom",
-          });
-        }
-      });
-
-      let mm = gsap.matchMedia();
-
-      mm.add("(min-width: 768px)", () => {
-        const images = document.querySelectorAll('.hover-image');
-        const onImgEnter = () => gsap.to(cursor, { scale: 5, duration: 0.4, ease: 'power2.out' });
-        const onImgLeave = () => gsap.to(cursor, { scale: 1, duration: 0.4, ease: 'power2.out' });
-        
-        images.forEach(img => {
-          img.addEventListener('mouseenter', onImgEnter);
-          img.addEventListener('mouseleave', onImgLeave);
-        });
-
-        const links = document.querySelectorAll('a, button');
-        const onLinkEnter = () => gsap.to(cursor, { scale: 2, duration: 0.3, ease: 'power2.out' });
-        const onLinkLeave = () => gsap.to(cursor, { scale: 1, duration: 0.3, ease: 'power2.out' });
-
-        links.forEach(link => {
-          link.addEventListener('mouseenter', onLinkEnter);
-          link.addEventListener('mouseleave', onLinkLeave);
-        });
-
-        return () => {
-          images.forEach(img => {
-            img.removeEventListener('mouseenter', onImgEnter);
-            img.removeEventListener('mouseleave', onImgLeave);
-          });
-          links.forEach(link => {
-            link.removeEventListener('mouseenter', onLinkEnter);
-            link.removeEventListener('mouseleave', onLinkLeave);
-          });
-        };
-      });
-    }, containerRef);
-    
-    return () => {
-      window.removeEventListener('mousemove', handleMouseMove);
-      ctx.revert();
-    };
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
-  const projects = [
-    { id: 1, title: 'LUMINA', category: 'FASHION E-COMMERCE', img: "/images/demo/agencia/1.jpg" },
-    { id: 2, title: 'AETHER', category: 'BRAND IDENTITY', img: "/images/demo/agencia/2.jpg" },
-    { id: 3, title: 'SYNTHESIS', category: 'WEB3 PLATFORM', img: "/images/demo/agencia/3.jpg" },
-    { id: 4, title: 'NOVA', category: 'EDITORIAL DESIGN', img: "/images/demo/agencia/4.jpg" }
-  ];
-
-  const services = [
-    { icon: Code, title: 'DESARROLLO WEB', desc: 'Next.js, React, Node.js. Webs ultrarrápidas con SSR, ISR y edge computing. Jamstack y headless CMS.', metric: '< 1s' },
-    { icon: Palette, title: 'DISEÑO UI/UX', desc: 'Interfaces que cuentan historias. Design systems, prototipos Figma, tests de usabilidad.', metric: '98%' },
-    { icon: Zap, title: 'BRANDING DIGITAL', desc: 'Identidad visual que trasciende. Logos, tipografía, paletas cromáticas, guidelines completos.', metric: '120+' },
-    { icon: BarChart3, title: 'ESTRATEGIA DIGITAL', desc: 'SEO técnico, CRO, analítica avanzada. Convertimos datos en decisiones de negocio.', metric: '3.2x' },
-  ];
-
-  const team = [
-    { name: 'Marta Vega', role: 'Creative Director', initials: 'MV' },
-    { name: 'Pablo Ruiz', role: 'Lead Developer', initials: 'PR' },
-    { name: 'Ana Chen', role: 'UX Researcher', initials: 'AC' },
-    { name: 'Leo Dubois', role: 'Motion Designer', initials: 'LD' },
-  ];
-
-  const process = [
-    { num: '01', title: 'DISCOVER', desc: 'Investigamos tu sector, competencia y audiencia. Workshops estratégicos para alinear visión y objetivos.' },
-    { num: '02', title: 'DESIGN', desc: 'Wireframes, moodboards, prototipos interactivos. Iteramos contigo hasta que cada píxel sea perfecto.' },
-    { num: '03', title: 'DEVELOP', desc: 'Código limpio, performante y accesible. Arquitectura escalable con CI/CD y testing automatizado.' },
-    { num: '04', title: 'DELIVER', desc: 'Deploy, monitoring, analytics. Te acompañamos post-lanzamiento con soporte y optimización continua.' },
-  ];
-
-  const clients = ['Spotify', 'Figma', 'Stripe', 'Notion', 'Linear', 'Vercel', 'Supabase', 'Framer'];
+  const { scrollYProgress } = useScroll();
+  const yHero = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
+  
+  // Horizontal scroll
+  const targetRef = useRef(null);
+  const { scrollYProgress: scrollHorizontal } = useScroll({
+    target: targetRef,
+  });
+  const xProjects = useTransform(scrollHorizontal, [0, 1], ["0%", "-80%"]);
 
   return (
-    <DemoLayout title="Agencia Creativa">
-      <div className="text-[#1a1a1a] md:cursor-none w-full bg-[#f2f2ef]" ref={containerRef}>
+    <DemoLayout title="Agencia — Creative & Bold">
+      <div className="bg-[#e3e3e3] text-[#111] font-sans selection:bg-[#111] selection:text-[#e3e3e3] overflow-hidden cursor-none">
         
-        <div 
-          ref={cursorRef} 
-          className="hidden md:flex fixed top-0 left-0 w-4 h-4 bg-white rounded-full pointer-events-none z-50 items-center justify-center mix-blend-difference"
-        />
+        {/* Custom Cursor */}
+        <motion.div 
+          className="fixed top-0 left-0 w-6 h-6 bg-[#111] rounded-full pointer-events-none z-[100] mix-blend-difference flex items-center justify-center"
+          animate={{
+            x: mousePosition.x - 12,
+            y: mousePosition.y - 12,
+            scale: isHovered ? 3 : 1,
+          }}
+          transition={{ type: "spring", stiffness: 500, damping: 28, mass: 0.5 }}
+        >
+          {isHovered && <span className="text-[4px] text-[#e3e3e3] uppercase font-bold tracking-widest">View</span>}
+        </motion.div>
 
-        {/* ═══ HERO ═══ */}
-        <section className="min-h-screen flex flex-col justify-center px-6 md:px-16 pt-20">
-          <div className="max-w-7xl mx-auto w-full">
-            <p className="font-mono text-xs md:text-sm max-w-md mb-8 md:mb-12 uppercase tracking-widest leading-relaxed text-[#1a1a1a]/50">
-              We craft digital experiences that transcend the ordinary. Independent design boutique est. 2019.
-            </p>
-            <h1 className="text-[clamp(3rem,12vw,10rem)] font-serif uppercase leading-[0.85] tracking-tighter">
-              We make<br/>brands<br/><span className="italic text-[#1a1a1a]/30">matter.</span>
+        {/* Header */}
+        <header className="fixed top-0 w-full p-6 md:p-10 flex justify-between items-center z-50 mix-blend-difference text-[#e3e3e3]">
+          <Link href="/" className="font-bold text-xl uppercase tracking-tighter"
+            onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
+            AGENCIA©
+          </Link>
+          <button 
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="w-12 h-12 flex items-center justify-center rounded-full border border-[#e3e3e3]/30 hover:bg-[#e3e3e3] hover:text-[#111] transition-colors"
+            onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}
+          >
+            {menuOpen ? <X size={20} /> : <Menu size={20} />}
+          </button>
+        </header>
+
+        {/* Menu Overlay */}
+        <AnimatePresence>
+          {menuOpen && (
+            <motion.div 
+              initial={{ clipPath: "circle(0% at 100% 0)" }}
+              animate={{ clipPath: "circle(150% at 100% 0)" }}
+              exit={{ clipPath: "circle(0% at 100% 0)" }}
+              transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
+              className="fixed inset-0 bg-[#111] text-[#e3e3e3] z-40 flex flex-col justify-center items-center"
+            >
+              <nav className="flex flex-col gap-6 text-center">
+                {["Work", "Studio", "Services", "Contact"].map((item, i) => (
+                  <motion.a 
+                    key={item} href={`#${item.toLowerCase()}`}
+                    initial={{ y: 50, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: 0.2 + i * 0.1 }}
+                    onClick={() => setMenuOpen(false)}
+                    className="text-6xl md:text-8xl font-black uppercase tracking-tighter hover:italic hover:text-red-500 transition-all"
+                    onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}
+                  >
+                    {item}
+                  </motion.a>
+                ))}
+              </nav>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* HERO SECTION */}
+        <section className="relative h-screen w-full flex items-end p-6 md:p-10 pb-20 overflow-hidden">
+          <motion.div style={{ y: yHero }} className="absolute inset-0 z-0">
+             <img src="/images/demo/agencia/hero.jpg" alt="Hero" className="w-full h-full object-cover filter grayscale opacity-20" />
+          </motion.div>
+          <div className="relative z-10 w-full flex flex-col justify-end h-full">
+            <h1 className="text-[12vw] leading-[0.8] font-black uppercase tracking-tighter flex flex-col">
+              <span className="block overflow-hidden"><motion.span initial={{ y: "100%" }} animate={{ y: 0 }} transition={{ duration: 0.8, ease: "circOut" }} className="block">Digital</motion.span></span>
+              <span className="block overflow-hidden"><motion.span initial={{ y: "100%" }} animate={{ y: 0 }} transition={{ duration: 0.8, ease: "circOut", delay: 0.1 }} className="block pl-[10vw]">Brutalism</motion.span></span>
+              <span className="block overflow-hidden text-red-500"><motion.span initial={{ y: "100%" }} animate={{ y: 0 }} transition={{ duration: 0.8, ease: "circOut", delay: 0.2 }} className="block">Agency</motion.span></span>
             </h1>
-            <div className="flex items-center gap-6 mt-12">
-              <a href="#projects" className="font-mono text-xs tracking-widest uppercase border-b border-[#1a1a1a] pb-1 hover:opacity-50 transition-opacity">View Work</a>
-              <a href="#contact" className="font-mono text-xs tracking-widest uppercase text-[#1a1a1a]/40 hover:text-[#1a1a1a] transition-colors">Get in Touch</a>
+            <div className="mt-12 flex flex-col md:flex-row justify-between items-start md:items-end w-full border-t border-[#111]/20 pt-6">
+              <p className="max-w-md font-bold text-sm uppercase tracking-widest leading-relaxed">
+                We craft brutal, unapologetic digital experiences that break the mold and leave a lasting impact.
+              </p>
+              <div className="flex gap-4 mt-6 md:mt-0">
+                <span className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest bg-[#111] text-[#e3e3e3] px-4 py-2 rounded-full"><Globe size={14}/> Worldwide</span>
+                <span className="flex items-center gap-2 text-xs font-bold uppercase tracking-widest border border-[#111] px-4 py-2 rounded-full"><Star size={14}/> Awwwards</span>
+              </div>
             </div>
           </div>
         </section>
 
-        {/* ═══ SERVICES ═══ */}
-        <section className="py-24 md:py-40 px-6 md:px-16 bg-[#111] text-[#f2f2ef]">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-4">
-              <h2 className="text-5xl md:text-7xl font-serif uppercase tracking-tighter leading-[0.9]">What<br/>we do</h2>
-              <p className="font-mono text-xs tracking-widest uppercase text-white/30">4 Core Services</p>
-            </div>
+        {/* MARQUEE */}
+        <div className="py-6 bg-[#111] text-[#e3e3e3] overflow-hidden flex whitespace-nowrap">
+          <motion.div 
+            animate={{ x: [0, -1035] }} 
+            transition={{ repeat: Infinity, duration: 10, ease: "linear" }}
+            className="flex text-4xl md:text-6xl font-black uppercase tracking-tighter"
+          >
+            <span className="mx-8">Breaking the rules</span><span className="mx-8 text-red-500">✦</span>
+            <span className="mx-8">Digital Brutalism</span><span className="mx-8 text-red-500">✦</span>
+            <span className="mx-8">Unapologetic Design</span><span className="mx-8 text-red-500">✦</span>
+            <span className="mx-8">Breaking the rules</span><span className="mx-8 text-red-500">✦</span>
+            <span className="mx-8">Digital Brutalism</span><span className="mx-8 text-red-500">✦</span>
+            <span className="mx-8">Unapologetic Design</span><span className="mx-8 text-red-500">✦</span>
+          </motion.div>
+        </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-[1px] bg-white/10">
-              {services.map((s, i) => (
-                <div key={i} className="bg-[#111] p-8 md:p-12 group hover:bg-[#1a1a1a] transition-colors">
-                  <div className="flex items-start justify-between mb-8">
-                    <s.icon className="w-6 h-6 text-white/20 group-hover:text-white/60 transition-colors" strokeWidth={1.5} />
-                    <span className="font-mono text-3xl md:text-4xl font-bold text-white/5 group-hover:text-white/10 transition-colors">{s.metric}</span>
-                  </div>
-                  <h3 className="font-mono text-sm tracking-widest uppercase mb-4">{s.title}</h3>
-                  <p className="text-sm text-white/40 leading-relaxed">{s.desc}</p>
+        {/* ABOUT / MANIFESTO */}
+        <section id="studio" className="py-32 px-6 md:px-10">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-20">
+            <div>
+              <h2 className="text-6xl md:text-8xl font-black uppercase tracking-tighter leading-none mb-10">
+                The <br/> Manifesto
+              </h2>
+              <div className="space-y-6 text-xl md:text-2xl font-medium leading-tight">
+                <p>We don't do pretty. We don't do safe. We build digital products that demand attention.</p>
+                <p>Our approach is rooted in structural honesty, raw typography, and high-performance engineering.</p>
+                <motion.div 
+                  className="w-32 h-32 bg-red-500 rounded-full flex items-center justify-center mt-12 cursor-none"
+                  whileHover={{ scale: 1.1, rotate: 15 }}
+                  onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}
+                >
+                  <span className="text-white font-bold uppercase tracking-widest text-xs">Read More</span>
+                </motion.div>
+              </div>
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-4">
+                <div className="aspect-[3/4] bg-gray-300 rounded-2xl overflow-hidden">
+                  <img src="/images/demo/agencia/1.jpg" alt="Office" className="w-full h-full object-cover filter grayscale hover:grayscale-0 transition-all duration-700" />
                 </div>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ═══ PROJECTS — STACKING CARDS ═══ */}
-        <section id="projects" className="bg-[#f2f2ef]">
-          <div className="px-6 md:px-16 pt-24 md:pt-40 pb-12 max-w-7xl mx-auto">
-            <h2 className="text-5xl md:text-7xl font-serif uppercase tracking-tighter leading-[0.9] mb-4">Selected<br/>work</h2>
-            <p className="font-mono text-xs tracking-widest uppercase text-[#1a1a1a]/30">2023 — 2026</p>
-          </div>
-
-          <div className="projects-container relative z-10 w-full">
-            {projects.map((project, i) => (
-              <div key={project.id} className="project-card h-screen w-full relative will-change-transform">
-                <div className="project-inner w-full h-full p-2 md:p-4 flex items-center justify-center will-change-transform">
-                <div className="w-full h-full relative overflow-hidden rounded-[2rem] group hover-image">
-                  <img src={project.img} alt="Item" className={`absolute inset-0 object-cover `} />
-                  <div className="absolute inset-0 bg-black/40 md:bg-black/30 flex flex-col justify-between p-6 md:p-12 text-white">
-                    <div className="flex justify-between items-start">
-                      <span className="font-mono text-xs md:text-base tracking-widest bg-black/20 md:bg-transparent px-3 py-1 md:p-0 rounded-full md:rounded-none backdrop-blur-sm md:backdrop-blur-none">
-                        {String(i + 1).padStart(2, '0')}
-                      </span>
-                      <span className="font-mono text-xs md:text-base tracking-widest bg-black/20 md:bg-transparent px-3 py-1 md:p-0 rounded-full md:rounded-none backdrop-blur-sm md:backdrop-blur-none">
-                        {project.category}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-end overflow-hidden">
-                      <h2 className="font-serif text-6xl md:text-9xl uppercase leading-none tracking-tighter md:translate-y-8 md:group-hover:translate-y-0 transition-transform duration-700 ease-out max-w-[70%] md:max-w-none">
-                        {project.title}
-                      </h2>
-                      <div className="bg-white text-black p-4 md:p-6 rounded-full md:translate-y-24 md:group-hover:translate-y-0 transition-transform duration-700 ease-out md:delay-100 active:scale-90 shadow-none border border-stone-200">
-                        <ArrowUpRight className="w-6 h-6 md:w-12 md:h-12" />
-                      </div>
-                    </div>
-                  </div>
+                <div className="aspect-square bg-[#111] text-[#e3e3e3] p-6 rounded-2xl flex flex-col justify-between">
+                  <Zap size={32} className="text-red-500" />
+                  <span className="text-4xl font-black uppercase">40+</span>
+                  <span className="text-xs uppercase tracking-widest font-bold">Awards</span>
+                </div>
+              </div>
+              <div className="space-y-4 pt-12">
+                <div className="aspect-square bg-red-500 text-[#111] p-6 rounded-2xl flex flex-col justify-between">
+                  <Star size={32} />
+                  <span className="text-4xl font-black uppercase">12</span>
+                  <span className="text-xs uppercase tracking-widest font-bold">Years</span>
+                </div>
+                <div className="aspect-[3/4] bg-gray-300 rounded-2xl overflow-hidden">
+                  <img src="/images/demo/agencia/2.jpg" alt="Culture" className="w-full h-full object-cover filter grayscale hover:grayscale-0 transition-all duration-700" />
                 </div>
               </div>
             </div>
-          ))}
           </div>
         </section>
 
-        {/* ═══ PROCESS ═══ */}
-        <section className="py-24 md:py-40 px-6 md:px-16 bg-[#f2f2ef]">
-          <div className="max-w-7xl mx-auto">
-            <h2 className="text-5xl md:text-7xl font-serif uppercase tracking-tighter leading-[0.9] mb-16">How we<br/>work</h2>
-
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-8 md:gap-12">
-              {process.map((p, i) => (
-                <div key={i} className="group">
-                  <span className="font-mono text-5xl font-bold text-[#1a1a1a]/5 group-hover:text-[#1a1a1a]/10 transition-colors block mb-6">{p.num}</span>
-                  <h3 className="font-mono text-sm tracking-widest uppercase mb-4">{p.title}</h3>
-                  <p className="text-sm text-[#1a1a1a]/40 leading-relaxed">{p.desc}</p>
-                </div>
-              ))}
+        {/* HORIZONTAL SCROLL PROJECTS */}
+        <section id="work" ref={targetRef} className="h-[300vh] relative bg-[#111] text-[#e3e3e3]">
+          <div className="sticky top-0 h-screen flex items-center overflow-hidden">
+            <div className="absolute top-10 left-10 z-10 mix-blend-difference">
+              <h2 className="text-6xl md:text-8xl font-black uppercase tracking-tighter">Selected<br/>Works</h2>
             </div>
-          </div>
-        </section>
-
-        {/* ═══ CLIENTS ═══ */}
-        <section className="py-16 md:py-24 px-6 md:px-16 border-y border-[#1a1a1a]/10 bg-[#f2f2ef]">
-          <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8">
-            <span className="font-mono text-xs tracking-widest uppercase text-[#1a1a1a]/30">Trusted by</span>
-            <div className="flex flex-wrap justify-center gap-8 md:gap-12">
-              {clients.map((name, i) => (
-                <span key={i} className="font-serif text-xl md:text-2xl italic text-[#1a1a1a]/10 hover:text-[#1a1a1a]/30 transition-colors cursor-default">{name}</span>
-              ))}
-            </div>
-          </div>
-        </section>
-
-        {/* ═══ TEAM ═══ */}
-        <section className="py-24 md:py-40 px-6 md:px-16 bg-[#f2f2ef]">
-          <div className="max-w-7xl mx-auto">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 gap-4">
-              <h2 className="text-5xl md:text-7xl font-serif uppercase tracking-tighter leading-[0.9]">The<br/>team</h2>
-              <p className="font-mono text-xs tracking-widest uppercase text-[#1a1a1a]/30">4 Humans, 0 AIs</p>
-            </div>
-
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
-              {team.map((m, i) => (
-                <div key={i} className="group">
-                  <div className="aspect-[3/4] bg-[#111] rounded-2xl mb-4 relative overflow-hidden flex items-center justify-center">
-                    <span className="text-5xl font-serif italic text-white/[0.04] select-none group-hover:text-white/[0.08] transition-colors">{m.initials}</span>
+            <motion.div style={{ x: xProjects }} className="flex gap-10 px-10 md:px-[30vw]">
+              {projects.map((project, i) => (
+                <div key={project.id} className="w-[85vw] md:w-[40vw] flex-shrink-0 relative group">
+                  <div 
+                    className="aspect-[4/5] overflow-hidden rounded-2xl"
+                    onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}
+                  >
+                    <motion.img 
+                      whileHover={{ scale: 1.05 }}
+                      transition={{ duration: 0.5 }}
+                      src={project.img} 
+                      alt={project.client} 
+                      className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-700" 
+                    />
                   </div>
-                  <h3 className="font-mono text-xs tracking-widest uppercase">{m.name}</h3>
-                  <p className="font-mono text-xs tracking-widest uppercase text-[#1a1a1a]/30 mt-1">{m.role}</p>
+                  <div className="mt-6 flex justify-between items-start">
+                    <div>
+                      <h3 className="text-4xl md:text-6xl font-black uppercase tracking-tighter">{project.client}</h3>
+                      <p className="text-sm font-bold uppercase tracking-widest text-red-500 mt-2">{project.type}</p>
+                    </div>
+                    <span className="text-xl font-bold font-mono">{project.year}</span>
+                  </div>
+                </div>
+              ))}
+            </motion.div>
+          </div>
+        </section>
+
+        {/* SERVICES ACCORDION */}
+        <section id="services" className="py-32 px-6 md:px-10 bg-[#e3e3e3]">
+          <div className="max-w-7xl mx-auto">
+            <h2 className="text-6xl md:text-8xl font-black uppercase tracking-tighter mb-20 border-b border-[#111] pb-10">
+              Expertise
+            </h2>
+            <div className="flex flex-col w-full">
+              {services.map((s, i) => (
+                <div key={i} className="group border-b border-[#111] py-10 hover:bg-[#111] hover:text-[#e3e3e3] transition-colors duration-500 px-6 cursor-none"
+                  onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
+                  <div className="flex flex-col md:flex-row md:items-center justify-between gap-6">
+                    <div className="flex items-center gap-10">
+                      <span className="text-2xl font-mono font-bold text-red-500">{s.num}</span>
+                      <h3 className="text-5xl md:text-7xl font-black uppercase tracking-tighter">{s.title}</h3>
+                    </div>
+                    <p className="max-w-sm text-sm md:text-base font-bold uppercase tracking-widest leading-relaxed opacity-0 group-hover:opacity-100 transition-opacity duration-500">
+                      {s.desc}
+                    </p>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* ═══ ABOUT ═══ */}
-        <section className="py-24 md:py-40 px-6 md:px-16 bg-[#111] text-[#f2f2ef]">
-          <div className="max-w-4xl mx-auto">
-            <p className="font-mono text-xs tracking-widest uppercase text-white/30 mb-8">About</p>
-            <p className="text-2xl md:text-4xl font-serif italic leading-[1.5] text-white/60 mb-12">
-              "We believe design is not decoration. It's a strategic tool that transforms businesses, shapes perception, and drives growth."
-            </p>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+        {/* BIG TYPOGRAPHY SEPARATOR */}
+        <section className="py-20 md:py-40 bg-red-500 text-[#111] overflow-hidden flex justify-center items-center">
+          <h2 className="text-[15vw] font-black uppercase tracking-tighter leading-none hover:scale-105 transition-transform duration-700 text-center">
+            NO <br/> EXCUSES
+          </h2>
+        </section>
+
+        {/* TEAM GRID */}
+        <section className="py-32 px-6 md:px-10 bg-[#e3e3e3]">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex justify-between items-end mb-20">
+              <h2 className="text-6xl md:text-8xl font-black uppercase tracking-tighter">The<br/>Cult</h2>
+              <p className="text-sm font-bold uppercase tracking-widest max-w-xs text-right">A collective of misfits, artists, and engineers.</p>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               {[
-                { v: '120+', l: 'Projects delivered' },
-                { v: '28', l: 'Countries reached' },
-                { v: '7', l: 'Years in business' },
-                { v: '98%', l: 'Client retention' },
-              ].map((s, i) => (
-                <div key={i}>
-                  <span className="text-3xl md:text-4xl font-serif">{s.v}</span>
-                  <p className="font-mono text-xs tracking-widest uppercase text-white/20 mt-2">{s.l}</p>
+                { n: "ALEX", r: "DIRECTOR", img: "/images/demo/agencia/3.jpg" },
+                { n: "SAM", r: "DEV", img: "/images/demo/agencia/4.jpg" },
+                { n: "JORDAN", r: "DESIGN", img: "/images/demo/agencia/5.jpg" },
+                { n: "TAYLOR", r: "MOTION", img: "/images/demo/agencia/6.jpg" }
+              ].map((m, i) => (
+                <div key={i} className="group relative overflow-hidden rounded-2xl aspect-[3/4]">
+                  <img src={m.img} alt={m.n} className="w-full h-full object-cover filter grayscale group-hover:scale-110 group-hover:grayscale-0 transition-all duration-700" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-transparent opacity-80" />
+                  <div className="absolute bottom-6 left-6 text-[#e3e3e3]">
+                    <h3 className="text-3xl font-black uppercase tracking-tighter">{m.n}</h3>
+                    <p className="text-xs font-bold uppercase tracking-widest text-red-500">{m.r}</p>
+                  </div>
                 </div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* ═══ CONTACT + FOOTER ═══ */}
-        <footer id="contact" className="bg-[#111] text-[#f2f2ef] flex flex-col justify-between p-6 md:p-12 z-20 relative rounded-t-[2rem]">
-          <div className="w-full text-center py-24 md:py-32">
-            <p className="font-mono text-xs tracking-widest uppercase text-white/30 mb-8">Got a project?</p>
-            <h1 className="font-serif text-6xl md:text-9xl leading-none tracking-tighter uppercase whitespace-nowrap active:scale-[0.98] transition-transform">
-              Let's Talk
-            </h1>
-            <a href="mailto:hello@agencia.studio" className="inline-block font-mono text-sm tracking-widest uppercase text-white/40 hover:text-white transition-colors mt-8 border-b border-white/20 pb-1">
-              hello@agencia.studio
-            </a>
-          </div>
-
-          <div className="flex flex-col md:flex-row justify-between items-start font-mono text-sm tracking-widest uppercase gap-12 pt-12 md:pt-16 border-t border-white/10">
-            <div className="space-y-4">
-              <p className="text-white/50">Location</p>
-              <p>Based in Seville, Spain</p>
-              <p>Available Worldwide</p>
+        {/* FOOTER */}
+        <footer id="contact" className="bg-[#111] text-[#e3e3e3] pt-32 pb-10 px-6 md:px-10">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex flex-col items-center text-center mb-32">
+              <p className="text-sm font-bold uppercase tracking-widest text-red-500 mb-8">Start a Project</p>
+              <h2 className="text-[12vw] font-black uppercase tracking-tighter leading-none hover:italic transition-all duration-300">
+                HELLO@<br/>AGENCIA
+              </h2>
             </div>
-            <div className="space-y-4">
-              <p className="text-white/50">Socials</p>
-              <a href="#" className="block active:scale-95 md:hover:opacity-70 transition-all origin-left">Instagram</a>
-              <a href="#" className="block active:scale-95 md:hover:opacity-70 transition-all origin-left">Twitter</a>
-              <a href="#" className="block active:scale-95 md:hover:opacity-70 transition-all origin-left">LinkedIn</a>
+            
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-10 border-t border-[#e3e3e3]/20 pt-10">
+              <div className="col-span-1 md:col-span-2">
+                <p className="text-3xl font-black uppercase tracking-tighter mb-4">AGENCIA©</p>
+                <p className="text-sm font-bold uppercase tracking-widest opacity-50 max-w-sm">
+                  We are a brutalist design and development studio operating globally from nowhere.
+                </p>
+              </div>
+              <div>
+                <h4 className="text-xs font-bold uppercase tracking-widest text-red-500 mb-6">Social</h4>
+                <ul className="space-y-2 text-sm font-bold uppercase tracking-widest">
+                  <li><a href="#" className="hover:text-red-500 transition-colors">Instagram</a></li>
+                  <li><a href="#" className="hover:text-red-500 transition-colors">Twitter (X)</a></li>
+                  <li><a href="#" className="hover:text-red-500 transition-colors">Awwwards</a></li>
+                  <li><a href="#" className="hover:text-red-500 transition-colors">LinkedIn</a></li>
+                </ul>
+              </div>
+              <div>
+                <h4 className="text-xs font-bold uppercase tracking-widest text-red-500 mb-6">Offices</h4>
+                <ul className="space-y-2 text-sm font-bold uppercase tracking-widest">
+                  <li>Tokyo, JP</li>
+                  <li>Berlin, DE</li>
+                  <li>New York, US</li>
+                </ul>
+              </div>
             </div>
-            <div className="space-y-4">
-              <p className="text-white/50">Contact</p>
-              <p>+34 955 123 456</p>
-              <p>hello@agencia.studio</p>
+            <div className="mt-20 flex flex-col md:flex-row justify-between items-center text-xs font-bold uppercase tracking-widest opacity-50">
+              <p>© {new Date().getFullYear()} Agencia. All rights reserved.</p>
+              <p>Designed with violence.</p>
             </div>
-          </div>
-          
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-center font-mono text-xs md:text-sm tracking-widest uppercase gap-8 mt-12 pt-8 border-t border-white/5">
-            <p className="text-white/20">© {new Date().getFullYear()} Agencia</p>
-            <p className="text-white/20">Design + Development Studio</p>
           </div>
         </footer>
+
       </div>
     </DemoLayout>
   );

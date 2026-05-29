@@ -1,735 +1,372 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
-import { LazyMotion, domAnimation, m, AnimatePresence, useInView } from "framer-motion";
-import { ShoppingBag, Clock, Zap, ArrowUpRight, Mail, Menu, X } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
+import { motion, useScroll, useTransform, AnimatePresence, useSpring } from "framer-motion";
 import Link from "next/link";
+import { ShoppingCart, Menu, X, ArrowRight, Instagram, Twitter, Flame, Skull } from "lucide-react";
 import DemoLayout from "@/components/DemoLayout";
+import clsx from "clsx";
+import { twMerge } from "tailwind-merge";
 
-const SIZES = [
-  { label: "XS", soldOut: false },
-  { label: "S",  soldOut: true  },
-  { label: "M",  soldOut: false },
-  { label: "L",  soldOut: false },
-  { label: "XL", soldOut: true  },
-  { label: "XXL",soldOut: false },
-];
-
-const COLLECTION = [
-  { name: "WRAITH HOODIE",   price: "€185", tag: "NEW DROP",    tagColor: "#FFE500", lock: 2 },
-  { name: "BONE CARGO",      price: "€145", tag: "LAST UNITS",  tagColor: "#FF3B3B", lock: 3 },
-  { name: "GHOST TEE Vol.3", price: "€65",  tag: "ALMOST GONE", tagColor: "#FF8C00", lock: 4 },
-  { name: "DEAD CAP",        price: "€55",  tag: "COLLAB",      tagColor: "#00D4FF", lock: 5 },
-];
-
-const DROPS = [
-  { name: "IRON CURTAIN JACKET",      date: "Jun 30, 2025 · 12:00 CET", status: "LIVE"     },
-  { name: "BONE CARGO Vol.2",         date: "Jul 15, 2025 · 12:00 CET", status: "UPCOMING" },
-  { name: "GHOST TEE Vol.4 × COLLAB", date: "Aug 1,  2025 · 12:00 CET", status: "RUMORED"  },
-];
-
-const STATUS_STYLES = {
-  LIVE:     { bg: "#FFE500", color: "#111" },
-  UPCOMING: { bg: "#111",    color: "#F5F0E8" },
-  RUMORED:  { bg: "#444",    color: "#F5F0E8" },
-};
-
-const MARQUEE_TEXT = "LIMITED · AUTHENTIC · RARE · DEADSTOCK · NO RESTOCK · ";
-
-function getTargetDate() {
-  const d = new Date();
-  d.setDate(d.getDate() + 7);
-  return d;
+function cn(...inputs) {
+  return twMerge(clsx(inputs));
 }
 
-function pad(n) {
-  return String(n).padStart(2, "0");
-}
+// Data
+const products = [
+  { id: "P01", name: "HELLFIRE HOODIE", price: "€120", status: "AVAILABLE", img: "/images/demo/urbano/1.jpg" },
+  { id: "P02", name: "SCYTHE CARGO", price: "€150", status: "LAST UNITS", img: "/images/demo/urbano/2.jpg" },
+  { id: "P03", name: "VOID TEE", price: "€60", status: "SOLD OUT", img: "/images/demo/urbano/3.jpg" },
+  { id: "P04", name: "REAPER VEST", price: "€210", status: "AVAILABLE", img: "/images/demo/urbano/4.jpg" },
+  { id: "P05", name: "ASHES BEANIE", price: "€45", status: "AVAILABLE", img: "/images/demo/urbano/5.jpg" },
+  { id: "P06", name: "GHOST RUNNER", price: "€190", status: "SOLD OUT", img: "/images/demo/urbano/6.jpg" },
+];
 
-function calcTimeLeft(target) {
-  const diff = target - Date.now();
-  if (diff <= 0) return { days: "00", hours: "00", minutes: "00", seconds: "00" };
-  const s = Math.floor(diff / 1000);
-  return {
-    days:    pad(Math.floor(s / 86400)),
-    hours:   pad(Math.floor((s % 86400) / 3600)),
-    minutes: pad(Math.floor((s % 3600) / 60)),
-    seconds: pad(s % 60),
-  };
-}
+const lookbook = [
+  { id: "L01", title: "LOOK 01", desc: "Urban decay inspired fit.", img: "/images/demo/urbano/1.jpg" },
+  { id: "L02", title: "LOOK 02", desc: "Monochrome silhouette.", img: "/images/demo/urbano/2.jpg" },
+  { id: "L03", title: "LOOK 03", desc: "Techwear meets street.", img: "/images/demo/urbano/3.jpg" },
+  { id: "L04", title: "LOOK 04", desc: "Tactical approach.", img: "/images/demo/urbano/4.jpg" },
+];
 
-function Cursor() {
-  const [pos, setPos] = useState({ x: -100, y: -100 });
-  const [hovered, setHovered] = useState(false);
+const features = [
+  "NO RESTOCKS", "HEAVYWEIGHT COTTON", "WORLDWIDE SHIPPING", "HAND DISTRESSED"
+];
 
+function Countdown() {
+  const [time, setTime] = useState({ h: 24, m: 0, s: 0 });
   useEffect(() => {
-    import("animejs").then((module) => {
-      const anime = module.default;
-      anime({
-        targets: '.anime-item',
-        translateY: [30, 0],
-        opacity: [0, 1],
-        delay: anime.stagger(150, { start: 300 }),
-        easing: 'easeOutExpo',
-        duration: 1000
+    const timer = setInterval(() => {
+      setTime(prev => {
+        let { h, m, s } = prev;
+        if (s > 0) s--;
+        else if (m > 0) { m--; s = 59; }
+        else if (h > 0) { h--; m = 59; s = 59; }
+        return { h, m, s };
       });
-    });
+    }, 1000);
+    return () => clearInterval(timer);
   }, []);
-
-  useEffect(() => {
-    if (window.matchMedia("(hover: none) and (pointer: coarse)").matches) return;
-    const move = (e) => setPos({ x: e.clientX, y: e.clientY });
-    const over = (e) => {
-      if (e.target.closest("a,button,[data-hover]")) setHovered(true);
-    };
-    const out = () => setHovered(false);
-    window.addEventListener("mousemove", move);
-    window.addEventListener("mouseover", over);
-    window.addEventListener("mouseout", out);
-    return () => {
-      window.removeEventListener("mousemove", move);
-      window.removeEventListener("mouseover", over);
-      window.removeEventListener("mouseout", out);
-    };
-  }, []);
-
+  
   return (
-    <div className="hidden md:block">
-      <m.div
-        className="fixed top-0 left-0 z-[9999] pointer-events-none"
-        animate={{ x: pos.x - 6, y: pos.y - 6, scale: hovered ? 0 : 1 }}
-        transition={{ type: "spring", stiffness: 800, damping: 35 }}
-        style={{
-          width: 12, height: 12, borderRadius: "50%",
-          background: "#FFE500", mixBlendMode: "difference",
-        }}
-      />
-      <m.div
-        className="fixed top-0 left-0 z-[9998] pointer-events-none"
-        animate={{ x: pos.x - 20, y: pos.y - 20, scale: hovered ? 1.8 : 1 }}
-        transition={{ type: "spring", stiffness: 200, damping: 28 }}
-        style={{
-          width: 40, height: 40, borderRadius: "50%",
-          border: "1.5px solid #FFE500", mixBlendMode: "difference",
-        }}
-      />
+    <div className="flex gap-4 font-mono text-3xl md:text-5xl font-black">
+      <div className="flex flex-col items-center">
+        <span>{String(time.h).padStart(2, "0")}</span>
+        <span className="text-[10px] uppercase text-red-500 tracking-widest mt-1">HRS</span>
+      </div>
+      <span className="text-red-500">:</span>
+      <div className="flex flex-col items-center">
+        <span>{String(time.m).padStart(2, "0")}</span>
+        <span className="text-[10px] uppercase text-red-500 tracking-widest mt-1">MIN</span>
+      </div>
+      <span className="text-red-500">:</span>
+      <div className="flex flex-col items-center">
+        <span>{String(time.s).padStart(2, "0")}</span>
+        <span className="text-[10px] uppercase text-red-500 tracking-widest mt-1">SEC</span>
+      </div>
     </div>
   );
 }
 
-function TimeBox({ value, label }) {
-  return (
-    <div className="flex-1 flex flex-col items-center justify-center bg-[#111] border-[2px] md:border-[2.5px] border-[#111] text-[#FFE500] py-3 md:py-4 px-2 md:px-4 min-w-[65px] md:min-w-[90px]">
-      <div className="font-mono text-3xl md:text-5xl font-black leading-none">{value}</div>
-      <div className="text-[9px] md:text-[11px] tracking-[2px] md:tracking-[4px] text-[#888] mt-1 md:mt-2">{label}</div>
-    </div>
-  );
-}
-
-export default function DeadstockPage() {
-  const TARGET = useRef(getTargetDate());
-  const [timeLeft, setTimeLeft] = useState(calcTimeLeft(TARGET.current));
-  const [selectedSize, setSelectedSize] = useState(null);
-  const [cartAdded, setCartAdded] = useState(false);
-  const [cartCount] = useState(2);
-  const [email, setEmail] = useState("");
-  const [subscribed, setSubscribed] = useState(false);
+export default function UrbanoDemo() {
   const [menuOpen, setMenuOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-  const carouselRef = useRef(null);
-  const [sliderWidth, setSliderWidth] = useState(0);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isHovering, setIsHovering] = useState(false);
 
   useEffect(() => {
-    const checkMobile = () => setIsMobile(window.innerWidth < 1024);
-    checkMobile();
-    window.addEventListener("resize", checkMobile);
-    return () => window.removeEventListener("resize", checkMobile);
+    const handleMouseMove = (e) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    };
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
-  useEffect(() => {
-    if (carouselRef.current && isMobile) {
-      setSliderWidth(carouselRef.current.scrollWidth - carouselRef.current.offsetWidth);
-    }
-  }, [isMobile]);
+  const { scrollYProgress } = useScroll();
+  const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
 
-  useEffect(() => {
-    const id = setInterval(() => setTimeLeft(calcTimeLeft(TARGET.current)), 1000);
-    return () => clearInterval(id);
-  }, []);
+  const heroImageRef = useRef(null);
+  const { scrollYProgress: heroProgress } = useScroll({ target: heroImageRef, offset: ["start start", "end start"] });
+  const heroScale = useTransform(heroProgress, [0, 1], [1, 1.2]);
+  const heroOpacity = useTransform(heroProgress, [0, 1], [1, 0.5]);
 
-  const handleAddToCart = () => {
-    if (!selectedSize) return;
-    setCartAdded(true);
-    setTimeout(() => setCartAdded(false), 2000);
-  };
-
-  const heroRef = useRef(null);
-  const heroInView = useInView(heroRef, { once: true });
-
-  const MENU_LINKS = ["LATEST DROP", "ARCHIVE", "LOOKBOOK", "ABOUT"];
+  const lookbookRef = useRef(null);
+  const { scrollYProgress: lookbookProgress } = useScroll({ target: lookbookRef });
+  const lookbookX = useTransform(lookbookProgress, [0, 1], ["0%", "-75%"]);
 
   return (
-    <LazyMotion features={domAnimation}>
-      <DemoLayout title="DEADSTOCK">
-      <div className="text-[#111] font-sans overflow-x-hidden md:cursor-none w-full relative">
-        <Cursor />
+    <DemoLayout title="URBANO — Streetwear">
+      <div className="bg-[#050505] text-[#f4f4f4] font-sans selection:bg-red-600 selection:text-white cursor-none overflow-x-hidden">
+        
+        {/* Scroll Progress */}
+        <motion.div className="fixed top-0 left-0 right-0 h-1.5 bg-red-600 origin-left z-[100]" style={{ scaleX }} />
 
-        <AnimatePresence>
-          {menuOpen && (
-            <m.div
-              initial={{ y: "-100%" }}
-              animate={{ y: 0 }}
-              exit={{ y: "-100%" }}
-              transition={{ type: "tween", duration: 0.5, ease: [0.76, 0, 0.24, 1] }}
-              className="fixed inset-0 z-[1001] bg-[#111] text-[#F5F0E8] flex flex-col pt-24 px-6 md:px-12"
-            >
-              <div className="flex flex-col gap-6 md:gap-8 mt-10">
-                {MENU_LINKS.map((link, i) => (
-                  <m.div
-                    key={link}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0 }}
-                    transition={{ delay: 0.2 + i * 0.1 }}
-                  >
-                    <Link
-                      href="/"
-                      onClick={() => setMenuOpen(false)}
-                      className="text-5xl md:text-7xl font-black uppercase tracking-tighter hover:text-[#FFE500] active:scale-95 transition-all inline-block"
-                    >
-                      {link}
-                    </Link>
-                  </m.div>
-                ))}
-              </div>
-              <div className="mt-auto pb-10 flex justify-between items-center border-t border-[#333] pt-6">
-                <span className="font-mono text-[10px] tracking-widest text-[#888]">NO RESTOCK. EVER.</span>
-                <div className="flex gap-4">
-                  {["IG", "TW", "DC"].map((s) => (
-                    <a key={s} href="#" className="font-mono text-[10px] tracking-widest hover:text-[#FFE500]">{s}</a>
-                  ))}
-                </div>
-              </div>
-            </m.div>
-          )}
-        </AnimatePresence>
+        {/* Custom Cursor */}
+        <motion.div 
+          className="fixed top-0 left-0 w-8 h-8 border-2 border-red-600 rounded-full pointer-events-none z-[9999] flex items-center justify-center mix-blend-difference"
+          animate={{
+            x: mousePosition.x - 16,
+            y: mousePosition.y - 16,
+            scale: isHovering ? 2 : 1,
+            backgroundColor: isHovering ? "rgba(220, 38, 38, 0.2)" : "transparent"
+          }}
+          transition={{ type: "spring", stiffness: 500, damping: 28, mass: 0.5 }}
+        >
+          {isHovering && <div className="w-1 h-1 bg-red-600 rounded-full" />}
+        </motion.div>
 
-        <nav className="fixed top-0 left-0 right-0 z-[1002] bg-[#F5F0E8] border-b-[2.5px] border-[#111] h-14 md:h-16 flex items-center justify-between px-3 md:px-8">
-          <div className="flex items-center h-full">
-            <button
-              onClick={() => setMenuOpen(!menuOpen)}
-              className="h-full flex items-center justify-center pr-4 md:pr-6 border-r-[2.5px] border-[#111] hover:bg-[#FFE500] active:bg-[#FFE500] transition-colors bg-transparent cursor-pointer outline-none"
-            >
-              {menuOpen ? <X size={24} color={menuOpen ? "#FFE500" : "#111"} className="mix-blend-difference" /> : <Menu size={24} color="#111" />}
+        {/* Navigation */}
+        <nav className="fixed top-0 w-full p-6 md:p-10 flex justify-between items-center z-50 mix-blend-difference">
+          <Link href="/" className="font-black text-2xl md:text-3xl tracking-tighter uppercase text-white hover:text-red-600 transition-colors"
+            onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}>
+            URBANO™
+          </Link>
+          <div className="flex items-center gap-8">
+            <button className="flex items-center gap-2 font-mono text-xs font-bold uppercase tracking-widest text-white hover:text-red-600 transition-colors"
+              onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}>
+              Cart [0]
             </button>
-            <Link href="/" className="hidden md:flex items-center gap-2 font-mono text-[11px] font-black tracking-[2px] px-6 border-r-[2.5px] border-[#111] h-full hover:bg-[#FFE500] transition-colors">
-              ← BACK
-            </Link>
-          </div>
-
-          <div className="font-mono text-lg md:text-2xl font-black tracking-tighter absolute left-1/2 -translate-x-1/2 mix-blend-difference text-white pointer-events-none">
-            DEADSTOCK
-          </div>
-
-          <div className="flex items-center h-full pl-4 md:pl-6 border-l-[2.5px] border-[#111] hover:bg-[#FFE500] cursor-pointer transition-colors active:scale-95">
-            <ShoppingBag size={20} strokeWidth={2.5} className={menuOpen ? "text-[#F5F0E8] mix-blend-difference" : "text-[#111]"} />
-            <span className="font-mono text-[10px] md:text-xs font-black bg-[#FFE500] text-[#111] rounded-full w-5 h-5 md:w-6 md:h-6 flex items-center justify-center border-[1.5px] border-[#111] ml-2">
-              {cartCount}
-            </span>
+            <button onClick={() => setMenuOpen(!menuOpen)} className="text-white hover:text-red-600 transition-colors"
+              onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}>
+              {menuOpen ? <X size={32} /> : <Menu size={32} />}
+            </button>
           </div>
         </nav>
 
-        <section ref={heroRef} className="min-h-[100svh] pt-14 md:pt-16 flex flex-col justify-center items-center text-center border-b-[2.5px] border-[#111] relative px-4">
-          <m.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={heroInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.4 }}
-            className="inline-flex items-center gap-2 bg-[#FFE500] border-2 border-[#111] px-3 py-1.5 md:px-4 md:py-2 mb-6 md:mb-8 font-mono text-[9px] md:text-xs font-black tracking-widest mt-6 md:mt-0"
-          >
-            <span className="w-2 h-2 rounded-full bg-[#FF3B3B] inline-block animate-pulse" />
-            DROP IS ACTIVE
-          </m.div>
+        {/* Fullscreen Menu */}
+        <AnimatePresence>
+          {menuOpen && (
+            <motion.div 
+              initial={{ opacity: 0, y: "-100%" }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: "-100%" }}
+              transition={{ duration: 0.6, ease: [0.76, 0, 0.24, 1] }}
+              className="fixed inset-0 bg-[#050505] z-40 flex flex-col justify-center items-center px-6"
+            >
+              <div className="absolute top-10 left-10 text-red-600 font-mono text-xs uppercase tracking-widest font-bold">MENU</div>
+              <div className="flex flex-col gap-8 text-center w-full max-w-3xl">
+                {["Shop All", "Lookbook", "Archive", "About"].map((item, i) => (
+                  <motion.a 
+                    key={item} href={`#${item.toLowerCase().replace(' ', '-')}`}
+                    initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ delay: 0.2 + i * 0.1 }}
+                    onClick={() => setMenuOpen(false)}
+                    className="text-6xl md:text-8xl font-black uppercase tracking-tighter hover:text-red-600 hover:italic transition-all border-b border-white/10 pb-4"
+                    onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}
+                  >
+                    {item}
+                  </motion.a>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-          <m.h1
-            initial={{ opacity: 0, y: 40 }}
-            animate={heroInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ duration: 0.7, delay: 0.1 }}
-            className="font-black text-6xl md:text-9xl leading-[0.85] tracking-tighter uppercase m-0"
-          >
-            THE DROP<br />
-            <span className="text-[#FFE500] style-stroke">IS LIVE</span>
-          </m.h1>
-
-          <m.p
-            initial={{ opacity: 0 }}
-            animate={heroInView ? { opacity: 1 } : {}}
-            transition={{ delay: 0.4 }}
-            className="font-mono text-[10px] md:text-sm tracking-[2px] md:tracking-[4px] text-[#555] my-8 px-2 leading-relaxed"
-          >
-            IRON CURTAIN JACKET SS25 — LIMITED TO 100 UNITS
-          </m.p>
-
-          <m.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={heroInView ? { opacity: 1, y: 0 } : {}}
-            transition={{ delay: 0.5 }}
-            className="flex gap-1 md:gap-2 w-full max-w-[340px] md:max-w-2xl px-1"
-          >
-            <TimeBox value={timeLeft.days} label="DAYS" />
-            <TimeBox value={timeLeft.hours} label="HRS" />
-            <TimeBox value={timeLeft.minutes} label="MIN" />
-            <TimeBox value={timeLeft.seconds} label="SEC" />
-          </m.div>
+        {/* 1. HERO SECTION */}
+        <section ref={heroImageRef} className="relative h-screen w-full flex flex-col items-center justify-center overflow-hidden">
+          <motion.div style={{ scale: heroScale, opacity: heroOpacity }} className="absolute inset-0 z-0">
+             <img src="/images/demo/urbano/hero.jpg" alt="Hero" className="w-full h-full object-cover filter grayscale contrast-125 brightness-75" />
+             <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[#050505]" />
+          </motion.div>
+          <div className="relative z-10 w-full flex flex-col items-center text-center mt-20">
+            <motion.div initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ duration: 1, ease: "easeOut" }} className="flex items-center gap-4 mb-6">
+              <Flame className="text-red-600 animate-pulse" size={32} />
+              <span className="font-mono text-xs md:text-sm font-bold uppercase tracking-widest text-red-600 border border-red-600 px-4 py-2 bg-black/50 backdrop-blur-sm">Season 04 Drop</span>
+            </motion.div>
+            <motion.h1 
+              initial={{ y: 50, opacity: 0 }} animate={{ y: 0, opacity: 1 }} transition={{ duration: 1, delay: 0.2, ease: "easeOut" }}
+              className="text-[clamp(4rem,18vw,15rem)] font-black uppercase leading-[0.8] tracking-tighter mix-blend-overlay text-white"
+            >
+              DEAD<br/>STOCK
+            </motion.h1>
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 1, delay: 0.6 }} className="mt-12">
+              <p className="font-mono text-xs uppercase tracking-widest text-white/50 mb-4">Ends In</p>
+              <Countdown />
+            </motion.div>
+          </div>
         </section>
 
-        <div className="bg-[#111] border-b-[2.5px] border-[#FFE500] overflow-hidden py-3 whitespace-nowrap">
-          <m.div
-            animate={{ x: ["0%", "-50%"] }}
-            transition={{ duration: 15, repeat: Infinity, ease: "linear" }}
-            className="inline-block"
+        {/* 2. INFINITE MARQUEE */}
+        <div className="py-8 bg-red-600 text-black overflow-hidden flex whitespace-nowrap border-y-4 border-black">
+          <motion.div 
+            animate={{ x: [0, -1000] }} 
+            transition={{ repeat: Infinity, duration: 10, ease: "linear" }}
+            className="flex text-4xl md:text-6xl font-black uppercase tracking-tighter"
           >
-            {[...Array(6)].map((_, i) => (
-              <span key={i} className="font-mono text-[11px] md:text-sm font-black tracking-widest text-[#FFE500] mr-2">
-                {MARQUEE_TEXT}
-              </span>
-            ))}
-          </m.div>
+            <span className="mx-8">NO RESTOCKS</span><span className="mx-8">✦</span>
+            <span className="mx-8">FINAL SALE</span><span className="mx-8">✦</span>
+            <span className="mx-8">WORLDWIDE SHIPPING</span><span className="mx-8">✦</span>
+            <span className="mx-8">NO RESTOCKS</span><span className="mx-8">✦</span>
+            <span className="mx-8">FINAL SALE</span><span className="mx-8">✦</span>
+            <span className="mx-8">WORLDWIDE SHIPPING</span><span className="mx-8">✦</span>
+          </motion.div>
         </div>
 
-        <section className="flex flex-col lg:grid lg:grid-cols-2 border-b-[2.5px] border-[#111]">
-          <m.div
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            className="border-b-[2.5px] lg:border-b-0 lg:border-r-[2.5px] border-[#111] overflow-hidden h-[55vh] lg:h-auto min-h-[400px] lg:min-h-[700px] relative"
-          >
-            <m.img
-              src="/images/demo/urbano/hero.jpg"
-              alt="IRON CURTAIN JACKET SS25"
-              whileHover={!isMobile ? { scale: 1.05 } : {}}
-              transition={{ duration: 0.6 }}
-              className="w-full h-full object-cover block absolute inset-0"
-            />
-          </m.div>
-
-          <m.div
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.6 }}
-            className="p-6 md:p-12 lg:p-16 flex flex-col justify-center gap-8 md:gap-10"
-          >
-            <div>
-              <div className="font-mono text-[10px] md:text-[11px] tracking-[3px] text-[#888] mb-3">
-                SS25 COLLECTION · OUTERWEAR
-              </div>
-              <h2 className="font-black text-6xl md:text-8xl leading-[0.9] m-0 tracking-tighter uppercase">
-                IRON CURTAIN<br />JACKET SS25
+        {/* 3. LATEST DROP (GRID) */}
+        <section id="shop-all" className="py-32 px-6 md:px-10">
+          <div className="max-w-[1600px] mx-auto">
+            <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-6">
+              <h2 className="text-6xl md:text-8xl font-black uppercase tracking-tighter leading-none">
+                LATEST <br/><span className="text-red-600">DROP</span>
               </h2>
-            </div>
-
-            <div className="flex items-center gap-4">
-              <div className="flex-1 bg-[#111] h-2">
-                <div className="w-[23%] bg-[#FFE500] h-full" />
-              </div>
-              <span className="font-mono text-[10px] md:text-xs font-black whitespace-nowrap">
-                23 / 100 REMAINING
-              </span>
-            </div>
-
-            <div className="flex items-baseline gap-4">
-              <span className="font-black text-4xl md:text-5xl lg:text-6xl">€320</span>
-              <span className="font-mono text-[10px] md:text-[11px] text-[#888] tracking-widest">INCL. TAX</span>
-            </div>
-
-            <div>
-              <div className="font-mono text-[10px] md:text-[11px] tracking-[3px] mb-4 text-[#555]">SELECT SIZE</div>
-              <div className="grid grid-cols-3 gap-2 md:gap-3">
-                {SIZES.map((sz) => (
-                  <button
-                    key={sz.label}
-                    onClick={() => !sz.soldOut && setSelectedSize(sz.label)}
-                    disabled={sz.soldOut}
-                    className={`
-                      relative py-3 md:py-4 font-mono font-black text-xs md:text-sm tracking-widest transition-all active:scale-95 outline-none
-                      ${sz.soldOut ? "cursor-not-allowed text-[#bbb] line-through border-2 border-[#ccc]" : "cursor-pointer"}
-                      ${!sz.soldOut && selectedSize === sz.label ? "bg-[#111] text-[#FFE500] border-2 border-[#111] shadow-[3px_3px_0_#FFE500]" : ""}
-                      ${!sz.soldOut && selectedSize !== sz.label ? "bg-transparent text-[#111] border-2 border-[#111] hover:bg-[#EAE4D8]" : ""}
-                    `}
-                  >
-                    {sz.label}
-                    {sz.soldOut && (
-                      <span className="font-mono text-[8px] absolute bottom-1 right-1.5 tracking-wider text-[#bbb]">S/O</span>
-                    )}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-3 md:gap-4 mt-2">
-              <AnimatePresence mode="wait">
-                {cartAdded ? (
-                  <m.div
-                    key="added"
-                    initial={{ opacity: 0, y: -10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: 10 }}
-                    className="bg-[#FFE500] border-[2.5px] border-[#111] p-4 md:p-5 font-mono font-black text-xs md:text-sm tracking-widest text-center shadow-[4px_4px_0_#111]"
-                  >
-                    ✓ ADDED TO BAG
-                  </m.div>
-                ) : (
-                  <m.button
-                    key="add"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    whileHover={!isMobile && selectedSize ? { x: -3, y: -3, boxShadow: "6px 6px 0 #FFE500" } : {}}
-                    whileTap={selectedSize ? { x: 0, y: 0, boxShadow: "0px 0px 0 #FFE500", scale: 0.98 } : {}}
-                    onClick={handleAddToCart}
-                    className={`
-                      flex items-center justify-center gap-3 bg-[#111] text-[#FFE500] border-[2.5px] border-[#111]
-                      p-4 md:p-5 font-mono font-black text-[11px] md:text-sm tracking-widest transition-all outline-none
-                      ${selectedSize ? "cursor-pointer shadow-[4px_4px_0_#FFE500] opacity-100" : "cursor-not-allowed opacity-50"}
-                    `}
-                  >
-                    <ShoppingBag size={18} />
-                    {selectedSize ? "ADD TO BAG" : "SELECT A SIZE"}
-                  </m.button>
-                )}
-              </AnimatePresence>
-              <p className="font-mono text-[9px] md:text-[10px] text-[#888] tracking-widest text-center mt-2">
-                NO RESTOCK · FINAL SALE · WORLDWIDE SHIPPING
+              <p className="font-mono text-xs uppercase tracking-widest max-w-xs text-white/50 text-right">
+                Engineered for the streets. Heavyweight fabrics, custom washes, limited quantities.
               </p>
             </div>
-          </m.div>
-        </section>
 
-        <section className="border-b-[2.5px] border-[#111] overflow-hidden">
-          <div className="border-b-[2.5px] border-[#111] p-4 md:p-6 px-4 md:px-8 flex justify-between items-center">
-            <h2 className="font-mono text-[10px] md:text-[11px] tracking-[4px] m-0 font-bold">SS25 COLLECTION</h2>
-            <button className="font-mono text-[9px] md:text-[11px] tracking-[3px] bg-transparent border-none cursor-pointer flex items-center gap-2 hover:text-[#FFE500] active:scale-95 transition-all font-bold outline-none">
-              VIEW ALL <ArrowUpRight size={14} />
-            </button>
-          </div>
-
-          {isMobile ? (
-            <div className="w-full relative py-6 bg-[#EAE4D8]">
-              <m.div
-                ref={carouselRef}
-                className="flex cursor-grab active:cursor-grabbing px-4 gap-4"
-                drag="x"
-                dragConstraints={{ right: 0, left: -sliderWidth }}
-                dragElastic={0.15}
-              >
-                {COLLECTION.map((item, i) => (
-                  <m.div
-                    key={item.name}
-                    className="min-w-[80vw] border-[2.5px] border-[#111] relative bg-[#F5F0E8] flex-shrink-0 shadow-[4px_4px_0_#111]"
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-12">
+              {products.map((product, i) => (
+                <div key={product.id} className="group flex flex-col">
+                  <div 
+                    className="relative aspect-[3/4] bg-[#111] overflow-hidden rounded-xl border-2 border-transparent group-hover:border-red-600 transition-colors duration-500"
+                    onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}
                   >
-                    <div className="h-[350px] border-b-[2.5px] border-[#111] overflow-hidden relative">
-                      <img
-                        src={`/images/demo/urbano/2.jpg`}
-                        alt={item.name}
-                        className="w-full h-full object-cover pointer-events-none"
-                      />
-                      <div className="absolute top-3 left-3">
-                        <span className="font-mono text-[9px] font-black tracking-widest px-2 py-1 border-[1.5px] border-[#111]" style={{ background: item.tagColor, color: ["#FFE500", "#00D4FF"].includes(item.tagColor) ? "#111" : "#fff" }}>
-                          {item.tag}
-                        </span>
-                      </div>
-                    </div>
-                    <div className="p-4 flex justify-between items-start">
-                      <div>
-                        <div className="font-black text-lg tracking-tight leading-none mb-2">{item.name}</div>
-                        <div className="font-mono text-xs font-black">{item.price}</div>
-                      </div>
-                    </div>
-                  </m.div>
-                ))}
-              </m.div>
-            </div>
-          ) : (
-            <div className="grid grid-cols-3 grid-rows-[auto_auto]">
-              <m.div
-                initial={{ opacity: 0 }}
-                whileInView={{ opacity: 1 }}
-                viewport={{ once: true }}
-                className="col-start-1 col-end-2 row-start-1 row-end-3 border-r-[2.5px] border-[#111] relative overflow-hidden group"
-              >
-                <m.img
-                  src={`/images/demo/urbano/3.jpg`}
-                  alt={COLLECTION[0].name}
-                  whileHover={{ scale: 1.05 }}
-                  transition={{ duration: 0.6 }}
-                  className="w-full h-full object-cover min-h-[600px] block"
-                />
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent p-6 pt-24 pointer-events-none">
-                  <span className="inline-block text-[#111] font-mono text-[9px] font-black tracking-widest px-2 py-1 mb-3" style={{ background: COLLECTION[0].tagColor }}>
-                    {COLLECTION[0].tag}
-                  </span>
-                  <div className="font-black text-3xl xl:text-4xl text-white tracking-tighter leading-none mb-2">
-                    {COLLECTION[0].name}
-                  </div>
-                  <div className="font-mono text-base text-[#FFE500] font-bold">{COLLECTION[0].price}</div>
-                </div>
-              </m.div>
-
-              {COLLECTION.slice(1).map((item, i) => (
-                <m.div
-                  key={item.name}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: i * 0.1 }}
-                  className="relative overflow-hidden group flex flex-col"
-                  style={{
-                    borderBottom: i < 2 ? "2.5px solid #111" : "none",
-                    borderRight: i % 2 === 0 ? "2.5px solid #111" : "none",
-                  }}
-                  data-hover
-                >
-                  <div className="overflow-hidden flex-1 relative">
-                    <m.img
-                      src={`/images/demo/urbano/4.jpg`}
-                      alt={item.name}
-                      whileHover={{ scale: 1.06 }}
-                      transition={{ duration: 0.5 }}
-                      className="w-full h-[300px] object-cover block"
-                    />
-                  </div>
-                  <div className="p-4 bg-[#F5F0E8] border-t-[2.5px] border-[#111]">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <div className="font-black text-base xl:text-lg tracking-tight leading-none mb-2">{item.name}</div>
-                        <div className="font-mono text-xs font-black">{item.price}</div>
-                      </div>
-                      <span className="font-mono text-[8px] font-black tracking-widest px-2 py-1 whitespace-nowrap" style={{ background: item.tagColor, color: ["#FFE500", "#00D4FF"].includes(item.tagColor) ? "#111" : "#fff" }}>
-                        {item.tag}
+                    <img src={product.img} alt={product.name} className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700" />
+                    
+                    {/* Overlay Status */}
+                    <div className="absolute top-4 left-4">
+                      <span className={cn(
+                        "font-mono text-[10px] font-black uppercase tracking-widest px-3 py-1",
+                        product.status === "SOLD OUT" ? "bg-red-600 text-black" : "bg-black text-white border border-white/20"
+                      )}>
+                        {product.status}
                       </span>
                     </div>
+
+                    {/* Quick Add Button */}
+                    <div className="absolute bottom-4 left-4 right-4 translate-y-20 group-hover:translate-y-0 transition-transform duration-500">
+                      <button className="w-full bg-red-600 text-black font-black uppercase tracking-widest py-4 flex items-center justify-center gap-2 hover:bg-white transition-colors"
+                        disabled={product.status === "SOLD OUT"}>
+                        <ShoppingCart size={18} />
+                        {product.status === "SOLD OUT" ? "UNAVAILABLE" : "ADD TO CART"}
+                      </button>
+                    </div>
                   </div>
-                </m.div>
+                  
+                  <div className="mt-6 flex justify-between items-start">
+                    <div>
+                      <h3 className="text-2xl font-black uppercase tracking-tighter">{product.name}</h3>
+                      <p className="font-mono text-[10px] uppercase tracking-widest text-white/40 mt-1">{product.id}</p>
+                    </div>
+                    <span className="text-xl font-bold font-mono text-red-600">{product.price}</span>
+                  </div>
+                </div>
               ))}
             </div>
-          )}
+            
+            <div className="mt-20 flex justify-center">
+              <button className="font-black text-2xl uppercase tracking-tighter border-b-4 border-red-600 pb-2 hover:text-red-600 transition-colors"
+                onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}>
+                VIEW ARCHIVE
+              </button>
+            </div>
+          </div>
         </section>
 
-        <section className="border-b-[2.5px] border-[#111]">
-          <div className="border-b-[2.5px] border-[#111] p-4 md:p-6 px-4 md:px-8 flex items-center gap-3 bg-[#EAE4D8] md:bg-transparent">
-            <Clock size={16} />
-            <h2 className="font-mono text-[10px] md:text-[11px] tracking-[4px] m-0 font-bold">DROP SCHEDULE</h2>
+        {/* 4. ABOUT / TEXT BLOCK */}
+        <section className="py-32 bg-red-600 text-black px-6 md:px-10 flex items-center justify-center text-center">
+          <div className="max-w-4xl">
+            <Skull size={48} className="mx-auto mb-10" />
+            <h2 className="text-4xl md:text-6xl lg:text-7xl font-black uppercase tracking-tighter leading-[1.1] mb-10">
+              We reject the fast fashion cycle. Every garment is constructed with purpose, designed to age, and built to survive.
+            </h2>
+            <div className="flex flex-wrap justify-center gap-4">
+              {features.map((f, i) => (
+                <span key={i} className="border-2 border-black px-4 py-2 font-mono text-xs font-bold uppercase tracking-widest">
+                  {f}
+                </span>
+              ))}
+            </div>
           </div>
+        </section>
 
-          {DROPS.map((drop, i) => {
-            const st = STATUS_STYLES[drop.status];
-            return (
-              <m.div
-                key={drop.name}
-                initial={{ opacity: 0, x: isMobile ? -10 : -30 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: i * 0.1 }}
-                whileHover={!isMobile ? { paddingLeft: "3rem", backgroundColor: drop.status === "LIVE" ? "#FFE500" : "#EAE4D8" } : {}}
-                whileTap={isMobile ? { scale: 0.98, backgroundColor: drop.status === "LIVE" ? "#FFE500" : "#EAE4D8" } : {}}
-                className="flex flex-col md:flex-row md:items-center justify-between p-5 md:p-6 px-4 md:px-8 border-b-[2.5px] border-[#111] cursor-pointer transition-all gap-4 md:gap-0"
-              >
-                <div className="flex items-start md:items-center gap-4 md:gap-5">
-                  {drop.status === "LIVE" ? (
-                    <Zap size={20} color="#FFE500" fill="#FFE500" className="bg-[#111] p-1 flex-shrink-0 mt-0.5 md:mt-0" />
-                  ) : (
-                    <div className="w-5" />
-                  )}
-                  <div>
-                    <div className="font-black text-2xl md:text-4xl tracking-tighter uppercase leading-none mb-2">
-                      {drop.name}
-                    </div>
-                    <div className="font-mono text-[9px] md:text-[10px] text-[#666] tracking-[2px]">
-                      {drop.date}
-                    </div>
+        {/* 5. HORIZONTAL SCROLL LOOKBOOK */}
+        <section id="lookbook" ref={lookbookRef} className="h-[300vh] relative bg-[#050505]">
+          <div className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden py-20">
+            <div className="absolute top-10 left-6 md:left-10 z-10 mix-blend-difference">
+              <h2 className="text-6xl md:text-8xl font-black uppercase tracking-tighter text-white">LOOK<br/><span className="text-red-600">BOOK</span></h2>
+              <p className="font-mono text-xs uppercase tracking-widest text-white/50 mt-4">VOL. 04 — TOKYO</p>
+            </div>
+            
+            <motion.div style={{ x: lookbookX }} className="flex gap-10 md:gap-20 px-6 md:px-[30vw] items-center mt-20">
+              {lookbook.map((look, i) => (
+                <div key={look.id} className="w-[85vw] md:w-[45vw] flex-shrink-0 relative group">
+                  <div className="aspect-[4/5] overflow-hidden border border-white/10 relative"
+                    onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}>
+                    <img src={look.img} alt={look.title} className="w-full h-full object-cover filter grayscale group-hover:grayscale-0 transition-all duration-700" />
+                    <div className="absolute inset-0 border-4 border-transparent group-hover:border-red-600 transition-colors duration-500 pointer-events-none" />
+                  </div>
+                  <div className="mt-6 flex justify-between items-center">
+                    <h3 className="text-4xl font-black uppercase tracking-tighter">{look.title}</h3>
+                    <p className="font-mono text-xs uppercase tracking-widest text-white/50 max-w-[150px] text-right">{look.desc}</p>
                   </div>
                 </div>
-                <div className="self-start md:self-auto ml-9 md:ml-0">
-                  <span className="font-mono text-[8px] md:text-[9px] font-black tracking-[2px] px-3 py-1.5 border-[1.5px] border-[#111]" style={{ background: st.bg, color: st.color }}>
-                    {drop.status}
-                  </span>
-                </div>
-              </m.div>
-            );
-          })}
-        </section>
-
-        <section className="bg-[#111] text-[#F5F0E8] py-16 md:py-24 px-4 md:px-8 border-b-[2.5px] border-[#FFE500]">
-          <div className="max-w-[900px] mx-auto">
-            <m.div
-              initial={{ opacity: 0, y: 40 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.7 }}
-            >
-              <div className="font-mono text-[9px] md:text-[11px] tracking-[4px] text-[#666] mb-6">
-                ABOUT THE BRAND
-              </div>
-              <h2 className="font-black text-6xl md:text-9xl leading-[0.85] tracking-tighter mb-8 md:mb-12 uppercase">
-                We don't<br />
-                <span className="text-[#FFE500]">restock.</span>
-              </h2>
-              <div className="flex flex-col md:grid md:grid-cols-2 gap-8 md:gap-12">
-                <p className="font-mono text-xs md:text-sm leading-[1.8] text-[#bbb] m-0 pr-4">
-                  DEADSTOCK was born from the idea that scarcity isn't a gimmick — it's a principle.
-                  Every piece we put out into the world is a deliberate, unrepeatable moment. Once it's gone,
-                  it's gone. No reruns. No second chances. That's the deal.
-                </p>
-                <p className="font-mono text-xs md:text-sm leading-[1.8] text-[#bbb] m-0 pr-4">
-                  We obsess over materials, silhouettes, and construction. Not to justify a price tag,
-                  but because we believe what you wear should outlast the hype. Built for the real ones.
-                  Worn by people who know. If you're reading this, you already get it.
-                </p>
-              </div>
-
-              <div className="flex flex-col md:grid md:grid-cols-3 gap-10 md:gap-0 mt-16 md:mt-20 border-t-[1.5px] border-[#333] pt-10">
-                {[
-                  { n: "100", label: "UNITS PER DROP" },
-                  { n: "0%",  label: "RESTOCK RATE" },
-                  { n: "SS25", label: "CURRENT SEASON" },
-                ].map((s, i) => (
-                  <m.div
-                    key={s.label}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.1 }}
-                    className={`md:py-8 ${i < 2 ? "md:border-r border-[#333]" : ""} ${i > 0 ? "md:pl-8 lg:pl-10" : ""}`}
-                  >
-                    <div className="font-black text-5xl md:text-6xl lg:text-7xl text-[#FFE500] leading-none mb-3">
-                      {s.n}
-                    </div>
-                    <div className="font-mono text-[9px] tracking-[3px] text-[#666]">
-                      {s.label}
-                    </div>
-                  </m.div>
-                ))}
-              </div>
-            </m.div>
+              ))}
+            </motion.div>
           </div>
         </section>
 
-        <section className="border-b-[2.5px] border-[#111] py-16 md:py-24 px-4 md:px-8 bg-[#EAE4D8]">
-          <div className="max-w-[650px] mx-auto text-center">
-            <m.div
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-            >
-              <Mail size={32} strokeWidth={1.5} className="mb-6 md:mb-8 mx-auto text-[#111]" />
-              <h2 className="font-black text-5xl md:text-8xl leading-[0.9] tracking-tighter uppercase m-0 mb-4 md:mb-5">
-                Get notified<br />before the drop.
-              </h2>
-              <p className="font-mono text-[9px] md:text-[11px] text-[#666] tracking-[2px] md:tracking-[3px] mb-8 md:mb-10">
-                DROP ALERTS · EARLY ACCESS · INSIDER INFO
-              </p>
-
-              <AnimatePresence mode="wait">
-                {subscribed ? (
-                  <m.div
-                    key="done"
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="bg-[#FFE500] border-[2.5px] border-[#111] p-5 font-mono font-black text-[10px] md:text-xs tracking-widest shadow-[5px_5px_0_#111] mx-4 md:mx-0"
-                  >
-                    ✓ YOU'RE ON THE LIST. STAY READY.
-                  </m.div>
-                ) : (
-                  <m.form
-                    key="form"
-                    onSubmit={(e) => { e.preventDefault(); if (email) setSubscribed(true); }}
-                    className="flex flex-col md:flex-row gap-4 md:gap-0 max-w-[500px] mx-auto px-4 md:px-0"
-                  >
-                    <input
-                      type="email"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      placeholder="YOUR EMAIL ADDRESS"
-                      required
-                      className="flex-1 border-[2.5px] border-[#111] md:border-r-0 bg-[#F5F0E8] p-4 font-mono text-[10px] tracking-widest outline-none text-[#111] placeholder:text-[#888] focus:bg-[#fff] transition-colors rounded-none"
-                    />
-                    <m.button
-                      type="submit"
-                      whileHover={!isMobile ? { x: -2, y: -2, boxShadow: "5px 5px 0 #FFE500" } : {}}
-                      whileTap={{ x: 0, y: 0, scale: 0.98, boxShadow: "0px 0px 0 #FFE500" }}
-                      className="bg-[#111] text-[#FFE500] border-[2.5px] border-[#111] p-4 font-mono font-black text-[10px] tracking-widest cursor-pointer shadow-[4px_4px_0_#FFE500] active:shadow-none transition-all outline-none"
-                    >
-                      NOTIFY ME
-                    </m.button>
-                  </m.form>
-                )}
-              </AnimatePresence>
-
-              <p className="font-mono text-[8px] md:text-[9px] text-[#aaa] tracking-[2px] mt-8">
-                NO SPAM · UNSUBSCRIBE ANYTIME · DROPS ONLY
-              </p>
-            </m.div>
+        {/* 6. NEWSLETTER */}
+        <section className="py-32 px-6 md:px-10 border-y border-white/10 bg-[#0a0a0a]">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter mb-6">JOIN THE <span className="text-red-600">CULT</span></h2>
+            <p className="font-mono text-xs uppercase tracking-widest text-white/50 mb-12">Sign up for early access to drops and exclusive discounts. No spam, just heat.</p>
+            <form className="flex flex-col md:flex-row w-full max-w-2xl mx-auto border-2 border-white/20 focus-within:border-red-600 transition-colors">
+              <input 
+                type="email" 
+                placeholder="ENTER YOUR EMAIL" 
+                className="flex-1 bg-transparent p-6 font-mono text-sm tracking-widest text-white outline-none placeholder:text-white/30 uppercase"
+                onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}
+              />
+              <button 
+                type="button"
+                className="bg-red-600 text-black font-black uppercase tracking-widest px-10 py-6 hover:bg-white transition-colors flex items-center justify-center gap-2"
+                onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}
+              >
+                SUBSCRIBE <ArrowRight size={20} />
+              </button>
+            </form>
           </div>
         </section>
 
-        <footer className="bg-[#111] text-[#F5F0E8] py-12 md:py-16 px-4 md:px-8">
-          <div className="flex flex-col gap-10 md:gap-12 max-w-[1200px] mx-auto">
-            <div className="flex flex-col lg:flex-row justify-between items-start border-b border-[#333] pb-10 md:pb-12 gap-8 lg:gap-0">
-              <div>
-                <div className="font-mono text-3xl md:text-5xl font-black tracking-tighter mb-3 md:mb-4">
-                  DEADSTOCK
-                </div>
-                <div className="font-mono text-[9px] md:text-[10px] text-[#666] tracking-[2px] leading-[1.8]">
-                  STREETWEAR · SS25<br />
-                  DROPS EVERY SEASON<br />
-                  NO RESTOCK. EVER.
-                </div>
-              </div>
-
-              <div className="flex flex-col gap-4 md:gap-5 w-full lg:w-auto">
-                <div className="font-mono text-[8px] md:text-[9px] tracking-[4px] text-[#555]">FOLLOW THE DROP</div>
-                <div className="flex flex-col md:flex-row gap-4 md:gap-6">
-                  {["INSTAGRAM", "TW/X", "DISCORD"].map((s) => (
-                    <m.a
-                      key={s}
-                      href="#"
-                      whileHover={!isMobile ? { color: "#FFE500", letterSpacing: "4px" } : {}}
-                      whileTap={{ scale: 0.95 }}
-                      className="font-mono text-[10px] md:text-[11px] font-black tracking-widest text-[#F5F0E8] transition-all border-b border-[#333] md:border-none pb-2 md:pb-0 block w-full md:w-auto hover:text-[#FFE500]"
-                    >
-                      {s}
-                    </m.a>
-                  ))}
-                </div>
+        {/* 7. FOOTER */}
+        <footer className="pt-32 pb-10 px-6 md:px-10 bg-[#050505]">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 border-b border-white/10 pb-20">
+            <div className="col-span-1 md:col-span-2">
+              <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter mb-6">URBANO™</h2>
+              <p className="font-mono text-xs uppercase tracking-widest text-white/40 max-w-sm leading-relaxed">
+                Independent streetwear label defined by brutalist aesthetics and uncompromising quality. Born in 2026.
+              </p>
+            </div>
+            <div>
+              <h4 className="font-mono text-xs font-bold uppercase tracking-widest text-red-600 mb-6">Links</h4>
+              <ul className="space-y-4 font-black uppercase tracking-widest text-lg">
+                <li><a href="#" className="hover:text-red-600 transition-colors">Shop</a></li>
+                <li><a href="#" className="hover:text-red-600 transition-colors">Archive</a></li>
+                <li><a href="#" className="hover:text-red-600 transition-colors">Stockists</a></li>
+                <li><a href="#" className="hover:text-red-600 transition-colors">Contact</a></li>
+              </ul>
+            </div>
+            <div>
+              <h4 className="font-mono text-xs font-bold uppercase tracking-widest text-red-600 mb-6">Social</h4>
+              <div className="flex gap-4">
+                <a href="#" className="w-12 h-12 border-2 border-white/20 flex items-center justify-center hover:bg-red-600 hover:border-red-600 transition-all rounded-full">
+                  <Instagram size={20} />
+                </a>
+                <a href="#" className="w-12 h-12 border-2 border-white/20 flex items-center justify-center hover:bg-red-600 hover:border-red-600 transition-all rounded-full">
+                  <Twitter size={20} />
+                </a>
               </div>
             </div>
-
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 md:gap-0">
-              <span className="font-mono text-[8px] md:text-[9px] text-[#555] tracking-[2px] order-2 md:order-1 leading-[1.8]">
-                © 2025 DEADSTOCK. ALL RIGHTS RESERVED. ALL DROPS FINAL.
-              </span>
-              <div className="flex flex-wrap gap-4 md:gap-6 order-1 md:order-2">
-                {["PRIVACY", "TERMS", "SHIPPING", "RETURNS"].map((l) => (
-                  <a key={l} href="#" className="font-mono text-[8px] md:text-[9px] text-[#555] tracking-[2px] hover:text-[#F5F0E8] transition-colors">
-                    {l}
-                  </a>
-                ))}
-              </div>
+          </div>
+          <div className="max-w-7xl mx-auto mt-10 flex flex-col md:flex-row justify-between items-center font-mono text-[10px] uppercase tracking-widest text-white/30 gap-4">
+            <p>© {new Date().getFullYear()} URBANO STUDIOS. ALL RIGHTS RESERVED.</p>
+            <div className="flex gap-6">
+              <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
+              <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
             </div>
           </div>
         </footer>
 
-        <style>{`
-          .style-stroke {
-            -webkit-text-stroke: 1.5px #111;
-          }
-          @media (min-width: 768px) {
-            .style-stroke {
-              -webkit-text-stroke: 3px #111;
-            }
-          }
-        `}</style>
       </div>
-      </DemoLayout>
-    </LazyMotion>
+    </DemoLayout>
   );
 }

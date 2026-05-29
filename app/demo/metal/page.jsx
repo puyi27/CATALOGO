@@ -1,118 +1,72 @@
 "use client";
 import React, { useEffect, useState, useRef } from "react";
-import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import { motion, useScroll, useTransform, AnimatePresence, useSpring } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import DemoLayout from "@/components/DemoLayout";
-import { ArrowLeft, Crosshair, Cpu, Maximize, Activity, Menu, X } from "lucide-react";
+import { ArrowLeft, Crosshair, Cpu, Maximize, Activity, Menu, X, ArrowRight, Settings, ShieldAlert, Thermometer, ShieldCheck } from "lucide-react";
 
-export default function TitanPrecision() {
+function CustomCursor() {
   const [cursorPos, setCursorPos] = useState({ x: -100, y: -100 });
   const [isHovering, setIsHovering] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
-    const moveCursor = (e) => {
-      setCursorPos({ x: e.clientX, y: e.clientY });
+    const moveCursor = (e) => setCursorPos({ x: e.clientX, y: e.clientY });
+    const handleMouseOver = (e) => {
+      const target = e.target;
+      if (target.tagName?.toLowerCase() === 'button' || target.tagName?.toLowerCase() === 'a' || target.closest('.interactable')) {
+        setIsHovering(true);
+      } else {
+        setIsHovering(false);
+      }
     };
+
     window.addEventListener("mousemove", moveCursor);
-    return () => window.removeEventListener("mousemove", moveCursor);
+    window.addEventListener("mouseover", handleMouseOver);
+    return () => {
+      window.removeEventListener("mousemove", moveCursor);
+      window.removeEventListener("mouseover", handleMouseOver);
+    }
   }, []);
-
-  const blueprintRef = useRef(null);
-  const { scrollYProgress } = useScroll({
-    target: blueprintRef,
-    offset: ["start end", "end start"],
-  });
-
-  const pathLength = useTransform(scrollYProgress, [0.2, 0.8], [0, 1]);
-
-  const [temp, setTemp] = useState(850);
-  const [cycles, setCycles] = useState(12400);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setTemp((prev) => prev + (Math.random() > 0.5 ? 1 : -1) * Math.floor(Math.random() * 5));
-      setCycles((prev) => prev + Math.floor(Math.random() * 3));
-    }, 2000);
-    return () => clearInterval(interval);
-  }, []);
-
-  useEffect(() => {
-    import('animejs').then((animeModule) => {
-      const anime = animeModule.default;
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            anime({
-              targets: '.anime-metal-item',
-              translateX: [-30, 0],
-              opacity: [0, 1],
-              delay: anime.stagger(150),
-              easing: 'easeOutExpo',
-              duration: 800
-            });
-            observer.disconnect();
-          }
-        });
-      });
-      const el = document.querySelector('.anime-metal-container');
-      if(el) observer.observe(el);
-    });
-  }, []);
-
-  const typeWriterText = "INGENIERÍA PARA LA METALURGIA DEL FUTURO.";
-  const typeWriterVariants = {
-    hidden: { opacity: 0 },
-    visible: {
-      opacity: 1,
-      transition: {
-        staggerChildren: 0.05,
-      },
-    },
-  };
-
-  const letterVariants = {
-    hidden: { opacity: 0, y: 10 },
-    visible: { opacity: 1, y: 0 },
-  };
 
   return (
-    <DemoLayout title="Precisión Industrial">
-    <div className="text-white font-sans selection:bg-[#ff4500] selection:text-white md:cursor-none">
-      <motion.div
-        className="fixed top-0 left-0 w-6 h-6 bg-[#ff4500] pointer-events-none z-50 mix-blend-difference hidden md:block"
-        animate={{
-          x: cursorPos.x - 12,
-          y: cursorPos.y - 12,
-          scale: isHovering ? 3 : 1,
-        }}
-        transition={{ type: "tween", ease: "backOut", duration: 0.15 }}
-        style={{ borderRadius: "0px" }}
-      />
+    <motion.div
+      className="fixed top-0 left-0 w-6 h-6 border-2 border-[#ff4500] pointer-events-none z-[9999] hidden md:flex items-center justify-center mix-blend-difference"
+      animate={{
+        x: cursorPos.x - 12,
+        y: cursorPos.y - 12,
+        scale: isHovering ? 2 : 1,
+        rotate: isHovering ? 45 : 0
+      }}
+      transition={{ type: "tween", ease: "backOut", duration: 0.2 }}
+      style={{ borderRadius: isHovering ? "0%" : "50%" }}
+    >
+      {isHovering && <div className="w-1 h-1 bg-[#ff4500]" />}
+    </motion.div>
+  );
+}
 
-      <nav className="fixed top-0 left-0 w-full p-4 md:p-6 flex justify-between items-center z-50 bg-[#0a0a0a]/80 backdrop-blur-md border-b border-stone-200/10 uppercase tracking-[0.2em] text-sm md:text-base font-bold">
-        <Link 
-          href="/" 
-          className="flex items-center gap-2 hover:text-[#ff4500] active:scale-95 transition-all md:cursor-none"
-          onMouseEnter={() => setIsHovering(true)}
-          onMouseLeave={() => setIsHovering(false)}
-        >
-          <ArrowLeft size={14} />
+function NavBar() {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  return (
+    <>
+      <nav className="fixed top-0 left-0 w-full p-4 md:p-6 flex justify-between items-center z-50 bg-[#050505]/90 backdrop-blur-md border-b border-white/5 uppercase tracking-[0.2em] text-sm font-bold text-white">
+        <Link href="/" className="flex items-center gap-2 hover:text-[#ff4500] transition-all interactable">
+          <ArrowLeft size={16} />
           <span className="hidden sm:inline">Catálogo</span>
         </Link>
-        <div className="flex items-center gap-2">
-          <Crosshair size={14} className="text-[#ff4500]" />
-          <span>TITAN PRECISION</span>
+        <div className="flex items-center gap-3 border border-white/10 px-4 py-2 bg-black/50">
+          <Crosshair size={16} className="text-[#ff4500] animate-spin-slow" />
+          <span>TITAN HEAVY IND.</span>
         </div>
-        <div className="hidden md:flex gap-6">
-          <span className="hover:text-[#ff4500] transition-colors md:cursor-none uppercase" onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}>Manifiesto</span>
-          <span className="hover:text-[#ff4500] transition-colors md:cursor-none uppercase" onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}>Sistemas</span>
+        <div className="hidden md:flex gap-8">
+          <a href="#" className="hover:text-[#ff4500] transition-colors interactable">Capabilities</a>
+          <a href="#" className="hover:text-[#ff4500] transition-colors interactable">Facilities</a>
+          <a href="#" className="hover:text-[#ff4500] transition-colors interactable">Contact</a>
         </div>
-        <button 
-          className="md:hidden flex items-center justify-center p-2 text-white active:scale-90 transition-transform"
-          onClick={() => setMenuOpen(!menuOpen)}
-        >
-          {menuOpen ? <X size={20} /> : <Menu size={20} />}
+        <button className="md:hidden text-white interactable" onClick={() => setMenuOpen(!menuOpen)}>
+          {menuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </nav>
 
@@ -123,212 +77,375 @@ export default function TitanPrecision() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: "-100%" }}
             transition={{ duration: 0.4, ease: "easeInOut" }}
-            className="fixed inset-0 z-40 bg-[#0a0a0a] flex flex-col justify-center items-center gap-8 md:hidden"
+            className="fixed inset-0 z-40 bg-[#050505] flex flex-col justify-center items-center gap-8 md:hidden"
           >
-            <span className="text-2xl font-black uppercase tracking-widest hover:text-[#ff4500] active:scale-95 transition-all" onClick={() => setMenuOpen(false)}>Manifiesto</span>
-            <span className="text-2xl font-black uppercase tracking-widest hover:text-[#ff4500] active:scale-95 transition-all" onClick={() => setMenuOpen(false)}>Sistemas</span>
-            <span className="text-2xl font-black uppercase tracking-widest hover:text-[#ff4500] active:scale-95 transition-all" onClick={() => setMenuOpen(false)}>Contacto</span>
+            <a href="#" className="text-3xl font-black uppercase tracking-widest text-white hover:text-[#ff4500] transition-colors" onClick={() => setMenuOpen(false)}>Capabilities</a>
+            <a href="#" className="text-3xl font-black uppercase tracking-widest text-white hover:text-[#ff4500] transition-colors" onClick={() => setMenuOpen(false)}>Facilities</a>
+            <a href="#" className="text-3xl font-black uppercase tracking-widest text-white hover:text-[#ff4500] transition-colors" onClick={() => setMenuOpen(false)}>Contact</a>
           </motion.div>
         )}
       </AnimatePresence>
+    </>
+  );
+}
 
-      <section className="relative h-[100svh] flex flex-col justify-center items-center px-4 md:px-6 pt-16 bg-[#0a0a0a]">
-        <img src="/images/demo/metal/hero.jpg" alt="Background" className="absolute inset-0 object-cover opacity-20 grayscale" />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#0a0a0a] via-transparent to-[#0a0a0a]" />
-        
-        <div className="relative z-10 w-full max-w-7xl mx-auto flex flex-col items-start">
-          <motion.h1 
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1, ease: "easeOut" }}
-            className="text-7xl md:text-9xl font-black uppercase tracking-tighter leading-[0.85] text-transparent bg-clip-text bg-gradient-to-br from-white to-neutral-600 break-words w-full"
-          >
-            PRECISIÓN<br />INDUSTRIAL.
-          </motion.h1>
-          
-          <motion.div 
-            variants={typeWriterVariants}
-            initial="hidden"
-            animate="visible"
-            className="mt-6 md:mt-8 flex flex-wrap font-mono text-sm sm:text-base md:text-lg text-[#ff4500] tracking-[0.2em] uppercase max-w-full"
-          >
-            {typeWriterText.split("").map((char, index) => (
-              <motion.span key={index} variants={letterVariants}>
-                {char}
-              </motion.span>
-            ))}
-          </motion.div>
-        </div>
+function HeroSection() {
+  const typeWriterText = "ENGINEERING THE METALLURGY OF TOMORROW.";
+  
+  return (
+    <section className="relative min-h-screen flex flex-col justify-center items-start px-6 md:px-12 pt-24 bg-[#050505] overflow-hidden">
+      <div className="absolute inset-0 z-0">
+        <Image src="/images/demo/metal/hero.jpg" alt="Industrial Facility" fill className="object-cover opacity-30 mix-blend-luminosity" priority />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#050505] via-[#050505]/80 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#050505] to-transparent" />
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI0IiBoZWlnaHQ9IjQiPgo8cmVjdCB3aWR0aD0iNCIgaGVpZ2h0PSI0IiBmaWxsPSIjZmZmIiBmaWxsLW9wYWNpdHk9IjAuMDUiLz4KPC9zdmc+')] opacity-20 pointer-events-none" />
+      </div>
+      
+      <div className="relative z-10 w-full max-w-7xl mx-auto flex flex-col items-start border-l-4 border-[#ff4500] pl-6 md:pl-12">
+        <motion.div 
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.5 }}
+          className="flex items-center gap-4 mb-6"
+        >
+          <div className="px-3 py-1 bg-[#ff4500]/10 border border-[#ff4500]/30 text-[#ff4500] font-mono text-sm tracking-widest uppercase">
+            Protocol: Active
+          </div>
+          <div className="h-px bg-white/20 w-12 md:w-24" />
+        </motion.div>
+
+        <motion.h1 
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+          className="text-6xl md:text-8xl lg:text-[10rem] font-black uppercase tracking-tighter leading-[0.85] text-white mb-8"
+        >
+          FORGING <br />
+          <span className="text-transparent bg-clip-text bg-gradient-to-br from-white to-neutral-600">THE FUTURE</span>
+        </motion.h1>
         
         <motion.div 
-          className="absolute bottom-6 md:bottom-10 flex flex-col items-center gap-2 text-neutral-500 font-mono text-sm md:text-base uppercase"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.5, duration: 1 }}
+          className="font-mono text-sm sm:text-base text-[#ff4500] tracking-[0.2em] uppercase max-w-xl"
         >
-          <span>Secuencia de inicio</span>
-          <div className="w-[1px] h-8 md:h-12 bg-gradient-to-b from-neutral-500 to-transparent" />
+          {typeWriterText}
         </motion.div>
-      </section>
 
-      <section className="py-24 md:py-32 px-4 md:px-6 border-t border-white/10" ref={blueprintRef}>
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-16">
-          <div className="flex flex-col justify-center">
-            <h2 className="text-6xl md:text-8xl font-black uppercase tracking-tighter mb-6 md:mb-8 leading-[0.9]">ADN de<br />Arquitectura</h2>
-            <p className="text-neutral-400 font-mono text-base md:text-lg leading-relaxed mb-6 uppercase tracking-widest text-justify md:text-left">
-              Las tolerancias exactas no son una opción, son un requisito estricto en nuestro flujo de trabajo de ensamblaje industrial. Cortamos, soldamos y extruimos materia prima con precisión submilimétrica.
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 }}
+          className="mt-12 flex flex-wrap gap-6"
+        >
+          <button className="interactable bg-[#ff4500] text-black px-8 py-4 font-black uppercase tracking-widest hover:bg-white transition-colors flex items-center gap-3">
+            Explore Capabilities <ArrowRight size={20} />
+          </button>
+          <button className="interactable bg-transparent border border-white/20 text-white px-8 py-4 font-bold uppercase tracking-widest hover:bg-white/5 transition-colors">
+            View Specs
+          </button>
+        </motion.div>
+      </div>
+    </section>
+  );
+}
+
+function LiveTelemetry() {
+  const [temp, setTemp] = useState(1250);
+  const [pressure, setPressure] = useState(48.2);
+  const [power, setPower] = useState(840);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTemp(p => p + (Math.random() > 0.5 ? 1 : -1) * Math.floor(Math.random() * 8));
+      setPressure(p => Number((p + (Math.random() > 0.5 ? 0.1 : -0.1)).toFixed(1)));
+      setPower(p => p + (Math.random() > 0.5 ? 2 : -2));
+    }, 1500);
+    return () => clearInterval(interval);
+  }, []);
+
+  return (
+    <section className="py-8 bg-[#050505] border-y border-white/10 overflow-hidden">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-1">
+          <div className="bg-[#0a0a0a] border border-white/5 p-6 flex items-center justify-between group">
+            <div>
+              <div className="flex items-center gap-2 text-neutral-500 font-mono text-xs uppercase mb-2">
+                <Thermometer size={14} /> Core Temperature
+              </div>
+              <div className="text-4xl font-black text-white font-mono">{temp}°C</div>
+            </div>
+            <div className="h-16 w-16 rounded-full border-4 border-[#ff4500]/20 border-t-[#ff4500] animate-spin-slow" />
+          </div>
+          <div className="bg-[#0a0a0a] border border-white/5 p-6 flex items-center justify-between group">
+            <div>
+              <div className="flex items-center gap-2 text-neutral-500 font-mono text-xs uppercase mb-2">
+                <Activity size={14} /> Hydraulic Pressure
+              </div>
+              <div className="text-4xl font-black text-white font-mono">{pressure} PSI</div>
+            </div>
+            <div className="h-12 w-full max-w-[100px] flex items-end gap-1">
+              {[1,2,3,4,5].map(i => (
+                <motion.div 
+                  key={i} 
+                  animate={{ height: ["20%", "100%", "20%"] }} 
+                  transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.2 }}
+                  className="w-full bg-[#ff4500]/50" 
+                />
+              ))}
+            </div>
+          </div>
+          <div className="bg-[#0a0a0a] border border-white/5 p-6 flex items-center justify-between group">
+            <div>
+              <div className="flex items-center gap-2 text-neutral-500 font-mono text-xs uppercase mb-2">
+                <Cpu size={14} /> Power Output
+              </div>
+              <div className="text-4xl font-black text-white font-mono">{power} MW</div>
+            </div>
+            <div className="text-emerald-500 font-mono text-sm border border-emerald-500/30 px-2 py-1 bg-emerald-500/10">STABLE</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function CapabilitiesSection() {
+  const items = [
+    { title: "5-Axis CNC Machining", img: "/images/demo/metal/1.jpg", desc: "Sub-millimeter precision for complex aerospace and automotive components." },
+    { title: "Robotic Welding", img: "/images/demo/metal/2.jpg", desc: "Automated TIG/MIG welding ensuring perfect structural integrity and consistency." },
+    { title: "Custom Extrusion", img: "/images/demo/metal/3.jpg", desc: "High-pressure extrusion for custom aluminum and titanium profiles." },
+    { title: "Thermal Treatment", img: "/images/demo/metal/4.jpg", desc: "Advanced tempering and annealing processes to maximize material strength." }
+  ];
+
+  return (
+    <section className="py-32 bg-[#050505] relative">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
+          <div>
+            <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter text-white mb-4">Industrial<br/>Capabilities</h2>
+            <p className="text-neutral-400 font-mono max-w-xl text-sm leading-relaxed">
+              Our 500,000 sq ft facility houses state-of-the-art manufacturing equipment capable of handling the most demanding industrial requirements.
             </p>
-            <div className="flex items-center gap-3 md:gap-4 text-[#ff4500] font-mono text-sm md:text-base uppercase tracking-widest bg-[#ff4500]/10 p-4 border border-[#ff4500]/20 w-fit">
-              <Activity size={16} />
-              <span>Análisis de estructura activado</span>
-            </div>
           </div>
-          
-          <div className="relative w-full aspect-square md:aspect-video lg:aspect-square border border-white/10 bg-neutral-950 p-4 md:p-8 flex justify-center items-center overflow-hidden">
-            <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_white_1px,_transparent_1px)] bg-[size:16px_16px] md:bg-[size:24px_24px]" />
-            <svg viewBox="0 0 100 100" className="w-full h-full relative z-10 max-w-[280px] md:max-w-none" fill="none" stroke="#ff4500" strokeWidth="0.5">
-              <motion.path d="M10,10 L90,10 L90,90 L10,90 Z" style={{ pathLength }} />
-              <motion.path d="M10,50 L90,50" style={{ pathLength }} />
-              <motion.path d="M50,10 L50,90" style={{ pathLength }} />
-              <motion.circle cx="50" cy="50" r="30" style={{ pathLength }} />
-              <motion.path d="M20,20 L80,80" style={{ pathLength }} />
-              <motion.path d="M80,20 L20,80" style={{ pathLength }} />
-            </svg>
-            <div className="absolute bottom-2 right-2 md:bottom-4 md:right-4 font-mono text-xs md:text-sm text-neutral-500 uppercase tracking-widest">
-              Esquema XYZ-409
-            </div>
+          <button className="interactable text-[#ff4500] font-mono font-bold uppercase flex items-center gap-2 border border-[#ff4500] px-6 py-3 hover:bg-[#ff4500] hover:text-black transition-colors">
+            View Equipment List <ArrowRight size={16} />
+          </button>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {items.map((item, i) => (
+            <motion.div 
+              key={i}
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: i * 0.1 }}
+              className="group relative aspect-video md:aspect-[4/3] bg-neutral-900 overflow-hidden border border-white/10"
+            >
+              <Image src={item.img} alt={item.title} fill className="object-cover grayscale group-hover:grayscale-0 transition-all duration-700 opacity-60 group-hover:opacity-100" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+              <div className="absolute bottom-0 left-0 p-8 w-full transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+                <div className="flex items-center gap-3 text-[#ff4500] font-mono text-sm mb-2">
+                  <Settings size={16} /> Process 0{i+1}
+                </div>
+                <h3 className="text-2xl md:text-3xl font-bold uppercase text-white mb-2">{item.title}</h3>
+                <p className="text-neutral-400 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 max-w-md">
+                  {item.desc}
+                </p>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function BlueprintSection() {
+  const containerRef = useRef(null);
+  const { scrollYProgress } = useScroll({ target: containerRef, offset: ["start end", "end start"] });
+  const pathLength = useTransform(scrollYProgress, [0.2, 0.8], [0, 1]);
+
+  return (
+    <section ref={containerRef} className="py-32 border-y border-white/10 bg-[#0a0a0a] relative overflow-hidden">
+      <div className="absolute inset-0 opacity-10 bg-[radial-gradient(circle_at_center,_white_1px,_transparent_1px)] bg-[size:32px_32px]" />
+      
+      <div className="max-w-7xl mx-auto px-6 relative z-10 grid lg:grid-cols-2 gap-16 items-center">
+        <div>
+          <div className="inline-flex items-center gap-2 border border-[#ff4500]/30 bg-[#ff4500]/10 text-[#ff4500] px-4 py-1.5 font-mono text-xs uppercase tracking-widest mb-8">
+            <ShieldAlert size={14} /> Structural Analysis
+          </div>
+          <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter text-white mb-8">
+            Architectural<br />DNA
+          </h2>
+          <p className="text-neutral-400 font-mono leading-relaxed mb-8 text-justify">
+            Tolerances are not optional; they are a strict requirement in our heavy manufacturing workflow. We analyze, simulate, and stress-test every component digitally before a single cut is made. Our proprietary engineering models predict thermal expansion and structural weaknesses with 99.9% accuracy.
+          </p>
+          <ul className="space-y-4 font-mono text-sm text-neutral-300 uppercase">
+            <li className="flex items-center gap-4 border-b border-white/5 pb-2">
+              <span className="text-[#ff4500] font-bold">01.</span> Digital Twin Simulation
+            </li>
+            <li className="flex items-center gap-4 border-b border-white/5 pb-2">
+              <span className="text-[#ff4500] font-bold">02.</span> Finite Element Analysis
+            </li>
+            <li className="flex items-center gap-4 border-b border-white/5 pb-2">
+              <span className="text-[#ff4500] font-bold">03.</span> Material Stress Testing
+            </li>
+          </ul>
+        </div>
+        
+        <div className="relative w-full aspect-square border border-[#ff4500]/20 bg-black/50 p-8 flex justify-center items-center overflow-hidden">
+          <svg viewBox="0 0 100 100" className="w-full h-full relative z-10 drop-shadow-[0_0_8px_rgba(255,69,0,0.5)]" fill="none" stroke="#ff4500" strokeWidth="0.5">
+            <motion.path d="M10,10 L90,10 L90,90 L10,90 Z" style={{ pathLength }} />
+            <motion.path d="M10,50 L90,50" style={{ pathLength }} />
+            <motion.path d="M50,10 L50,90" style={{ pathLength }} />
+            <motion.circle cx="50" cy="50" r="30" style={{ pathLength }} />
+            <motion.path d="M20,20 L80,80" style={{ pathLength }} />
+            <motion.path d="M80,20 L20,80" style={{ pathLength }} />
+            <motion.circle cx="50" cy="50" r="15" strokeDasharray="2,2" style={{ pathLength }} />
+            <motion.rect x="30" y="30" width="40" height="40" style={{ pathLength }} />
+          </svg>
+          <div className="absolute top-4 left-4 font-mono text-xs text-[#ff4500] uppercase">
+            Schematic X-99
+          </div>
+          <div className="absolute bottom-4 right-4 font-mono text-xs text-neutral-500 uppercase">
+            Render Status: 100%
           </div>
         </div>
-      </section>
+      </div>
+    </section>
+  );
+}
 
-      <section className="py-24 md:py-32 px-4 md:px-6 border-t border-white/10 bg-neutral-950 overflow-hidden">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row md:justify-between md:items-end mb-8 md:mb-12 gap-4">
-            <h2 className="text-6xl md:text-7xl font-black uppercase tracking-tighter leading-[0.9]">Telemetría<br />Operativa</h2>
-            <span className="font-mono text-[#ff4500] text-sm md:text-base uppercase tracking-widest flex items-center gap-2 bg-[#ff4500]/10 px-3 py-1.5 border border-[#ff4500]/20 w-fit">
-              <span className="w-2 h-2 bg-[#ff4500] animate-pulse" />
-              Live Data
-            </span>
-          </div>
+function GlobalScale() {
+  return (
+    <section className="py-32 bg-[#050505]">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="text-center mb-16">
+          <h2 className="text-4xl md:text-5xl font-black uppercase tracking-tighter text-white mb-4">Production at Scale</h2>
+          <p className="text-neutral-500 font-mono uppercase">Delivering industrial materials globally</p>
+        </div>
+        
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
+          {[
+            { v: "2.4M", l: "Tons of Steel" },
+            { v: "150+", l: "Global Partners" },
+            { v: "45", l: "Years Active" },
+            { v: "0.01", l: "Defect Rate (%)" }
+          ].map((s, i) => (
+            <motion.div 
+              key={i}
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              className="bg-[#0a0a0a] border border-white/10 p-8 text-center hover:border-[#ff4500] transition-colors"
+            >
+              <div className="text-4xl md:text-6xl font-black text-white mb-4 tracking-tighter">{s.v}</div>
+              <div className="text-[#ff4500] font-mono text-sm uppercase tracking-widest">{s.l}</div>
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
 
-          <div className="flex md:grid md:grid-cols-3 gap-4 overflow-x-auto snap-x snap-mandatory pb-6 pt-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden w-full">
-            <div className="min-w-[85vw] sm:min-w-[60vw] md:min-w-0 snap-center border border-white/10 p-6 md:p-8 bg-[#0a0a0a] flex flex-col justify-between aspect-square md:aspect-auto md:h-64 group active:border-[#ff4500] md:hover:border-[#ff4500]/50 transition-colors">
-              <div className="flex justify-between items-start">
-                <Cpu className="text-neutral-500 group-active:text-[#ff4500] md:group-hover:text-[#ff4500] transition-colors" size={24} />
-                <span className="font-mono text-sm md:text-base text-neutral-600 uppercase">Ciclos</span>
-              </div>
-              <div className="mt-8 md:mt-0">
-                <motion.div 
-                  key={cycles}
-                  initial={{ opacity: 0.5, y: -5 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  className="text-5xl md:text-6xl font-black tracking-tighter"
-                >
-                  {cycles.toLocaleString()}
-                </motion.div>
-                <div className="font-mono text-sm md:text-base text-[#ff4500] mt-2 uppercase">Operaciones/Hora</div>
-              </div>
-            </div>
-
-            <div className="min-w-[85vw] sm:min-w-[60vw] md:min-w-0 snap-center border border-white/10 p-6 md:p-8 bg-[#0a0a0a] flex flex-col justify-between aspect-square md:aspect-auto md:h-64 group active:border-[#ff4500] md:hover:border-[#ff4500]/50 transition-colors">
-              <div className="flex justify-between items-start">
-                <Maximize className="text-neutral-500 group-active:text-[#ff4500] md:group-hover:text-[#ff4500] transition-colors" size={24} />
-                <span className="font-mono text-sm md:text-base text-neutral-600 uppercase">Tolerancia</span>
-              </div>
-              <div className="mt-8 md:mt-0">
-                <div className="text-5xl md:text-6xl font-black tracking-tighter">0.001</div>
-                <div className="font-mono text-sm md:text-base text-[#ff4500] mt-2 uppercase">Milímetros</div>
-              </div>
-            </div>
-
-            <div className="min-w-[85vw] sm:min-w-[60vw] md:min-w-0 snap-center border border-white/10 p-6 md:p-8 bg-[#0a0a0a] flex flex-col justify-between aspect-square md:aspect-auto md:h-64 group active:border-[#ff4500] md:hover:border-[#ff4500]/50 transition-colors">
-              <div className="flex justify-between items-start">
-                <Activity className="text-neutral-500 group-active:text-[#ff4500] md:group-hover:text-[#ff4500] transition-colors" size={24} />
-                <span className="font-mono text-sm md:text-base text-neutral-600 uppercase">Núcleo térmico</span>
-              </div>
-              <div className="mt-8 md:mt-0">
-                <motion.div 
-                  key={temp}
-                  initial={{ opacity: 0.5 }}
-                  animate={{ opacity: 1 }}
-                  className="text-5xl md:text-6xl font-black tracking-tighter flex items-start"
-                >
-                  {temp}<span className="text-xl md:text-2xl mt-1 md:mt-2">°C</span>
-                </motion.div>
-                <div className="font-mono text-sm md:text-base text-[#ff4500] mt-2 uppercase">Temperatura estable</div>
-              </div>
-            </div>
+function TestimonialSection() {
+  return (
+    <section className="py-32 border-t border-white/10 bg-[#0a0a0a] relative">
+      <div className="max-w-7xl mx-auto px-6 flex flex-col md:flex-row items-center gap-16">
+        <div className="md:w-1/3 relative aspect-square border border-white/10">
+           <Image src="/images/demo/metal/5.jpg" alt="Partner" fill className="object-cover grayscale" />
+        </div>
+        <div className="md:w-2/3">
+          <ShieldCheck size={48} className="text-[#ff4500] mb-8" />
+          <p className="text-2xl md:text-4xl font-bold uppercase leading-snug text-white mb-8">
+            "Titan Precision's custom titanium alloys reduced our aerospace components weight by 14% while exceeding all structural stress tests. They are unparalleled in heavy manufacturing."
+          </p>
+          <div className="font-mono">
+            <div className="text-white font-bold text-lg">J. ROBERTSON</div>
+            <div className="text-neutral-500 text-sm uppercase mt-1">Lead Engineer, AeroDynamics Corp</div>
           </div>
         </div>
-      </section>
+      </div>
+    </section>
+  );
+}
 
-      <section className="py-24 md:py-32 px-4 md:px-6 border-t border-white/10 relative overflow-hidden">
-        <div className="absolute right-0 top-0 w-full md:w-1/2 h-full bg-[#ff4500] opacity-5 md:skew-x-[-20deg] transform md:translate-x-32" />
-        <div className="max-w-7xl mx-auto relative z-10">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-16 items-center">
-            <div className="order-2 lg:order-1">
-              <h2 className="text-6xl md:text-8xl font-black uppercase tracking-tighter mb-8 leading-[0.9]">
-                Fabricación<br />Pesada
-              </h2>
-              <div className="flex flex-col gap-4 md:gap-6 font-mono text-sm md:text-base text-neutral-400 uppercase tracking-widest anime-metal-container">
-                <div className="anime-metal-item opacity-0 flex items-center gap-4 border-b border-white/10 pb-4">
-                  <span className="text-[#ff4500] font-black text-lg">01</span>
-                  <span>Mecanizado CNC 5 Ejes</span>
-                </div>
-                <div className="anime-metal-item opacity-0 flex items-center gap-4 border-b border-white/10 pb-4">
-                  <span className="text-[#ff4500] font-black text-lg">02</span>
-                  <span>Corte por Plasma</span>
-                </div>
-                <div className="anime-metal-item opacity-0 flex items-center gap-4 border-b border-white/10 pb-4">
-                  <span className="text-[#ff4500] font-black text-lg">03</span>
-                  <span>Soldadura Robótica TIG/MIG</span>
-                </div>
-                <div className="anime-metal-item opacity-0 flex items-center gap-4 border-b border-white/10 pb-4">
-                  <span className="text-[#ff4500] font-black text-lg">04</span>
-                  <span>Aleaciones de Titanio</span>
-                </div>
-                <div className="anime-metal-item opacity-0 flex items-center gap-4 border-b border-white/10 pb-4">
-                  <span className="text-[#ff4500] font-black text-lg">05</span>
-                  <span>Análisis de Tensión Térmica</span>
-                </div>
-              </div>
-            </div>
-            <div className="order-1 lg:order-2 relative aspect-[4/3] md:aspect-[3/4] w-full">
-              <img src="/images/demo/metal/6.jpg" alt="Background" className="w-full h-full object-cover grayscale contrast-125 border border-white/5" />
-              <div className="absolute inset-0 border-2 border-[#ff4500] transform translate-x-3 translate-y-3 md:translate-x-4 md:translate-y-4 -z-10" />
-            </div>
+function Footer() {
+  return (
+    <footer className="bg-[#050505] border-t-4 border-[#ff4500] pt-24 pb-12 px-6">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-16 mb-16">
+        <div className="max-w-md">
+          <h3 className="text-3xl font-black uppercase tracking-tighter text-white mb-6">TITAN HEAVY IND.</h3>
+          <p className="text-neutral-500 font-mono text-sm leading-relaxed mb-8">
+            Global leaders in heavy metallurgy, custom fabrication, and structural engineering. Built to last.
+          </p>
+          <button className="interactable bg-[#ff4500] text-black px-6 py-3 font-bold uppercase tracking-widest hover:bg-white transition-colors w-full sm:w-auto">
+            Request Quote
+          </button>
+        </div>
+        
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-12 font-mono text-sm">
+          <div>
+            <h4 className="text-white font-bold uppercase mb-6 border-b border-white/20 pb-2">Operations</h4>
+            <ul className="space-y-4 text-neutral-400">
+              <li><a href="#" className="hover:text-[#ff4500] transition-colors interactable">Capabilities</a></li>
+              <li><a href="#" className="hover:text-[#ff4500] transition-colors interactable">Equipment</a></li>
+              <li><a href="#" className="hover:text-[#ff4500] transition-colors interactable">Quality Control</a></li>
+              <li><a href="#" className="hover:text-[#ff4500] transition-colors interactable">Safety</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4 className="text-white font-bold uppercase mb-6 border-b border-white/20 pb-2">Company</h4>
+            <ul className="space-y-4 text-neutral-400">
+              <li><a href="#" className="hover:text-[#ff4500] transition-colors interactable">About Us</a></li>
+              <li><a href="#" className="hover:text-[#ff4500] transition-colors interactable">Careers</a></li>
+              <li><a href="#" className="hover:text-[#ff4500] transition-colors interactable">Investors</a></li>
+              <li><a href="#" className="hover:text-[#ff4500] transition-colors interactable">News</a></li>
+            </ul>
+          </div>
+          <div className="col-span-2 md:col-span-1">
+            <h4 className="text-white font-bold uppercase mb-6 border-b border-white/20 pb-2">Contact</h4>
+            <ul className="space-y-4 text-neutral-400">
+              <li>1-800-TITAN-ENG</li>
+              <li>info@titanheavy.com</li>
+              <li>Industrial Park 4, Sector 7<br/>Detroit, MI</li>
+            </ul>
           </div>
         </div>
-      </section>
-
-      <footer className="border-t border-white/10 bg-[#0a0a0a] pt-24 md:pt-32 pb-8 md:pb-16 px-4 md:px-6 relative overflow-hidden">
-        <div className="max-w-7xl mx-auto flex flex-col items-center text-center relative z-10">
-          <motion.button 
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onMouseEnter={() => setIsHovering(true)}
-            onMouseLeave={() => setIsHovering(false)}
-            className="group relative inline-flex items-center justify-center px-8 py-5 md:px-12 md:py-6 bg-[#ff4500] text-black font-black text-xl md:text-5xl uppercase tracking-tighter overflow-hidden md:cursor-none w-full md:w-auto"
-          >
-            <span className="relative z-10">Iniciar Proyecto</span>
-            <div className="absolute inset-0 bg-white transform translate-y-full md:group-hover:translate-y-0 active:translate-y-0 transition-transform duration-500 ease-out" />
-          </motion.button>
-          
-          <div className="mt-24 md:mt-32 w-full flex flex-col md:flex-row justify-between items-center gap-6 md:gap-8 font-mono text-sm md:text-base text-neutral-600 uppercase tracking-widest border-t border-white/10 pt-8">
-            <div className="flex items-center gap-2">
-              <Crosshair size={14} />
-              <span className="text-center">TITAN PRECISION CORP. © 2024</span>
-            </div>
-            <div className="flex flex-wrap justify-center gap-6 md:gap-8">
-              <span className="hover:text-white transition-colors md:cursor-none active:scale-95" onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}>Terminos</span>
-              <span className="hover:text-white transition-colors md:cursor-none active:scale-95" onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}>Privacidad</span>
-              <span className="hover:text-white transition-colors md:cursor-none active:scale-95" onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}>Contacto</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <div className="w-1.5 h-1.5 bg-[#ff4500]" />
-              <span>Sistema Operativo</span>
-            </div>
-          </div>
+      </div>
+      
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center pt-8 border-t border-white/10 font-mono text-xs uppercase text-neutral-600 gap-4">
+        <div>© 2026 Titan Heavy Industries Corp. All rights reserved.</div>
+        <div className="flex gap-6">
+          <a href="#" className="hover:text-white transition-colors interactable">Terms</a>
+          <a href="#" className="hover:text-white transition-colors interactable">Privacy</a>
+          <a href="#" className="hover:text-white transition-colors interactable">Sitemap</a>
         </div>
-      </footer>
-    </div>
+      </div>
+    </footer>
+  );
+}
+
+export default function TitanHeavyInd() {
+  return (
+    <DemoLayout title="Titan Heavy Industries">
+      <CustomCursor />
+      <div className="bg-[#050505] text-white font-sans selection:bg-[#ff4500] selection:text-white min-h-screen">
+        <NavBar />
+        <main>
+          <HeroSection />
+          <LiveTelemetry />
+          <CapabilitiesSection />
+          <BlueprintSection />
+          <GlobalScale />
+          <TestimonialSection />
+        </main>
+        <Footer />
+      </div>
     </DemoLayout>
   );
 }

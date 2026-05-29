@@ -1,669 +1,423 @@
-'use client'
+"use client";
 
-import { useEffect, useRef, useState } from 'react'
-import { motion, AnimatePresence, useScroll, useTransform, useSpring } from 'framer-motion'
-import { Clock, ArrowUpRight, ChevronRight, Mail, Phone, MapPin, Menu, X } from 'lucide-react'
-import Link from 'next/link'
-import DemoLayout from '@/components/DemoLayout'
+import React, { useState, useEffect, useRef } from "react";
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import Link from "next/link";
+import { ArrowLeft, Menu, X, Play, MapPin, ArrowRight, Clock } from "lucide-react";
+import DemoLayout from "@/components/DemoLayout";
 
-const PALETTE = {
-  ivory:     '#FBF9F6',
-  navy:      '#1C2A39',
-  gold:      '#C3A370',
-  goldLight: '#D4B98A',
-  goldDark:  '#A8885C',
-  stone:     '#8C8578',
-  ink:       '#2D2D2D',
+/* -------------------------------------------------------------------------- */
+/*                                CUSTOM HOOKS                                */
+/* -------------------------------------------------------------------------- */
+
+function useMousePosition() {
+  const [mousePosition, setMousePosition] = useState({ x: -100, y: -100 });
+  useEffect(() => {
+    const updateMousePosition = (e) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    };
+    window.addEventListener("mousemove", updateMousePosition);
+    return () => window.removeEventListener("mousemove", updateMousePosition);
+  }, []);
+  return mousePosition;
 }
 
-const COLLECTIONS = [
-  {
-    name:  'LEGACY I',
-    ref:   'Ref. V-1884-LE',
-    desc:  'Calíbre manual de 72h de reserva de marcha. Caja de 38mm en platino 950.',
-    price: 'desde €28,400',
-    img:   '/images/demo/premium/hero.jpg',
-  },
-  {
-    name:  'ALTITUDE PRO',
-    ref:   'Ref. V-2301-AP',
-    desc:  'Tourbillon volant con indicador de altitud. Titanio grado 5. Resistente a 300m.',
-    price: 'desde €67,800',
-    img:   '/images/demo/premium/2.jpg',
-  },
-  {
-    name:  'NOIR ABSOLU',
-    ref:   'Ref. V-2024-NA',
-    desc:  'DLC negro mat. Cronógrafo de doble pulsador. Únicamente 88 ejemplares en existencia.',
-    price: 'desde €145,000',
-    img:   '/images/demo/premium/3.jpg',
-  },
-]
+/* -------------------------------------------------------------------------- */
+/*                                 COMPONENTS                                 */
+/* -------------------------------------------------------------------------- */
 
-const TIMELINE = [
-  { year: 1884, event: 'Fundación en Le Brassus, Valle de Jóux, Suiza.' },
-  { year: 1932, event: 'Primera complicación de calendario perpetuo con indicador de fase lunar.' },
-  { year: 1971, event: 'Introducción del calíbre V-71, el oscilador de cuarzo más preciso de la época.' },
-  { year: 2024, event: 'Tourbillon volant magnético. El avance más significativo en 50 años.' },
-]
-
-const SAVOIR = [
-  {
-    title: 'Guilloché Manual',
-    desc:  'Cada esfera se trabaja a mano durante 30+ horas con técnicas del siglo XIX.',
-    img:   '/images/demo/premium/4.jpg',
-  },
-  {
-    title: 'Ensamblaje',
-    desc:  '212 componentes. Un relojero. Cuatro semanas de trabajo meticuloso.',
-    img:   '/images/demo/premium/5.jpg',
-  },
-  {
-    title: 'Control de Calidad',
-    desc:  '28 días de pruebas en seis posiciones antes de dejar nuestros talleres.',
-    img:   '/images/demo/premium/6.jpg',
-  },
-  {
-    title: 'Caja y Pulido',
-    desc:  'Acabados alternados satinados y pulidos ejecutados a mano por artesanos certificados.',
-    img:   '/images/demo/premium/2.jpg',
-  },
-]
-
-function CustomCursor() {
-  const cursorX = useSpring(0, { stiffness: 500, damping: 40 })
-  const cursorY = useSpring(0, { stiffness: 500, damping: 40 })
-  const [visible, setVisible] = useState(false)
-
-  useEffect(() => {
-    import("animejs").then((module) => {
-      const anime = module.default;
-      anime({
-        targets: '.anime-item',
-        translateY: [30, 0],
-        opacity: [0, 1],
-        delay: anime.stagger(150, { start: 300 }),
-        easing: 'easeOutExpo',
-        duration: 1000
-      });
-    });
-  }, []);
-
-  useEffect(() => {
-    const move = (e) => {
-      cursorX.set(e.clientX - 5)
-      cursorY.set(e.clientY - 5)
-      if (!visible) setVisible(true)
-    }
-    window.addEventListener('mousemove', move)
-    return () => window.removeEventListener('mousemove', move)
-  }, [cursorX, cursorY, visible])
-
+const Cursor = () => {
+  const { x, y } = useMousePosition();
   return (
     <motion.div
-      className="hidden md:block pointer-events-none fixed top-0 left-0 z-[9999] rounded-full mix-blend-normal"
-      style={{
-        x: cursorX,
-        y: cursorY,
-        width: 10,
-        height: 10,
-        border: `1px solid ${PALETTE.gold}`,
-        opacity: visible ? 1 : 0,
-      }}
+      className="hidden md:block fixed top-0 left-0 w-3 h-3 bg-[#D4AF37] rounded-full pointer-events-none z-[9999] mix-blend-difference"
+      animate={{ x: x - 6, y: y - 6 }}
+      transition={{ type: "tween", ease: "backOut", duration: 0.15 }}
     />
-  )
-}
+  );
+};
 
-function Nav() {
-  const [isOpen, setIsOpen] = useState(false)
+const FadeInReveal = ({ children, delay = 0, className = "" }) => (
+  <motion.div
+    initial={{ opacity: 0, y: 40 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, margin: "-10%" }}
+    transition={{ duration: 0.8, ease: [0.25, 0.1, 0.25, 1], delay }}
+    className={className}
+  >
+    {children}
+  </motion.div>
+);
+
+/* -------------------------------------------------------------------------- */
+/*                                  SECTIONS                                  */
+/* -------------------------------------------------------------------------- */
+
+const Hero = () => {
+  return (
+    <section className="relative w-full h-[100svh] flex flex-col md:flex-row bg-[#050505] text-[#F9F6F0] overflow-hidden">
+      <div className="w-full md:w-1/2 h-1/2 md:h-full relative flex flex-col justify-center px-8 md:px-16 pt-24 md:pt-0 z-10">
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0.5 }}
+          className="font-sans text-[10px] md:text-xs uppercase tracking-[0.4em] text-[#D4AF37] mb-6"
+        >
+          Manufacture Genevoise Est. 1856
+        </motion.p>
+        <motion.h1
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 1, delay: 0.7 }}
+          className="font-serif text-[12vw] md:text-[6vw] leading-[0.9] tracking-tighter mb-8"
+        >
+          Mastering <br /> <span className="italic font-light">Eternity.</span>
+        </motion.h1>
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: 0.9 }}
+          className="font-sans text-sm md:text-base text-[#F9F6F0]/60 max-w-sm leading-relaxed"
+        >
+          Aurelia timepieces represent the absolute zenith of haute horlogerie, crafted by master artisans in the heart of Geneva.
+        </motion.p>
+        
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 1, delay: 1.1 }}
+          className="mt-12 flex items-center gap-6"
+        >
+          <button className="flex items-center gap-3 font-sans text-xs uppercase tracking-widest border-b border-[#D4AF37] pb-1 text-[#D4AF37] hover:text-[#F9F6F0] hover:border-[#F9F6F0] transition-colors">
+            Discover Collections <ArrowRight size={14} />
+          </button>
+        </motion.div>
+      </div>
+      
+      <div className="w-full md:w-1/2 h-1/2 md:h-full relative overflow-hidden">
+        <motion.img
+          initial={{ scale: 1.1 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 2, ease: "easeOut" }}
+          src="/images/demo/premium/hero.jpg"
+          alt="Aurelia Watch"
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent md:bg-gradient-to-l opacity-80" />
+      </div>
+    </section>
+  );
+};
+
+const Heritage = () => {
+  const years = [
+    { year: "1856", title: "The Foundation", text: "Antoine Aurelia establishes his first workshop in Geneva, dedicating his life to creating chronometers of unprecedented precision." },
+    { year: "1923", title: "First Tourbillon", text: "Aurelia introduces its first pocket watch featuring a tourbillon, winning the Observatory Chronometer competition." },
+    { year: "1978", title: "The Sovereign", text: "Launch of our most iconic sports-luxury collection, redefining the aesthetic of high-end steel watches." },
+    { year: "2024", title: "Perpetual Future", text: "Unveiling the ultra-thin perpetual calendar, a triumph of miniaturization and mechanical genius." },
+  ];
 
   return (
-    <>
-      <nav className="fixed top-0 left-0 right-0 z-[100] flex items-center justify-between px-6 md:px-12 h-16 bg-[#FBF9F6] border-b border-[#1C2A39]/10">
-        <span className="font-serif text-sm md:text-base tracking-[0.08em] text-[#1C2A39]">
-          VALMONT &amp; CO
-          <span className="hidden md:inline"> — HORLOGERIE SUISSE EST. 1884</span>
-        </span>
+    <section className="py-24 md:py-40 px-8 md:px-16 bg-[#0F0F0F] text-[#F9F6F0]">
+      <FadeInReveal>
+        <h2 className="font-serif text-4xl md:text-6xl mb-16 text-center">
+          Our <span className="italic text-[#D4AF37]">Heritage</span>
+        </h2>
+      </FadeInReveal>
+      
+      <div className="max-w-4xl mx-auto relative border-l border-[#D4AF37]/30 pl-8 md:pl-12 space-y-16">
+        {years.map((item, i) => (
+          <FadeInReveal key={i} delay={i * 0.1}>
+            <div className="relative">
+              <div className="absolute -left-[37px] md:-left-[53px] top-1.5 w-3 h-3 rounded-full bg-[#D4AF37] shadow-[0_0_10px_rgba(212,175,55,0.5)]" />
+              <p className="font-sans text-xl md:text-2xl text-[#D4AF37] mb-2">{item.year}</p>
+              <h3 className="font-serif text-2xl md:text-3xl mb-4">{item.title}</h3>
+              <p className="font-sans text-sm md:text-base text-[#F9F6F0]/60 leading-relaxed">
+                {item.text}
+              </p>
+            </div>
+          </FadeInReveal>
+        ))}
+      </div>
+    </section>
+  );
+};
 
-        <div className="hidden md:flex items-center gap-9">
-          {['Colecciones', 'Patrimonio', 'Maison'].map((item) => (
-            <motion.a
-              key={item}
-              href="#"
-              whileHover={{ color: PALETTE.gold }}
-              className="font-sans text-sm tracking-[0.16em] uppercase text-[#1C2A39] transition-colors"
-            >
-              {item}
-            </motion.a>
+const Collections = () => {
+  const collections = [
+    { name: "Sovereign", desc: "The ultimate sports luxury", price: "From $24,500", img: "/images/demo/premium/1.jpg" },
+    { name: "Éternité", desc: "Classic dress chronometers", price: "From $18,000", img: "/images/demo/premium/2.jpg" },
+    { name: "Celestia", desc: "Astronomical complications", price: "From $85,000", img: "/images/demo/premium/3.jpg" },
+    { name: "Odyssey", desc: "Deep sea exploration", price: "From $14,200", img: "/images/demo/premium/4.jpg" },
+  ];
+
+  return (
+    <section className="py-24 md:py-40 px-8 md:px-16 bg-[#F9F6F0] text-[#050505]">
+      <div className="flex justify-between items-end mb-16 border-b border-[#050505]/10 pb-8">
+        <div>
+          <p className="font-sans text-[10px] uppercase tracking-[0.3em] text-[#D4AF37] mb-4">Manufacture 2024</p>
+          <h2 className="font-serif text-4xl md:text-6xl">Collections</h2>
+        </div>
+        <button className="hidden md:flex font-sans text-xs uppercase tracking-widest items-center gap-2 hover:opacity-50 transition-opacity">
+          View All <ArrowRight size={14} />
+        </button>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+        {collections.map((col, i) => (
+          <FadeInReveal key={i} delay={i * 0.1}>
+            <div className="group cursor-pointer">
+              <div className="relative aspect-square md:aspect-[4/3] overflow-hidden bg-[#E8E5DF] mb-6">
+                <img 
+                  src={col.img} 
+                  alt={col.name} 
+                  className="w-full h-full object-cover mix-blend-multiply group-hover:scale-105 transition-transform duration-700"
+                />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500" />
+              </div>
+              <div className="flex justify-between items-start">
+                <div>
+                  <h3 className="font-serif text-2xl md:text-3xl mb-2">{col.name}</h3>
+                  <p className="font-sans text-xs text-[#050505]/50 uppercase tracking-widest">{col.desc}</p>
+                </div>
+                <p className="font-sans text-sm font-medium">{col.price}</p>
+              </div>
+            </div>
+          </FadeInReveal>
+        ))}
+      </div>
+    </section>
+  );
+};
+
+const Craftsmanship = () => {
+  const containerRef = useRef(null);
+  const { scrollYProgress } = useScroll({
+    target: containerRef,
+    offset: ["start end", "end start"]
+  });
+  const y = useTransform(scrollYProgress, [0, 1], ["-20%", "20%"]);
+
+  return (
+    <section ref={containerRef} className="relative h-screen bg-[#050505] overflow-hidden flex items-center justify-center">
+      <motion.img 
+        style={{ y }}
+        src="/images/demo/premium/5.jpg" 
+        alt="Craftsmanship" 
+        className="absolute inset-0 w-full h-[140%] object-cover opacity-40"
+      />
+      <div className="relative z-10 text-center text-[#F9F6F0] max-w-3xl px-8">
+        <p className="font-sans text-[10px] uppercase tracking-[0.4em] text-[#D4AF37] mb-8">Haute Horlogerie</p>
+        <h2 className="font-serif text-4xl md:text-6xl leading-tight font-light mb-8">
+          It takes 400 hours to assemble a single Aurelia tourbillon.
+        </h2>
+        <p className="font-sans text-sm md:text-base text-[#F9F6F0]/70 leading-relaxed mb-12">
+          Every component, even those hidden from view, is meticulously hand-finished with anglage, perlage, and côtes de Genève. We do not compromise on perfection.
+        </p>
+        <button className="w-16 h-16 rounded-full border border-[#D4AF37] text-[#D4AF37] flex items-center justify-center mx-auto hover:bg-[#D4AF37] hover:text-[#050505] transition-all duration-300">
+          <Play size={20} className="ml-1" />
+        </button>
+      </div>
+    </section>
+  );
+};
+
+const Complications = () => {
+  const features = [
+    { title: "Tourbillon Volant", desc: "Defying gravity with a rotating cage suspended from a single bridge." },
+    { title: "Quantième Perpétuel", desc: "A mechanical brain that correctly calculates leap years until 2100." },
+    { title: "Répétition Minutes", desc: "Chiming the exact time on demand with crystal clear acoustics." },
+    { title: "Chronographe à Rattrapante", desc: "Measuring split times with absolute precision via a dual-hand mechanism." }
+  ];
+
+  return (
+    <section className="py-24 md:py-40 px-8 md:px-16 bg-[#0F0F0F] text-[#F9F6F0]">
+      <div className="max-w-6xl mx-auto flex flex-col md:flex-row gap-16">
+        <div className="md:w-1/3">
+          <FadeInReveal>
+            <h2 className="font-serif text-4xl md:text-5xl mb-6">The Art of <br/> <span className="italic text-[#D4AF37]">Complications</span></h2>
+            <p className="font-sans text-sm text-[#F9F6F0]/50 leading-relaxed">
+              Pushing the boundaries of mechanical engineering to create micro-mechanical wonders that measure more than just hours and minutes.
+            </p>
+          </FadeInReveal>
+        </div>
+        <div className="md:w-2/3 grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-12">
+          {features.map((feat, i) => (
+            <FadeInReveal key={i} delay={i * 0.1}>
+              <div className="border-t border-[#D4AF37]/30 pt-6">
+                <Clock className="text-[#D4AF37] mb-4" size={24} />
+                <h3 className="font-serif text-2xl mb-3">{feat.title}</h3>
+                <p className="font-sans text-sm text-[#F9F6F0]/60 leading-relaxed">{feat.desc}</p>
+              </div>
+            </FadeInReveal>
           ))}
-          <Link
-            href="/"
-            className="font-sans text-sm tracking-[0.14em] uppercase text-[#C3A370] border-l border-[#C3A370]/30 pl-6"
-          >
-            ← Catálogo
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const PrivateBoutique = () => {
+  return (
+    <section className="py-24 md:py-32 px-8 md:px-16 bg-[#F9F6F0] text-[#050505]">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row rounded-sm overflow-hidden bg-[#E8E5DF]">
+        <div className="md:w-1/2 p-12 md:p-20 flex flex-col justify-center">
+          <p className="font-sans text-[10px] uppercase tracking-[0.4em] text-[#D4AF37] mb-6">Private Service</p>
+          <h2 className="font-serif text-4xl md:text-5xl mb-6">Book an Appointment</h2>
+          <p className="font-sans text-sm text-[#050505]/60 mb-12 max-w-sm">
+            Experience our collections in person. Our ambassadors await you in our private salons for a personalized presentation.
+          </p>
+          <form className="flex flex-col gap-6">
+            <input type="text" placeholder="Full Name" className="bg-transparent border-b border-[#050505]/20 pb-3 font-sans text-sm outline-none focus:border-[#D4AF37] transition-colors" />
+            <input type="email" placeholder="Email Address" className="bg-transparent border-b border-[#050505]/20 pb-3 font-sans text-sm outline-none focus:border-[#D4AF37] transition-colors" />
+            <select className="bg-transparent border-b border-[#050505]/20 pb-3 font-sans text-sm outline-none focus:border-[#D4AF37] transition-colors appearance-none cursor-pointer">
+              <option value="" disabled selected>Select Boutique</option>
+              <option value="geneva">Geneva Flagship</option>
+              <option value="paris">Paris Place Vendôme</option>
+              <option value="london">London Bond Street</option>
+              <option value="dubai">Dubai Mall</option>
+            </select>
+            <button type="button" className="mt-8 bg-[#050505] text-[#F9F6F0] font-sans text-xs uppercase tracking-widest py-4 hover:bg-[#D4AF37] transition-colors">
+              Request Appointment
+            </button>
+          </form>
+        </div>
+        <div className="md:w-1/2 min-h-[400px]">
+          <img src="/images/demo/premium/6.jpg" alt="Boutique" className="w-full h-full object-cover" />
+        </div>
+      </div>
+    </section>
+  );
+};
+
+const Footer = () => {
+  return (
+    <footer className="bg-[#050505] text-[#F9F6F0] pt-24 pb-12 px-8 md:px-16 border-t border-white/5">
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-start gap-16 mb-24">
+        <div className="max-w-xs">
+          <h2 className="font-serif text-3xl tracking-widest uppercase mb-6">AURELIA</h2>
+          <p className="font-sans text-xs text-[#F9F6F0]/40 leading-relaxed mb-6">
+            Haute Horlogerie Genevoise since 1856. Crafting the measurement of time into an art form.
+          </p>
+          <div className="flex gap-4">
+            {["Instagram", "WeChat", "LinkedIn"].map((social) => (
+              <a key={social} href="#" className="font-sans text-[10px] uppercase tracking-widest text-[#D4AF37] hover:text-[#F9F6F0] transition-colors">
+                {social}
+              </a>
+            ))}
+          </div>
+        </div>
+        <div className="flex flex-col md:flex-row gap-12 md:gap-24 font-sans text-xs">
+          <div className="flex flex-col gap-4">
+            <h4 className="uppercase tracking-[0.2em] text-[#F9F6F0]/30 mb-2">Collections</h4>
+            <a href="#" className="hover:text-[#D4AF37] transition-colors">Sovereign</a>
+            <a href="#" className="hover:text-[#D4AF37] transition-colors">Éternité</a>
+            <a href="#" className="hover:text-[#D4AF37] transition-colors">Celestia</a>
+            <a href="#" className="hover:text-[#D4AF37] transition-colors">Odyssey</a>
+          </div>
+          <div className="flex flex-col gap-4">
+            <h4 className="uppercase tracking-[0.2em] text-[#F9F6F0]/30 mb-2">Maison</h4>
+            <a href="#" className="hover:text-[#D4AF37] transition-colors">History</a>
+            <a href="#" className="hover:text-[#D4AF37] transition-colors">Savoir-Faire</a>
+            <a href="#" className="hover:text-[#D4AF37] transition-colors">Boutiques</a>
+            <a href="#" className="hover:text-[#D4AF37] transition-colors">Careers</a>
+          </div>
+          <div className="flex flex-col gap-4">
+            <h4 className="uppercase tracking-[0.2em] text-[#F9F6F0]/30 mb-2">Legal</h4>
+            <a href="#" className="hover:text-[#D4AF37] transition-colors">Privacy Policy</a>
+            <a href="#" className="hover:text-[#D4AF37] transition-colors">Terms of Use</a>
+            <a href="#" className="hover:text-[#D4AF37] transition-colors">Cookies</a>
+          </div>
+        </div>
+      </div>
+      <div className="max-w-7xl mx-auto pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center font-sans text-[10px] uppercase tracking-widest text-[#F9F6F0]/30 gap-4">
+        <p>&copy; {new Date().getFullYear()} Aurelia Watches. All rights reserved.</p>
+        <p>Swiss Made</p>
+      </div>
+    </footer>
+  );
+};
+
+/* -------------------------------------------------------------------------- */
+/*                                 MAIN PAGE                                  */
+/* -------------------------------------------------------------------------- */
+
+export default function PremiumPage() {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  return (
+    <DemoLayout title="AURELIA | Luxury Swiss Watches">
+      <style>{`
+        body { background-color: #050505; color: #F9F6F0; cursor: none; }
+        ::selection { background: #D4AF37; color: #050505; }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #050505; }
+        ::-webkit-scrollbar-thumb { background: #D4AF37; }
+      `}</style>
+      <Cursor />
+      
+      {/* Navbar */}
+      <nav className="fixed top-0 left-0 w-full z-50 px-8 py-8 flex justify-between items-center mix-blend-difference text-[#F9F6F0] pointer-events-none">
+        <div className="pointer-events-auto">
+          <Link href="/" className="flex items-center gap-2 hover:text-[#D4AF37] transition-colors">
+            <ArrowLeft size={16} />
+            <span className="font-sans text-[10px] md:text-xs uppercase tracking-[0.2em] hidden md:block">Catálogo</span>
           </Link>
         </div>
-
-        <button 
-          className="md:hidden text-[#1C2A39] p-2 -mr-2"
-          onClick={() => setIsOpen(true)}
-        >
-          <Menu size={20} />
-        </button>
+        <div className="pointer-events-auto font-serif text-2xl tracking-[0.4em] uppercase absolute left-1/2 -translate-x-1/2">
+          AURELIA
+        </div>
+        <div className="pointer-events-auto flex items-center gap-6">
+          <button className="hidden md:block font-sans text-[10px] uppercase tracking-[0.2em] hover:text-[#D4AF37] transition-colors border border-[#F9F6F0]/20 px-4 py-2 rounded-sm">
+            Boutiques
+          </button>
+          <button onClick={() => setMenuOpen(!menuOpen)} className="hover:text-[#D4AF37] transition-colors">
+            {menuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
       </nav>
 
+      {/* Fullscreen Menu */}
       <AnimatePresence>
-        {isOpen && (
+        {menuOpen && (
           <motion.div
-            initial={{ opacity: 0, y: '-100%' }}
+            initial={{ opacity: 0, y: "-100%" }}
             animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: '-100%' }}
-            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-            className="fixed inset-0 z-[200] bg-[#FBF9F6] flex flex-col justify-center items-center"
+            exit={{ opacity: 0, y: "-100%" }}
+            transition={{ duration: 0.8, ease: [0.76, 0, 0.24, 1] }}
+            className="fixed inset-0 z-40 bg-[#050505] text-[#F9F6F0] flex flex-col justify-center items-center"
           >
-            <button 
-              className="absolute top-6 right-6 text-[#1C2A39] p-2"
-              onClick={() => setIsOpen(false)}
-            >
-              <X size={24} />
-            </button>
-
-            <div className="flex flex-col items-center gap-8">
-              {['Colecciones', 'Patrimonio', 'Maison'].map((item) => (
+            <div className="absolute inset-0 opacity-10 pointer-events-none flex items-center justify-center">
+              <span className="font-serif text-[40vw] text-[#D4AF37] whitespace-nowrap">AURELIA</span>
+            </div>
+            <div className="flex flex-col gap-8 text-center font-serif text-4xl md:text-6xl z-10">
+              {["Collections", "High Horology", "Heritage", "Savoir-Faire", "Boutiques"].map((item, i) => (
                 <motion.a
-                  key={item}
+                  key={i}
                   href="#"
-                  whileTap={{ scale: 0.95 }}
-                  className="font-serif text-3xl text-[#1C2A39]"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 + i * 0.1, duration: 0.5 }}
+                  className="hover:italic hover:text-[#D4AF37] transition-all"
+                  onClick={() => setMenuOpen(false)}
                 >
                   {item}
                 </motion.a>
               ))}
-              <div className="w-12 h-px bg-[#C3A370] my-4" />
-              <Link
-                href="/"
-                className="font-sans text-sm tracking-[0.2em] uppercase text-[#C3A370]"
-              >
-                ← Volver al Catálogo
-              </Link>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
-    </>
-  )
-}
 
-function Hero() {
-  const ref = useRef(null)
-  const { scrollYProgress } = useScroll({ target: ref, offset: ['start start', 'end start'] })
-  const y = useTransform(scrollYProgress, [0, 1], [0, -80])
-
-  return (
-    <section ref={ref} className="grid grid-cols-1 md:grid-cols-2 min-h-screen pt-16 bg-[#FBF9F6]">
-      <motion.div 
-        style={{ y }}
-        className="flex flex-col justify-center px-6 md:px-12 py-12 md:py-20 order-2 md:order-1"
-      >
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 1, ease: [0.25, 0.1, 0.25, 1] }}
-        >
-          <p className="font-sans text-sm tracking-[0.24em] uppercase text-[#C3A370] mb-6 md:mb-8">
-            Nouvelle Collection 2024
-          </p>
-
-          <h1 className="font-serif text-6xl md:text-8xl tracking-tighter leading-[1.05] text-[#1C2A39] mb-6 md:mb-8">
-            The Art of<br />
-            Measuring<br />
-            <em className="italic text-[#C3A370]">Time.</em>
-          </h1>
-
-          <p className="font-serif text-lg md:text-xl leading-relaxed text-[#8C8578] max-w-[400px] mb-10 md:mb-14 italic">
-            Desde 1884, cada pieza que abandona nuestros talleres en Le Brassus
-            lleva consigo cuatro generaciones de maestría ininterrumpida.
-          </p>
-
-          <motion.a
-            href="#collections"
-            whileHover={{ gap: 16 }}
-            whileTap={{ scale: 0.95 }}
-            className="inline-flex items-center gap-[10px] font-sans text-sm tracking-[0.2em] uppercase text-[#1C2A39] border-b border-[#1C2A39] pb-1 transition-all"
-          >
-            Explorar Colecciones <ChevronRight size={12} />
-          </motion.a>
-        </motion.div>
-
-        <div className="flex flex-col md:flex-row gap-8 md:gap-12 mt-16 md:mt-24 pt-8 md:pt-12 border-t border-[#1C2A39]/10">
-          {[
-            { value: 'Desde 1884',        label: 'Manufactura' },
-            { value: '47 Premios',         label: 'Géneva Observatory' },
-            { value: '12 Patentes',        label: 'Activas' },
-          ].map((s, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.6 + i * 0.15, duration: 0.8 }}
-            >
-              <p className="font-serif text-xl md:text-2xl text-[#1C2A39] mb-1">
-                {s.value}
-              </p>
-              <p className="font-sans text-sm tracking-[0.16em] uppercase text-[#8C8578]">
-                {s.label}
-              </p>
-            </motion.div>
-          ))}
-        </div>
-      </motion.div>
-
-      <div className="relative overflow-hidden h-[50vh] md:h-auto order-1 md:order-2">
-        <motion.img
-          src="/images/demo/premium/3.jpg"
-          alt="Valmont & Co"
-          initial={{ scale: 1.08 }}
-          animate={{ scale: 1 }}
-          transition={{ duration: 1.6, ease: [0.25, 0.1, 0.25, 1] }}
-          className="w-full h-full object-cover block"
-        />
-        <motion.div
-          initial={{ scaleX: 1 }}
-          animate={{ scaleX: 0 }}
-          transition={{ duration: 1.2, ease: [0.76, 0, 0.24, 1], delay: 0.2 }}
-          className="absolute inset-0 bg-[#FBF9F6] origin-left"
-        />
-        <img src="/images/demo/premium/hero.jpg" alt="Background" className="absolute inset-0 object-cover pointer-events-none" />
-      </div>
-    </section>
-  )
-}
-
-function Collections() {
-  return (
-    <section id="collections" className="bg-[#FBF9F6] py-20 md:py-32 overflow-hidden">
-      <div className="px-6 md:px-12 mb-12 md:mb-16">
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-        >
-          <p className="font-sans text-sm tracking-[0.24em] uppercase text-[#C3A370] mb-4">
-            Manufacture 2024
-          </p>
-          <h2 className="font-serif text-5xl md:text-7xl tracking-tighter text-[#1C2A39]">
-            Nuestras Colecciones
-          </h2>
-        </motion.div>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-[2px] px-6 md:px-12">
-        {COLLECTIONS.map((c, i) => (
-          <CollectionCard key={c.name} c={c} i={i} />
-        ))}
-      </div>
-    </section>
-  )
-}
-
-function CollectionCard({ c, i }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.8, delay: i * 0.15 }}
-      whileTap={{ scale: 0.98 }}
-      className="cursor-pointer group block"
-    >
-      <div className="relative overflow-hidden aspect-[4/5]">
-        <img
-          src={c.img}
-          alt={c.name}
-          className="w-full h-full object-cover block transition-all duration-[600ms] ease-[cubic-bezier(0.25,0.1,0.25,1)] grayscale-0 md:grayscale md:group-hover:grayscale-0 md:group-hover:scale-[1.04]"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#1C2A39]/80 via-transparent to-transparent flex items-end p-6 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-300">
-          <span className="inline-flex items-center gap-2 font-sans text-sm tracking-[0.18em] uppercase text-[#FBF9F6]">
-            Solicitar Información <ArrowUpRight size={12} />
-          </span>
-        </div>
-
-        <div className="absolute top-4 right-4 md:top-5 md:right-5 bg-[#FBF9F6]/90 backdrop-blur-sm px-[10px] py-1">
-          <span className="font-sans text-sm tracking-[0.14em] text-[#1C2A39]">
-            {c.ref}
-          </span>
-        </div>
-      </div>
-
-      <div className="py-6 md:py-7 border-t border-[#1C2A39]/10">
-        <p className="font-sans text-sm tracking-[0.2em] uppercase text-[#C3A370] mb-2">
-          {c.name}
-        </p>
-        <p className="font-serif text-base leading-relaxed text-[#8C8578] mb-4 italic">
-          {c.desc}
-        </p>
-        <p className="font-serif text-lg md:text-xl text-[#1C2A39]">
-          {c.price}
-        </p>
-      </div>
-    </motion.div>
-  )
-}
-
-function Patrimonio() {
-  return (
-    <section id="patrimonio" className="bg-[#FBF9F6] py-20 md:py-32 px-6 md:px-12 border-t border-[#1C2A39]/10">
-      <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8 }}
-        className="mb-16 md:mb-20"
-      >
-        <p className="font-sans text-sm tracking-[0.24em] uppercase text-[#C3A370] mb-4">
-          Depuis 1884
-        </p>
-        <h2 className="font-serif text-5xl md:text-7xl tracking-tighter text-[#1C2A39] max-w-[520px]">
-          Patrimonio de Excelencia
-        </h2>
-      </motion.div>
-
-      <div className="max-w-[760px] relative">
-        <div className="absolute left-[31px] md:left-[112px] top-2 bottom-2 w-px bg-[#1C2A39]/10" />
-
-        {TIMELINE.map((t, i) => (
-          <motion.div
-            key={t.year}
-            initial={{ opacity: 0, x: -30 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7, delay: i * 0.15 }}
-            className="flex gap-6 md:gap-10 mb-10 md:mb-14 items-start relative z-10"
-          >
-            <div className="w-[54px] md:w-[72px] shrink-0 text-right">
-              <span className="font-serif text-xl md:text-2xl text-[#C3A370]">
-                {t.year}
-              </span>
-            </div>
-            <div className="w-[10px] h-[10px] rounded-full bg-[#C3A370] shrink-0 mt-1.5 border-4 border-transparent" />
-            <p className="font-serif text-lg md:text-xl leading-[1.7] text-[#8C8578] italic">
-              {t.event}
-            </p>
-          </motion.div>
-        ))}
-      </div>
-    </section>
-  )
-}
-
-function SavoirFaire() {
-  return (
-    <section className="bg-[#1C2A39] py-20 md:py-32 px-6 md:px-12 overflow-hidden">
-      <motion.div
-        initial={{ opacity: 0, y: 24 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.8 }}
-        className="mb-12 md:mb-20"
-      >
-        <p className="font-sans text-sm tracking-[0.24em] uppercase text-[#C3A370] mb-4">
-          Artisanat Suisse
-        </p>
-        <h2 className="font-serif text-5xl md:text-7xl tracking-tighter text-[#FBF9F6]">
-          Savoir-Faire
-        </h2>
-      </motion.div>
-
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {SAVOIR.map((s, i) => (
-          <motion.div
-            key={s.title}
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.7, delay: i * 0.12 }}
-            whileHover={{ y: -6 }}
-            className="bg-[#FBF9F6]/5 border border-[#FBF9F6]/10 overflow-hidden cursor-default"
-          >
-            <div className="aspect-[4/3] overflow-hidden">
-              <motion.img
-                src={s.img}
-                alt={s.title}
-                whileHover={{ scale: 1.06 }}
-                transition={{ duration: 0.5 }}
-                className="w-full h-full object-cover block brightness-[0.82]"
-              />
-            </div>
-            <div className="p-6 md:p-8">
-              <p className="font-sans text-sm tracking-[0.2em] uppercase text-[#C3A370] mb-3">
-                {s.title}
-              </p>
-              <p className="font-serif text-base leading-[1.7] text-[#FBF9F6]/60 italic">
-                {s.desc}
-              </p>
-            </div>
-          </motion.div>
-        ))}
-      </div>
-
-      <motion.div
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1, delay: 0.5 }}
-        className="flex items-center justify-center mt-16 md:mt-20 gap-4"
-      >
-        <Clock size={16} className="text-[#C3A370]" />
-        <span className="font-sans text-sm tracking-[0.22em] uppercase text-[#FBF9F6]/30 text-center">
-          Le Brassus, Vallée de Joux, Suisse
-        </span>
-      </motion.div>
-    </section>
-  )
-}
-
-function PrivateClient() {
-  const [sent, setSent] = useState(false)
-
-  return (
-    <section className="bg-[#F5F0E8] py-20 md:py-32 px-6 md:px-12">
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-24 max-w-[1100px] mx-auto">
-        <motion.div
-          initial={{ opacity: 0, x: -30 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8 }}
-        >
-          <p className="font-sans text-sm tracking-[0.24em] uppercase text-[#C3A370] mb-4">
-            Service Privé
-          </p>
-          <h2 className="font-serif text-5xl md:text-7xl tracking-tighter text-[#1C2A39] leading-[1.2] mb-6 md:mb-7">
-            Consulta<br />Privada
-          </h2>
-          <p className="font-serif text-lg md:text-xl leading-[1.75] text-[#8C8578] italic mb-10 md:mb-12">
-            Nuestro equipo de especialistas le acompañará personalmente en la
-            selección de su pieza, con total discreción y dedicación exclusiva.
-          </p>
-
-          <div className="flex flex-col gap-5">
-            {[
-              { Icon: Phone,  text: '+41 21 845 XX XX' },
-              { Icon: Mail,   text: 'private@valmontco.ch' },
-              { Icon: MapPin, text: 'Le Brassus 1, 1348, Suiza' },
-            ].map(({ Icon, text }) => (
-              <div key={text} className="flex items-center gap-4">
-                <Icon size={14} className="text-[#C3A370]" />
-                <span className="font-sans text-sm md:text-base tracking-[0.06em] text-[#8C8578]">
-                  {text}
-                </span>
-              </div>
-            ))}
-          </div>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, x: 30 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.8, delay: 0.1 }}
-        >
-          <AnimatePresence mode="wait">
-            {sent ? (
-              <motion.div
-                key="thanks"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0 }}
-                className="flex flex-col items-center justify-center h-full text-center gap-4 py-20 md:py-0"
-              >
-                <Clock size={32} className="text-[#C3A370]" />
-                <p className="font-serif text-xl md:text-2xl text-[#1C2A39] italic">
-                  Merci. Le contactaremos pronto.
-                </p>
-              </motion.div>
-            ) : (
-              <motion.form
-                key="form"
-                onSubmit={(e) => { e.preventDefault(); setSent(true) }}
-                className="flex flex-col gap-6 md:gap-5"
-              >
-                {[
-                  { label: 'Nombre', type: 'text',  placeholder: 'Su nombre completo' },
-                  { label: 'Correo', type: 'email', placeholder: 'correo@ejemplo.com' },
-                  { label: 'Teléfono', type: 'tel', placeholder: '+34 600 000 000' },
-                ].map((f) => (
-                  <div key={f.label}>
-                    <label className="block font-sans text-sm tracking-[0.2em] uppercase text-[#8C8578] mb-1.5">
-                      {f.label}
-                    </label>
-                    <input
-                      type={f.type}
-                      placeholder={f.placeholder}
-                      required
-                      className="w-full py-3 border-b border-[#1C2A39]/30 bg-transparent font-serif text-lg text-[#1C2A39] outline-none focus:border-[#C3A370] transition-colors rounded-none placeholder:text-[#8C8578]/60"
-                    />
-                  </div>
-                ))}
-
-                <div>
-                  <label className="block font-sans text-sm tracking-[0.2em] uppercase text-[#8C8578] mb-1.5">
-                    Referencia de Interés
-                  </label>
-                  <select className="w-full py-3 border-b border-[#1C2A39]/30 bg-transparent font-serif text-lg text-[#1C2A39] outline-none appearance-none cursor-pointer focus:border-[#C3A370] transition-colors rounded-none">
-                    {COLLECTIONS.map((c) => (
-                      <option key={c.name} value={c.name}>{c.name} — {c.ref}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block font-sans text-sm tracking-[0.2em] uppercase text-[#8C8578] mb-1.5">
-                    Mensaje
-                  </label>
-                  <textarea
-                    rows={4}
-                    placeholder="Cuéntenos sobre sus preferencias…"
-                    className="w-full py-3 border-b border-[#1C2A39]/30 bg-transparent font-serif text-lg text-[#1C2A39] outline-none resize-none focus:border-[#C3A370] transition-colors rounded-none placeholder:text-[#8C8578]/60"
-                  />
-                </div>
-
-                <motion.button
-                  type="submit"
-                  whileHover={{ backgroundColor: '#1C2A39', color: '#FBF9F6' }}
-                  whileTap={{ scale: 0.98 }}
-                  className="mt-2 py-4 px-10 border border-[#1C2A39] bg-transparent font-sans text-sm tracking-[0.2em] uppercase text-[#1C2A39] cursor-pointer transition-colors self-start w-full md:w-auto"
-                >
-                  Enviar Consulta
-                </motion.button>
-              </motion.form>
-            )}
-          </AnimatePresence>
-        </motion.div>
-      </div>
-    </section>
-  )
-}
-
-function PressQuote() {
-  return (
-    <section className="bg-[#1C2A39] py-20 md:py-24 px-6 md:px-12 text-center">
-      <motion.div
-        initial={{ opacity: 0, y: 32 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 1 }}
-      >
-        <div className="w-10 h-px bg-[#C3A370] mx-auto mb-8 md:mb-10" />
-        <blockquote className="font-serif text-4xl md:text-6xl tracking-tighter italic text-[#FBF9F6] leading-[1.55] max-w-[820px] mx-auto font-normal">
-          "A monument of Swiss craft. Valmont &amp; Co has done what we thought
-          was impossible."
-        </blockquote>
-        <p className="font-sans text-sm tracking-[0.2em] uppercase text-[#C3A370] mt-8">
-          — Hodinkee, 2024
-        </p>
-        <div className="w-10 h-px bg-[#C3A370] mx-auto mt-8 md:mt-10" />
-      </motion.div>
-    </section>
-  )
-}
-
-function Footer() {
-  return (
-    <footer className="bg-[#FBF9F6] border-t border-[#1C2A39]/10 px-6 md:px-12 py-12">
-      <div className="flex flex-col md:flex-row items-center justify-between mb-8 md:mb-10 gap-6 text-center md:text-left">
-        <span className="font-serif text-lg md:text-xl text-[#1C2A39] tracking-[0.04em]">
-          VALMONT &amp; CO
-        </span>
-        <div className="flex flex-wrap justify-center gap-6 md:gap-8">
-          {['Privacidad', 'Términos', 'Cookies', 'Contacto'].map((l) => (
-            <a
-              key={l}
-              href="#"
-              className="font-sans text-xs md:text-sm tracking-[0.14em] uppercase text-[#8C8578] hover:text-[#1C2A39] transition-colors"
-            >
-              {l}
-            </a>
-          ))}
-        </div>
-      </div>
-
-      <div className="flex flex-col md:flex-row items-center justify-between pt-6 border-t border-[#1C2A39]/5 gap-4 text-center md:text-left">
-        <p className="font-sans text-xs tracking-[0.1em] text-[#8C8578]/80">
-          © 2024 Valmont &amp; Co Horlogerie Suisse. Tous droits réservés.
-        </p>
-        <p className="font-serif text-sm italic text-[#C3A370]">
-          Le Brassus, Vallée de Joux, Suisse
-        </p>
-      </div>
-    </footer>
-  )
-}
-
-export default function ValmontPage() {
-  return (
-    <DemoLayout title="Valmont & Co">
-      <style>{`
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-        html { scroll-behavior: smooth; }
-        @media (pointer: fine) {
-          a, button { cursor: none !important; }
-        }
-      `}</style>
-
-      <div className="text-[#1C2A39] md:cursor-none">
-        <CustomCursor />
-        <Nav />
-        <main className="overflow-hidden">
-          <Hero />
-          <Collections />
-          <Patrimonio />
-          <SavoirFaire />
-          <PrivateClient />
-          <PressQuote />
-        </main>
-        <Footer />
-      </div>
+      <main>
+        <Hero />
+        <Heritage />
+        <Collections />
+        <Craftsmanship />
+        <Complications />
+        <PrivateBoutique />
+      </main>
+      <Footer />
     </DemoLayout>
-  )
+  );
 }

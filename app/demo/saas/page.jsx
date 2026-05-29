@@ -1,11 +1,13 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { LazyMotion, domAnimation, m, useSpring, useMotionValue, useTransform } from 'framer-motion';
+import { LazyMotion, domAnimation, m, useSpring, useMotionValue, useTransform, useScroll, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
+import Image from 'next/image';
 import DemoLayout from '@/components/DemoLayout';
-import { Zap, Cpu, Server, Users, Activity, Database, Globe, ArrowUpRight, ArrowLeft } from 'lucide-react';
+import { Zap, Cpu, Server, Users, Activity, Database, Globe, ArrowUpRight, ArrowLeft, ArrowRight, CheckCircle2, ChevronDown, MonitorPlay, ShieldCheck, Code2, BarChart3, CloudLightning } from 'lucide-react';
 
+// --- CUSTOM CURSOR ---
 function CustomCursor() {
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
@@ -26,7 +28,7 @@ function CustomCursor() {
 
     const handleMouseOver = (e) => {
       const target = e.target;
-      if (target.tagName.toLowerCase() === 'button' || target.tagName.toLowerCase() === 'a' || target.closest('.interactive-el')) {
+      if (target.tagName?.toLowerCase() === 'button' || target.tagName?.toLowerCase() === 'a' || target.closest('.interactive-el')) {
         scale.set(3);
         isHovering.set(1);
       } else {
@@ -57,6 +59,7 @@ function CustomCursor() {
   );
 }
 
+// --- TELEMETRY UTILS ---
 const generateSmoothPath = (data, width = 500, height = 200) => {
   if (data.length === 0) return "";
   const max = 120;
@@ -82,18 +85,152 @@ const generateSmoothPath = (data, width = 500, height = 200) => {
 const BentoBox = ({ children, className, delay = 0 }) => (
   <m.div
     initial={{ opacity: 0, y: 20 }}
-    animate={{ opacity: 1, y: 0 }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, margin: "-50px" }}
     transition={{ duration: 0.5, delay, ease: "easeOut" }}
-    className={`bg-[#0a0a0a] border border-white/5 rounded-3xl p-5 md:p-6 flex flex-col relative overflow-hidden active:scale-[0.98] transition-transform md:active:scale-100 ${className}`}
+    className={`bg-neutral-900/50 backdrop-blur-md border border-white/10 rounded-3xl p-6 flex flex-col relative overflow-hidden hover:border-purple-500/30 transition-colors ${className}`}
   >
-    <div className="absolute inset-0 bg-gradient-to-b from-white/[0.02] to-transparent pointer-events-none" />
+    <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-transparent pointer-events-none" />
     <div className="relative z-10 flex flex-col h-full w-full">
       {children}
     </div>
   </m.div>
 );
 
-export default function SaasDemo() {
+// --- SECTIONS ---
+function HeroSection() {
+  return (
+    <section className="relative min-h-screen flex items-center pt-24 pb-12 overflow-hidden">
+      <div className="absolute inset-0 z-0">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgba(120,50,255,0.15),transparent_50%)]" />
+      </div>
+      <div className="max-w-7xl mx-auto px-6 relative z-10 w-full grid lg:grid-cols-2 gap-12 items-center">
+        <m.div 
+          initial={{ opacity: 0, x: -50 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, ease: "easeOut" }}
+        >
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-purple-500/10 border border-purple-500/20 mb-6 text-purple-400 text-sm font-medium">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-purple-500"></span>
+            </span>
+            Vercel-like performance, infinite scale
+          </div>
+          <h1 className="text-5xl lg:text-7xl font-bold tracking-tighter text-white mb-6 leading-[1.1]">
+            The unified platform for <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400">modern data</span>
+          </h1>
+          <p className="text-lg text-neutral-400 mb-8 max-w-xl leading-relaxed">
+            Unleash the power of real-time analytics with a serverless architecture designed for global scale. Stop worrying about infrastructure and start shipping features.
+          </p>
+          <div className="flex flex-wrap items-center gap-4">
+            <button className="interactive-el px-6 py-3 bg-white text-black rounded-full font-medium hover:bg-neutral-200 transition-colors flex items-center gap-2">
+              Start Building <ArrowRight size={18} />
+            </button>
+            <button className="interactive-el px-6 py-3 bg-neutral-900 border border-white/10 text-white rounded-full font-medium hover:bg-neutral-800 transition-colors flex items-center gap-2">
+              <MonitorPlay size={18} /> View Demo
+            </button>
+          </div>
+        </m.div>
+        
+        <m.div 
+          initial={{ opacity: 0, scale: 0.9, rotateY: 15 }}
+          animate={{ opacity: 1, scale: 1, rotateY: 0 }}
+          transition={{ duration: 1, ease: "easeOut" }}
+          className="relative perspective-1000"
+        >
+          <div className="relative rounded-2xl overflow-hidden border border-white/10 shadow-2xl shadow-purple-900/20 aspect-video md:aspect-square lg:aspect-[4/3] group">
+            <Image 
+              src="/images/demo/saas/hero.jpg" 
+              alt="SaaS Dashboard Interface" 
+              fill 
+              className="object-cover group-hover:scale-105 transition-transform duration-700" 
+            />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+            <div className="absolute bottom-6 left-6 right-6 backdrop-blur-md bg-black/40 border border-white/10 rounded-xl p-4 flex items-center justify-between">
+              <div>
+                <div className="text-sm text-neutral-400">Total Queries (24h)</div>
+                <div className="text-2xl font-mono font-bold text-white">1.24B</div>
+              </div>
+              <Activity className="text-purple-400" size={32} />
+            </div>
+          </div>
+        </m.div>
+      </div>
+    </section>
+  );
+}
+
+function MarqueeSection() {
+  const logos = ["Acme Corp", "GlobalTech", "Nexus", "Quantum", "Starlight", "Horizon", "Acme Corp", "GlobalTech", "Nexus", "Quantum", "Starlight", "Horizon"];
+  return (
+    <section className="py-12 border-y border-white/5 bg-black overflow-hidden relative">
+      <div className="absolute left-0 top-0 bottom-0 w-32 bg-gradient-to-r from-black to-transparent z-10" />
+      <div className="absolute right-0 top-0 bottom-0 w-32 bg-gradient-to-l from-black to-transparent z-10" />
+      <div className="flex w-max animate-marquee">
+        {logos.map((logo, i) => (
+          <div key={i} className="px-12 text-2xl font-bold text-neutral-800 tracking-wider uppercase flex-shrink-0">
+            {logo}
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function FeaturesBento() {
+  return (
+    <section className="py-24 max-w-7xl mx-auto px-6">
+      <div className="mb-16 text-center max-w-3xl mx-auto">
+        <h2 className="text-4xl font-bold tracking-tight mb-4 text-white">Everything you need to scale</h2>
+        <p className="text-neutral-400 text-lg">Our comprehensive suite of tools replaces your fragmented tech stack with one cohesive, blazing-fast platform.</p>
+      </div>
+      
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[250px]">
+        <BentoBox className="md:col-span-2 row-span-2 group">
+          <div className="flex justify-between items-start mb-6">
+            <div className="w-12 h-12 bg-blue-500/10 rounded-xl flex items-center justify-center border border-blue-500/20">
+              <CloudLightning className="text-blue-400" size={24} />
+            </div>
+          </div>
+          <h3 className="text-2xl font-semibold mb-2 text-white">Edge Caching Network</h3>
+          <p className="text-neutral-400 mb-6">Deliver content to your users in milliseconds with our globally distributed edge network covering 250+ cities worldwide.</p>
+          <div className="flex-1 relative rounded-xl overflow-hidden mt-auto border border-white/10">
+            <Image src="/images/demo/saas/1.jpg" alt="Edge Network Map" fill className="object-cover group-hover:scale-105 transition-duration-500" />
+          </div>
+        </BentoBox>
+
+        <BentoBox className="md:col-span-1 row-span-1 group">
+          <div className="w-10 h-10 bg-emerald-500/10 rounded-xl flex items-center justify-center border border-emerald-500/20 mb-4">
+            <ShieldCheck className="text-emerald-400" size={20} />
+          </div>
+          <h3 className="text-xl font-semibold mb-2 text-white">Enterprise Security</h3>
+          <p className="text-sm text-neutral-400">SOC2 Type II, HIPAA compliant, and end-to-end encryption out of the box.</p>
+        </BentoBox>
+
+        <BentoBox className="md:col-span-1 row-span-1 group">
+          <div className="w-10 h-10 bg-purple-500/10 rounded-xl flex items-center justify-center border border-purple-500/20 mb-4">
+            <Code2 className="text-purple-400" size={20} />
+          </div>
+          <h3 className="text-xl font-semibold mb-2 text-white">API-First Design</h3>
+          <p className="text-sm text-neutral-400">Integrate effortlessly with our robust GraphQL and REST APIs with full TS support.</p>
+        </BentoBox>
+
+        <BentoBox className="md:col-span-3 row-span-1 flex-row items-center gap-8 group">
+          <div className="flex-1">
+            <h3 className="text-2xl font-semibold mb-2 text-white">Automated Scaling</h3>
+            <p className="text-neutral-400">Go from 0 to 1M requests per second without changing a single line of code. We handle the infrastructure routing and load balancing automatically.</p>
+          </div>
+          <div className="hidden md:flex flex-1 relative h-full min-h-[150px] rounded-xl overflow-hidden border border-white/10">
+             <Image src="/images/demo/saas/2.jpg" alt="Scaling Graphic" fill className="object-cover" />
+          </div>
+        </BentoBox>
+      </div>
+    </section>
+  );
+}
+
+function LiveDashboard() {
   const [latencyData, setLatencyData] = useState(Array.from({ length: 20 }, () => Math.floor(Math.random() * 60) + 40));
   const [activeUsers, setActiveUsers] = useState(14520);
   const [cpuUsage, setCpuUsage] = useState(42);
@@ -101,12 +238,8 @@ export default function SaasDemo() {
   const [reqHistory, setReqHistory] = useState(Array.from({ length: 12 }, () => Math.floor(Math.random() * 500) + 500));
   const [nodes, setNodes] = useState([
     { name: 'eu-west-1a', ip: '10.0.1.24', status: 'ok', load: 45 },
-    { name: 'eu-west-1b', ip: '10.0.1.25', status: 'ok', load: 62 },
     { name: 'us-east-1a', ip: '10.0.2.11', status: 'warn', load: 88 },
-    { name: 'ap-south-1a', ip: '10.0.3.5', status: 'ok', load: 31 },
   ]);
-
-  const carouselRef = useRef(null);
 
   useEffect(() => {
     const intLatency = setInterval(() => {
@@ -131,291 +264,258 @@ export default function SaasDemo() {
     }, 2500);
 
     return () => {
-      clearInterval(intLatency);
-      clearInterval(intUsers);
-      clearInterval(intCpu);
-      clearInterval(intReqs);
-      clearInterval(intNodes);
+      clearInterval(intLatency); clearInterval(intUsers);
+      clearInterval(intCpu); clearInterval(intReqs); clearInterval(intNodes);
     };
   }, []);
 
-  useEffect(() => {
-    import("animejs").then((module) => {
-      const anime = module.default;
-      anime({
-        targets: '.anime-node-item',
-        translateX: [-20, 0],
-        opacity: [0, 1],
-        delay: anime.stagger(100, {start: 500}),
-        easing: 'easeOutExpo'
-      });
-    });
-  }, []);
-
-  const getLatencyCard = (idSuffix) => (
-    <BentoBox className="col-span-1 md:col-span-2 lg:col-span-2 row-span-2 h-[320px] md:h-auto" delay={0.1}>
-      <div className="flex justify-between items-start mb-2">
-        <div>
-          <h2 className="text-neutral-400 font-medium flex items-center gap-2">
-            <Zap size={16} className="text-amber-500" />
-            Global Latency
-          </h2>
-          <div className="text-[clamp(3rem,10vw,4rem)] font-bold mt-2 md:mt-4 font-mono text-white leading-none">
-            {latencyData[latencyData.length - 1]}
-            <span className="text-xl md:text-2xl text-neutral-500 ml-1">ms</span>
-          </div>
-        </div>
-        <div className="px-3 py-1 bg-amber-500/10 text-amber-500 rounded-full text-xs font-medium border border-amber-500/20">
-          p99
-        </div>
-      </div>
-      <div className="flex-1 w-full relative mt-4">
-        <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none" viewBox="0 0 500 200">
-          <defs>
-            <linearGradient id={`latencyGradient-${idSuffix}`} x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="rgb(245, 158, 11)" stopOpacity="0.3" />
-              <stop offset="100%" stopColor="rgb(245, 158, 11)" stopOpacity="0" />
-            </linearGradient>
-          </defs>
-          <m.path
-            d={generateSmoothPath(latencyData) + " L 500 200 L 0 200 Z"}
-            fill={`url(#latencyGradient-${idSuffix})`}
-            transition={{ type: "tween", ease: "linear", duration: 1.5 }}
-          />
-          <m.path
-            d={generateSmoothPath(latencyData)}
-            fill="none"
-            stroke="rgb(245, 158, 11)"
-            strokeWidth="3"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            transition={{ type: "tween", ease: "linear", duration: 1.5 }}
-          />
-        </svg>
-        <div className="absolute inset-0 pointer-events-none border-t border-b border-white/5 flex flex-col justify-between py-2">
-          <span className="text-xs md:text-sm text-neutral-600 font-mono">120ms</span>
-          <span className="text-xs md:text-sm text-neutral-600 font-mono">60ms</span>
-          <span className="text-xs md:text-sm text-neutral-600 font-mono">0ms</span>
-        </div>
-      </div>
-    </BentoBox>
-  );
-
-  const cpuCard = (
-    <BentoBox className="col-span-1 row-span-1 h-full w-full" delay={0.2}>
-      <div className="flex justify-between items-start">
-        <Cpu size={20} className="text-blue-500" />
-        <span className="text-xs md:text-sm text-blue-500 bg-blue-500/10 px-2 py-1 rounded-full font-mono border border-blue-500/20">us-east-1</span>
-      </div>
-      <div className="mt-auto">
-        <div className="text-4xl font-bold font-mono text-white">{cpuUsage}%</div>
-        <div className="text-sm text-neutral-500 mt-1">CPU Utilization</div>
-      </div>
-      <div className="w-full bg-white/5 h-1.5 rounded-full mt-4 overflow-hidden">
-        <m.div 
-          className="h-full bg-blue-500"
-          animate={{ width: `${cpuUsage}%` }}
-          transition={{ type: "spring", stiffness: 100, damping: 20 }}
-        />
-      </div>
-    </BentoBox>
-  );
-
-  const nodesCard = (
-    <BentoBox className="col-span-1 row-span-2 flex flex-col h-[320px] md:h-auto" delay={0.3}>
-      <div className="flex items-center justify-between mb-4 md:mb-6">
-        <div className="flex items-center gap-2">
-          <Server size={20} className="text-purple-500" />
-          <h2 className="text-neutral-400 font-medium">Nodes</h2>
-        </div>
-        <span className="flex h-2 w-2 relative">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-purple-400 opacity-75"></span>
-          <span className="relative inline-flex rounded-full h-2 w-2 bg-purple-500"></span>
-        </span>
-      </div>
-      <div className="flex-1 flex flex-col gap-2 md:gap-3 justify-center">
-        {nodes.map((node, i) => (
-          <div key={i} className="anime-node-item opacity-0 flex items-center justify-between p-2 md:p-3 rounded-xl bg-white/[0.03] border border-white/5">
-            <div className="flex items-center gap-3">
-              <div className={`w-2 h-2 rounded-full ${node.status === 'ok' ? 'bg-emerald-500' : 'bg-rose-500'}`} />
-              <div>
-                <div className="text-sm font-medium text-neutral-200">{node.name}</div>
-                <div className="text-xs md:text-sm text-neutral-500 font-mono">{node.ip}</div>
-              </div>
-            </div>
-            <div className={`text-xs font-mono ${node.status === 'ok' ? 'text-emerald-500' : 'text-rose-500'}`}>
-              {node.load}%
-            </div>
-          </div>
-        ))}
-      </div>
-    </BentoBox>
-  );
-
-  const usersCard = (
-    <BentoBox className="col-span-1 row-span-1 h-full w-full" delay={0.4}>
-      <div className="flex justify-between items-start">
-        <Users size={20} className="text-emerald-500" />
-        <div className="flex items-center text-xs md:text-sm text-emerald-500 bg-emerald-500/10 px-2 py-1 rounded-full font-mono border border-emerald-500/20 gap-1">
-          <ArrowUpRight size={12} />
-          12%
-        </div>
-      </div>
-      <div className="mt-auto">
-        <m.div className="text-4xl font-bold font-mono text-white" key={activeUsers}>
-          {activeUsers.toLocaleString()}
-        </m.div>
-        <div className="text-sm text-neutral-500 mt-1">Active Connections</div>
-      </div>
-    </BentoBox>
-  );
-
-  const reqsCard = (
-    <BentoBox className="col-span-1 row-span-1 flex flex-col h-full w-full" delay={0.5}>
-      <div className="flex justify-between items-start mb-2">
-        <Activity size={20} className="text-rose-500" />
-      </div>
-      <div className="flex items-end gap-2 mt-auto mb-4">
-        <div className="text-3xl font-bold font-mono text-white">{reqs}</div>
-        <div className="text-sm text-neutral-500 mb-1">req/s</div>
-      </div>
-      <div className="flex items-end h-10 gap-1 w-full relative">
-        {reqHistory.map((val, i) => (
-          <div key={i} className="flex-1 bg-white/5 rounded-t-sm h-full relative overflow-hidden">
-            <m.div 
-              className="absolute bottom-0 w-full bg-rose-500 rounded-t-sm"
-              animate={{ height: `${(val / 1000) * 100}%` }}
-              transition={{ type: "spring", stiffness: 300, damping: 20 }}
-            />
-          </div>
-        ))}
-      </div>
-    </BentoBox>
-  );
-
-  const dbCard = (
-    <BentoBox className="col-span-1 row-span-1 flex flex-col justify-between h-full w-full" delay={0.6}>
-      <div className="flex justify-between items-start">
-        <div className="flex items-center gap-2">
-          <Database size={20} className="text-indigo-500" />
-        </div>
-        <span className="text-xs md:text-sm text-neutral-500 bg-white/5 px-2 py-1 rounded-md border border-white/5">Primary DB</span>
-      </div>
-      <div className="grid grid-cols-2 gap-3 mt-auto">
-        <div className="bg-white/[0.03] p-3 rounded-xl border border-white/5">
-          <div className="text-xs md:text-sm text-neutral-500 mb-1">Reads/s</div>
-          <m.div 
-            className="text-lg font-bold font-mono text-indigo-400"
-            key={reqs}
-            initial={{ opacity: 0.5 }}
-            animate={{ opacity: 1 }}
-          >
-            {(Math.floor(reqs * 4.2)).toLocaleString()}
-          </m.div>
-        </div>
-        <div className="bg-white/[0.03] p-3 rounded-xl border border-white/5">
-          <div className="text-xs md:text-sm text-neutral-500 mb-1">Writes/s</div>
-          <m.div 
-            className="text-lg font-bold font-mono text-indigo-400"
-            key={activeUsers}
-            initial={{ opacity: 0.5 }}
-            animate={{ opacity: 1 }}
-          >
-            {(Math.floor(reqs * 0.8)).toLocaleString()}
-          </m.div>
-        </div>
-      </div>
-    </BentoBox>
-  );
-
-  const edgeCard = (
-    <BentoBox className="col-span-1 md:col-span-2 lg:col-span-2 row-span-1 flex flex-col justify-center h-[180px] md:h-auto" delay={0.7}>
-      <div className="flex items-center justify-between w-full">
-        <div className="flex items-center gap-3 md:gap-5">
-          <div className="w-12 h-12 md:w-16 md:h-16 rounded-full bg-cyan-500/10 flex items-center justify-center border border-cyan-500/20 relative shrink-0">
-            <m.div 
-              className="absolute inset-0 border-2 border-cyan-500/30 rounded-full"
-              animate={{ scale: [1, 1.5], opacity: [1, 0] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
-            />
-            <Globe size={24} className="text-cyan-500 relative z-10 md:w-7 md:h-7" />
-          </div>
+  return (
+    <section className="py-24 bg-neutral-900/30 border-y border-white/5 relative">
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.02)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.02)_1px,transparent_1px)] bg-[size:40px_40px] pointer-events-none" />
+      <div className="max-w-7xl mx-auto px-6 relative z-10">
+        <div className="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
           <div>
-            <h3 className="text-base md:text-lg font-medium text-white">Edge Network</h3>
-            <div className="text-xs md:text-sm text-neutral-500 mt-1">Global routing active</div>
+            <h2 className="text-3xl font-bold text-white mb-2">Live System Telemetry</h2>
+            <p className="text-neutral-400">Real-time infrastructure monitoring of our global edge network.</p>
+          </div>
+          <div className="flex items-center gap-2 px-3 py-1.5 bg-black border border-white/10 rounded-full">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span className="text-xs font-mono text-neutral-300">All systems nominal</span>
           </div>
         </div>
-        <div className="text-right">
-          <div className="text-2xl md:text-3xl font-bold font-mono text-cyan-400">
-            12.4
-            <span className="text-xs md:text-sm text-cyan-500/50 ml-1">TB/s</span>
-          </div>
-          <div className="text-xs md:text-sm text-neutral-500 mt-1 md:mt-2">Total Bandwidth</div>
+
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+          <BentoBox className="md:col-span-2 row-span-2">
+            <div className="flex justify-between items-start mb-2">
+              <h3 className="text-neutral-400 font-medium flex items-center gap-2"><Zap size={16} className="text-amber-500" /> Global Latency</h3>
+              <div className="px-2 py-1 bg-amber-500/10 text-amber-500 rounded text-xs font-mono">p99</div>
+            </div>
+            <div className="text-5xl font-bold mt-2 font-mono text-white">{latencyData[latencyData.length - 1]}<span className="text-2xl text-neutral-500 ml-1">ms</span></div>
+            <div className="flex-1 w-full relative mt-8 h-32">
+              <svg className="absolute inset-0 w-full h-full" preserveAspectRatio="none" viewBox="0 0 500 200">
+                <defs>
+                  <linearGradient id="latencyGrad" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stopColor="rgb(245, 158, 11)" stopOpacity="0.3" />
+                    <stop offset="100%" stopColor="rgb(245, 158, 11)" stopOpacity="0" />
+                  </linearGradient>
+                </defs>
+                <m.path d={generateSmoothPath(latencyData) + " L 500 200 L 0 200 Z"} fill="url(#latencyGrad)" transition={{ duration: 1.5 }} />
+                <m.path d={generateSmoothPath(latencyData)} fill="none" stroke="rgb(245, 158, 11)" strokeWidth="3" />
+              </svg>
+            </div>
+          </BentoBox>
+
+          <BentoBox className="col-span-1">
+            <div className="flex justify-between mb-4"><Cpu className="text-blue-500" size={20} /><span className="text-xs font-mono text-blue-400">CPU</span></div>
+            <div className="text-4xl font-mono text-white font-bold">{cpuUsage}%</div>
+            <div className="w-full bg-white/5 h-1.5 rounded-full mt-auto">
+              <m.div className="h-full bg-blue-500 rounded-full" animate={{ width: `${cpuUsage}%` }} />
+            </div>
+          </BentoBox>
+
+          <BentoBox className="col-span-1">
+            <div className="flex justify-between mb-4"><Users className="text-emerald-500" size={20} /></div>
+            <m.div className="text-3xl font-mono text-white font-bold" key={activeUsers}>{activeUsers.toLocaleString()}</m.div>
+            <div className="text-sm text-neutral-500 mt-1">Active Users</div>
+          </BentoBox>
+
+          <BentoBox className="col-span-1 md:col-span-2">
+            <div className="flex items-center gap-2 mb-4"><Server className="text-purple-500" size={20} /><span className="text-neutral-400 font-medium">Nodes</span></div>
+            <div className="space-y-3">
+              {nodes.map((n, i) => (
+                <div key={i} className="flex justify-between items-center bg-black/50 p-2 rounded-lg border border-white/5">
+                  <div className="flex items-center gap-2">
+                    <div className={`w-2 h-2 rounded-full ${n.status==='ok'?'bg-emerald-500':'bg-rose-500'}`} />
+                    <span className="text-sm text-neutral-300">{n.name}</span>
+                  </div>
+                  <span className="text-xs font-mono text-neutral-500">{n.load}%</span>
+                </div>
+              ))}
+            </div>
+          </BentoBox>
         </div>
       </div>
-    </BentoBox>
+    </section>
   );
+}
+
+function PricingSection() {
+  const plans = [
+    { name: "Starter", price: "$49", features: ["Up to 10k MAU", "Standard Analytics", "Community Support", "1 Project"] },
+    { name: "Pro", price: "$199", popular: true, features: ["Up to 100k MAU", "Advanced Analytics", "Priority Support", "Unlimited Projects", "Custom Domains"] },
+    { name: "Enterprise", price: "Custom", features: ["Unlimited MAU", "Custom SLA", "Dedicated Success Manager", "SSO & Advanced Security", "On-premise option"] },
+  ];
 
   return (
-    <DemoLayout title="SaaS Telemetry">
-    <LazyMotion features={domAnimation}>
-      <style dangerouslySetInnerHTML={{__html: `@media (pointer: fine) { body { cursor: none !important; } }`}} />
-      <div className="text-neutral-100 font-sans selection:bg-amber-500/30 overflow-x-hidden">
-        
-        <CustomCursor />
-
-        <div className="absolute top-0 right-0 w-[800px] h-[800px] bg-purple-900/10 rounded-full blur-[120px] pointer-events-none mix-blend-screen translate-x-1/3 -translate-y-1/3" />
-        <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-blue-900/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen -translate-x-1/3 translate-y-1/3" />
-        <div className="absolute inset-0 z-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'linear-gradient(rgba(255,255,255,1) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,1) 1px, transparent 1px)', backgroundSize: '40px 40px' }} />
-
-        <nav className="mb-8 md:mb-12 flex items-center justify-between max-w-7xl mx-auto relative z-10">
-          <Link href="/" className="inline-flex items-center gap-2 text-neutral-400 active:scale-95 transition-all interactive-el md:hover:text-white">
-            <ArrowLeft size={16} />
-            <span>Catálogo</span>
-          </Link>
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/20">
-            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
-            <span className="text-xs text-emerald-500 font-mono font-medium">System Operational</span>
-          </div>
-        </nav>
-
-        <main className="max-w-7xl mx-auto relative z-10">
-          <header className="mb-8 mt-2 md:mt-0">
-            <h1 className="text-[clamp(2.5rem,8vw,5rem)] leading-none font-bold tracking-tight mb-3 text-white">Telemetry</h1>
-            <p className="text-neutral-500 text-sm md:text-base max-w-[85vw]">Real-time infrastructure monitoring and global edge performance.</p>
-          </header>
-
-          <div className="hidden md:grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 auto-rows-[180px]">
-            {getLatencyCard('desk')}
-            {cpuCard}
-            {nodesCard}
-            {usersCard}
-            {reqsCard}
-            {dbCard}
-            {edgeCard}
-          </div>
-
-          <div className="flex md:hidden flex-col gap-4">
-            {getLatencyCard('mob')}
-            <div ref={carouselRef} className="overflow-hidden w-[100vw] -ml-4 px-4 py-2">
-              <m.div
-                drag="x"
-                dragConstraints={carouselRef}
-                dragElastic={0.2}
-                className="flex gap-4 w-max cursor-grab active:cursor-grabbing pr-8"
-              >
-                <div className="w-[75vw] max-w-[300px] shrink-0 h-[180px]">{cpuCard}</div>
-                <div className="w-[75vw] max-w-[300px] shrink-0 h-[180px]">{usersCard}</div>
-                <div className="w-[75vw] max-w-[300px] shrink-0 h-[180px]">{reqsCard}</div>
-                <div className="w-[75vw] max-w-[300px] shrink-0 h-[180px]">{dbCard}</div>
-              </m.div>
-            </div>
-            {nodesCard}
-            {edgeCard}
-          </div>
-        </main>
+    <section className="py-24 max-w-7xl mx-auto px-6">
+      <div className="text-center mb-16">
+        <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">Pricing that scales with you</h2>
+        <p className="text-neutral-400">Start for free, upgrade when you need more power.</p>
       </div>
-    </LazyMotion>
+      <div className="grid md:grid-cols-3 gap-8">
+        {plans.map((plan, idx) => (
+          <m.div 
+            key={idx}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: idx * 0.1 }}
+            className={`relative p-8 rounded-3xl border ${plan.popular ? 'bg-purple-900/10 border-purple-500/50' : 'bg-neutral-900/30 border-white/10'} flex flex-col`}
+          >
+            {plan.popular && (
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-purple-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+                MOST POPULAR
+              </div>
+            )}
+            <h3 className="text-xl font-medium text-white mb-2">{plan.name}</h3>
+            <div className="mb-6 flex items-baseline gap-1">
+              <span className="text-4xl font-bold text-white">{plan.price}</span>
+              {plan.price !== "Custom" && <span className="text-neutral-500">/mo</span>}
+            </div>
+            <ul className="space-y-4 mb-8 flex-1">
+              {plan.features.map((feat, i) => (
+                <li key={i} className="flex items-start gap-3 text-neutral-300 text-sm">
+                  <CheckCircle2 className="text-purple-400 shrink-0" size={18} />
+                  <span>{feat}</span>
+                </li>
+              ))}
+            </ul>
+            <button className={`w-full py-3 rounded-xl font-medium transition-colors ${plan.popular ? 'bg-purple-600 hover:bg-purple-700 text-white' : 'bg-white/10 hover:bg-white/20 text-white'}`}>
+              {plan.price === "Custom" ? "Contact Sales" : "Get Started"}
+            </button>
+          </m.div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function FAQSection() {
+  const faqs = [
+    { q: "How fast is the setup process?", a: "You can be up and running in less than 5 minutes. Our SDKs are designed to be plug-and-play." },
+    { q: "Do you offer a free tier?", a: "Yes, our Developer plan is completely free and includes enough resources to build and launch your MVP." },
+    { q: "What happens if I exceed my plan limits?", a: "We never hard-cap your usage. We will notify you and you will be billed for overages at a standard rate until you choose to upgrade." },
+  ];
+
+  return (
+    <section className="py-24 max-w-3xl mx-auto px-6">
+      <h2 className="text-3xl font-bold text-center text-white mb-12">Frequently Asked Questions</h2>
+      <div className="space-y-4">
+        {faqs.map((faq, idx) => {
+          const [isOpen, setIsOpen] = useState(false);
+          return (
+            <div key={idx} className="border border-white/10 bg-neutral-900/30 rounded-2xl overflow-hidden">
+              <button 
+                onClick={() => setIsOpen(!isOpen)}
+                className="w-full p-6 text-left flex justify-between items-center focus:outline-none"
+              >
+                <span className="font-medium text-white">{faq.q}</span>
+                <ChevronDown className={`text-neutral-400 transition-transform ${isOpen ? 'rotate-180' : ''}`} size={20} />
+              </button>
+              <AnimatePresence>
+                {isOpen && (
+                  <m.div 
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: 'auto', opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    className="px-6 pb-6 text-neutral-400"
+                  >
+                    {faq.a}
+                  </m.div>
+                )}
+              </AnimatePresence>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+function Footer() {
+  return (
+    <footer className="border-t border-white/10 bg-black pt-16 pb-8 px-6">
+      <div className="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-8 mb-12">
+        <div>
+          <div className="text-xl font-bold text-white mb-6">SaasCore</div>
+          <p className="text-sm text-neutral-500">Building the future of infrastructure, one request at a time.</p>
+        </div>
+        <div>
+          <h4 className="text-white font-medium mb-4">Product</h4>
+          <ul className="space-y-2 text-sm text-neutral-400">
+            <li><a href="#" className="hover:text-purple-400">Features</a></li>
+            <li><a href="#" className="hover:text-purple-400">Integrations</a></li>
+            <li><a href="#" className="hover:text-purple-400">Pricing</a></li>
+            <li><a href="#" className="hover:text-purple-400">Changelog</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 className="text-white font-medium mb-4">Resources</h4>
+          <ul className="space-y-2 text-sm text-neutral-400">
+            <li><a href="#" className="hover:text-purple-400">Documentation</a></li>
+            <li><a href="#" className="hover:text-purple-400">API Reference</a></li>
+            <li><a href="#" className="hover:text-purple-400">Community</a></li>
+            <li><a href="#" className="hover:text-purple-400">Blog</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4 className="text-white font-medium mb-4">Legal</h4>
+          <ul className="space-y-2 text-sm text-neutral-400">
+            <li><a href="#" className="hover:text-purple-400">Privacy Policy</a></li>
+            <li><a href="#" className="hover:text-purple-400">Terms of Service</a></li>
+            <li><a href="#" className="hover:text-purple-400">Cookie Policy</a></li>
+          </ul>
+        </div>
+      </div>
+      <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between pt-8 border-t border-white/10 text-sm text-neutral-600">
+        <p>&copy; 2026 SaasCore Inc. All rights reserved.</p>
+        <div className="flex gap-4 mt-4 md:mt-0">
+          <a href="#" className="hover:text-white transition-colors">Twitter</a>
+          <a href="#" className="hover:text-white transition-colors">GitHub</a>
+          <a href="#" className="hover:text-white transition-colors">Discord</a>
+        </div>
+      </div>
+    </footer>
+  );
+}
+
+export default function SaasDemo() {
+  return (
+    <DemoLayout title="SaaS Core Platform">
+      <LazyMotion features={domAnimation}>
+        <style dangerouslySetInnerHTML={{__html: `@media (pointer: fine) { body { cursor: none !important; } }`}} />
+        <div className="bg-black text-neutral-100 font-sans selection:bg-purple-500/30 overflow-x-hidden min-h-screen">
+          <CustomCursor />
+          
+          <nav className="fixed top-0 left-0 right-0 z-50 border-b border-white/5 bg-black/50 backdrop-blur-md">
+            <div className="max-w-7xl mx-auto px-6 h-16 flex items-center justify-between">
+              <Link href="/" className="inline-flex items-center gap-2 text-neutral-400 hover:text-white transition-colors">
+                <ArrowLeft size={16} />
+                <span className="font-medium">Catálogo</span>
+              </Link>
+              <div className="hidden md:flex items-center gap-6 text-sm font-medium text-neutral-400">
+                <a href="#" className="hover:text-white transition-colors">Product</a>
+                <a href="#" className="hover:text-white transition-colors">Docs</a>
+                <a href="#" className="hover:text-white transition-colors">Pricing</a>
+              </div>
+              <button className="px-4 py-2 bg-white text-black text-sm font-medium rounded-full hover:bg-neutral-200 transition-colors">
+                Log In
+              </button>
+            </div>
+          </nav>
+
+          <main>
+            <HeroSection />
+            <MarqueeSection />
+            <FeaturesBento />
+            <LiveDashboard />
+            <PricingSection />
+            <FAQSection />
+          </main>
+          
+          <Footer />
+        </div>
+      </LazyMotion>
     </DemoLayout>
   );
 }

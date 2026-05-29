@@ -1,361 +1,316 @@
-'use client'
+"use client";
+import React, { useState } from 'react';
+import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
+import { Croissant, Coffee, Wheat, Star, MapPin, Phone, Mail, ArrowRight, Instagram, Plus, Minus, ShoppingBag } from 'lucide-react';
+import Link from 'next/link';
+import DemoLayout from '@/components/DemoLayout';
 
-import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
-import Link from 'next/link'
-import DemoLayout from '@/components/DemoLayout'
-import { ShoppingBag, ArrowLeft, MapPin, Clock, Phone, Menu, X } from 'lucide-react'
-import { useEffect, useState } from 'react'
+const fadeUp = {
+  hidden: { opacity: 0, y: 40 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
+};
 
-export default function Panaderia() {
-  const { scrollYProgress } = useScroll()
-  const yHero = useTransform(scrollYProgress, [0, 1], [0, 600])
-  const opacityHero = useTransform(scrollYProgress, [0, 0.2], [1, 0])
+const products = [
+  { id: 1, name: "Country Sourdough", category: "Bread", price: "$8.00", img: "/images/demo/panaderia/1.jpg", desc: "Our signature loaf, fermented for 36 hours for a deep, complex flavor and perfect crust." },
+  { id: 2, name: "Almond Croissant", category: "Pastry", price: "$5.50", img: "/images/demo/panaderia/2.jpg", desc: "Twice-baked butter croissant filled with rich almond frangipane and topped with toasted almonds." },
+  { id: 3, name: "Baguette Tradition", category: "Bread", price: "$4.00", img: "/images/demo/panaderia/3.jpg", desc: "Classic French baguette with a crisp crust and an airy, open crumb structure." },
+  { id: 4, name: "Cinnamon Morning Bun", category: "Pastry", price: "$4.50", img: "/images/demo/panaderia/4.jpg", desc: "Flaky croissant dough rolled with Ceylon cinnamon and brown sugar, tossed in cardamom sugar." },
+  { id: 5, name: "Whole Wheat Walnut", category: "Bread", price: "$9.00", img: "/images/demo/panaderia/5.jpg", desc: "Earthy stone-ground whole wheat studded with toasted organic walnuts." },
+  { id: 6, name: "Artisan Coffee Beans", category: "Pantry", price: "$18.00", img: "/images/demo/panaderia/6.jpg", desc: "Our house espresso blend, roasted locally. Notes of dark chocolate and cherry." }
+];
 
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
-  const [isHovering, setIsHovering] = useState(false)
-  const [menuOpen, setMenuOpen] = useState(false)
+const faqs = [
+  { q: "How should I store my sourdough bread?", a: "To keep the crust crispy, store it cut-side down on a cutting board or in a paper bag at room temperature. Avoid plastic bags, which soften the crust. For longer storage, slice and freeze." },
+  { q: "Do you offer gluten-free or vegan options?", a: "While our facility handles a lot of wheat, we do offer naturally vegan sourdoughs (just flour, water, salt). We currently do not produce gluten-free breads to ensure zero cross-contamination for celiacs." },
+  { q: "Can I pre-order for the weekend?", a: "Yes! Weekend pre-orders open every Tuesday at 9 AM and close Thursday at noon. You can order online and skip the line on Saturday or Sunday morning." },
+  { q: "Do you supply wholesale to local cafes?", a: "We do partner with a select group of local coffee shops. Please reach out via email to discuss wholesale partnerships." }
+];
 
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      setMousePosition({ x: e.clientX, y: e.clientY })
-    }
-    window.addEventListener('mousemove', handleMouseMove)
-    return () => window.removeEventListener('mousemove', handleMouseMove)
-  }, [])
+export default function PanaderiaDemo() {
+  const [activeFaq, setActiveFaq] = useState(null);
+  const [filter, setFilter] = useState("All");
+  const { scrollYProgress } = useScroll();
+  const yBg = useTransform(scrollYProgress, [0, 1], ["0%", "30%"]);
 
-  useEffect(() => {
-    import('animejs').then((animeModule) => {
-      const anime = animeModule.default;
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            anime({
-              targets: '.anime-pan-item',
-              scale: [0.95, 1],
-              translateY: [40, 0],
-              opacity: [0, 1],
-              delay: anime.stagger(150),
-              easing: 'easeOutQuart',
-              duration: 1000
-            });
-            observer.disconnect();
-          }
-        });
-      });
-      const el = document.querySelector('.anime-pan-container');
-      if(el) observer.observe(el);
-    });
-  }, []);
-
-  const processSteps = [
-    { title: "La Mezcla", desc: "Agua, harina, sal y nuestra masa madre centenaria.", img: "/images/demo/panaderia/1.jpg" },
-    { title: "El Reposo", desc: "Fermentación lenta en frío durante 48 horas.", img: "/images/demo/panaderia/2.jpg" },
-    { title: "El Fuego", desc: "Horneado en piedra a 250 grados para una corteza perfecta.", img: "/images/demo/panaderia/3.jpg" }
-  ]
-
-  const products = [
-    { name: "Pain de Campagne", price: "4.00€", img: "/images/demo/panaderia/4.jpg" },
-    { name: "Croissant au Beurre", price: "2.50€", img: "/images/demo/panaderia/5.jpg" },
-    { name: "Fougasse aux Olives", price: "3.50€", img: "/images/demo/panaderia/6.jpg" },
-    { name: "Baguette Tradition", price: "1.50€", img: "/images/demo/panaderia/1.jpg" }
-  ]
+  const filteredProducts = filter === "All" ? products : products.filter(p => p.category === filter);
 
   return (
-    <DemoLayout title="L'Atelier du Pain">
-    <div className="text-[#2C2C2C] font-serif overflow-hidden md:cursor-none">
-      <motion.div
-        className="hidden md:flex fixed top-0 left-0 w-6 h-6 rounded-full border-2 border-[#E6C280] pointer-events-none z-50 mix-blend-difference"
-        animate={{
-          x: mousePosition.x - 12,
-          y: mousePosition.y - 12,
-          scale: isHovering ? 2 : 1,
-          backgroundColor: isHovering ? '#E6C280' : 'transparent',
-        }}
-        transition={{ type: 'spring', stiffness: 500, damping: 28, mass: 0.5 }}
-      />
-
-      <nav className="fixed top-0 left-0 w-full z-40 bg-[#FAF9F6]/90 backdrop-blur-md border-b border-[#E6C280]/20 px-4 md:px-6 py-4 flex justify-between items-center">
-        <Link 
-          href="/"
-          className="flex items-center gap-2 text-[#6A3E1E] md:hover:text-[#E6C280] transition-colors uppercase tracking-widest text-sm md:text-base active:scale-95"
-          onMouseEnter={() => setIsHovering(true)}
-          onMouseLeave={() => setIsHovering(false)}
-        >
-          <ArrowLeft size={16} />
-          <span className="hidden md:inline">Catálogo</span>
-        </Link>
+    <DemoLayout title="Panadería - Artisan Bakery">
+      <div className="bg-[#FCF9F2] text-[#4A3C31] font-sans selection:bg-[#E5C7A3] selection:text-[#4A3C31] overflow-hidden">
         
-        <div className="text-lg md:text-2xl font-bold tracking-[0.2em] text-[#6A3E1E] text-center absolute left-1/2 -translate-x-1/2 uppercase w-1/2 md:w-auto truncate">
-          L'Atelier du Pain
-        </div>
-
-        <div className="flex items-center gap-4">
-          <button 
-            className="text-[#6A3E1E] md:hover:text-[#E6C280] transition-colors active:scale-95"
-            onMouseEnter={() => setIsHovering(true)}
-            onMouseLeave={() => setIsHovering(false)}
-          >
-            <ShoppingBag size={20} />
-          </button>
-          <button 
-            className="md:hidden text-[#6A3E1E] active:scale-95"
-            onClick={() => setMenuOpen(true)}
-          >
-            <Menu size={24} />
-          </button>
-        </div>
-      </nav>
-
-      <AnimatePresence>
-        {menuOpen && (
-          <motion.div 
-            initial={{ opacity: 0, y: '-100%' }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: '-100%' }}
-            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-            className="fixed inset-0 z-50 bg-[#6A3E1E] text-[#FAF9F6] flex flex-col items-center justify-center"
-          >
-            <button 
-              className="absolute top-6 right-6 active:scale-95 p-2"
-              onClick={() => setMenuOpen(false)}
-            >
-              <X size={32} />
-            </button>
-            <div className="flex flex-col gap-10 text-center text-4xl font-serif italic">
-              <Link href="#" onClick={() => setMenuOpen(false)} className="active:scale-95 active:text-[#E6C280] transition-colors">Inicio</Link>
-              <Link href="#" onClick={() => setMenuOpen(false)} className="active:scale-95 active:text-[#E6C280] transition-colors">Nuestro Proceso</Link>
-              <Link href="#" onClick={() => setMenuOpen(false)} className="active:scale-95 active:text-[#E6C280] transition-colors">Menú</Link>
-              <Link href="#" onClick={() => setMenuOpen(false)} className="active:scale-95 active:text-[#E6C280] transition-colors">Contacto</Link>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      <section className="relative h-[100dvh] flex items-center justify-center overflow-hidden">
-        <motion.div 
-          className="absolute inset-0 z-0"
-          style={{ y: yHero, opacity: opacityHero }}
-        >
-          <div className="absolute inset-0 bg-black/40 z-10" />
-          <img src="/images/demo/panaderia/hero.jpg" alt="Background" className="w-full h-full object-cover opacity-80" />
-        </motion.div>
-
-        <div className="relative z-10 text-center text-[#FAF9F6] flex flex-col items-center px-4 w-full">
-          <motion.h1 
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-            className="text-6xl md:text-9xl font-medium italic mb-6 tracking-tighter leading-[0.9]"
-          >
-            L'art de la patience.
-          </motion.h1>
-          <motion.p 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1, delay: 0.5 }}
-            className="text-lg md:text-2xl uppercase tracking-[0.3em] font-light text-[#E6C280] max-w-sm md:max-w-none mx-auto leading-relaxed"
-          >
-            Masa madre de 142 años.
-          </motion.p>
-        </div>
-
-        <motion.div 
-          className="absolute bottom-8 md:bottom-10 left-1/2 -translate-x-1/2 z-10 flex flex-col items-center gap-4"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 1, duration: 1 }}
-        >
-          <span className="uppercase tracking-widest text-sm md:text-base text-[#FAF9F6]">Scroll</span>
-          <motion.div 
-            className="w-[1px] h-12 md:h-16 bg-[#E6C280]"
-            animate={{ scaleY: [0, 1, 0], originY: [0, 0, 1] }}
-            transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
-          />
-        </motion.div>
-      </section>
-
-      <section className="py-24 md:py-32 bg-[#FAF9F6] relative z-20 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-0 md:px-20">
-          <motion.div 
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true, margin: "-100px" }}
-            className="text-center mb-16 md:mb-24 px-6 md:px-0"
-          >
-            <h2 className="text-sm md:text-base uppercase tracking-[0.4em] text-[#E6C280] mb-4">Nuestro Proceso</h2>
-            <p className="text-5xl md:text-7xl tracking-tighter text-[#6A3E1E] italic px-4">El ritual de cada madrugada</p>
-          </motion.div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8 px-6 md:px-20">
-            {processSteps.map((step, i) => (
-              <motion.div 
-                key={i}
-                initial={{ opacity: 0, y: 50 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-50px" }}
-                transition={{ delay: i * 0.2, duration: 0.8 }}
-                className="group cursor-pointer"
-                onMouseEnter={() => setIsHovering(true)}
-                onMouseLeave={() => setIsHovering(false)}
-              >
-                <div className="overflow-hidden mb-6 aspect-[4/5] relative">
-                  <div className="absolute inset-0 bg-[#6A3E1E]/20 z-10 opacity-0 md:group-hover:opacity-100 transition-opacity duration-500" />
-                  <img src={step.img} alt="Item" className={`w-full h-full object-cover  md:scale-105 md:group-hover:scale-100 transition-transform duration-700 ease-out md:grayscale md:group-hover:grayscale-0`} />
-                  <div className="absolute top-4 left-4 z-20 text-[#FAF9F6] text-xl font-serif italic md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-500">
-                    0{i + 1}.
-                  </div>
-                </div>
-                <h3 className="text-2xl text-[#6A3E1E] mb-3 uppercase tracking-widest">{step.title}</h3>
-                <p className="text-[#2C2C2C]/70 font-light leading-relaxed">{step.desc}</p>
-              </motion.div>
-            ))}
+        {/* Navigation */}
+        <nav className="absolute w-full px-6 py-6 flex justify-between items-center z-50">
+          <Link href="/" className="font-mono text-sm tracking-widest uppercase text-[#4A3C31] hover:text-[#C17A4D] transition-colors font-bold">
+            ← Catálogo
+          </Link>
+          <div className="text-2xl font-serif font-bold text-[#4A3C31] tracking-wide">
+            MIE DE PAIN
           </div>
-        </div>
-      </section>
+          <button className="flex items-center gap-2 text-[#4A3C31] hover:text-[#C17A4D] transition-colors font-medium">
+            <ShoppingBag className="w-5 h-5" />
+            <span className="hidden md:inline">Order Ahead</span>
+          </button>
+        </nav>
 
-      <section className="py-24 md:py-32 bg-[#6A3E1E] text-[#FAF9F6] overflow-hidden">
-        <div className="max-w-7xl mx-auto px-0 md:px-20">
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-16 md:mb-20 px-6 md:px-0 gap-6">
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-            >
-              <h2 className="text-sm md:text-base uppercase tracking-[0.4em] text-[#E6C280] mb-4">Clásicos</h2>
-              <p className="text-5xl md:text-7xl tracking-tighter italic">Recién Salidos</p>
+        {/* 1. Hero Section */}
+        <section className="relative h-screen flex flex-col items-center justify-center pt-20 overflow-hidden">
+          <div className="absolute inset-0 z-0">
+            <motion.img 
+              style={{ y: yBg }}
+              src="/images/demo/panaderia/hero.jpg" 
+              alt="Freshly baked bread" 
+              className="w-full h-full object-cover opacity-80" 
+            />
+            <div className="absolute inset-0 bg-gradient-to-b from-[#FCF9F2]/60 via-transparent to-[#FCF9F2]" />
+          </div>
+          <motion.div 
+            className="relative z-10 text-center px-4 max-w-3xl"
+            initial={{ opacity: 0, y: 30 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1, delay: 0.2 }}
+          >
+            <div className="flex justify-center mb-6 text-[#C17A4D]">
+              <Wheat className="w-12 h-12" />
+            </div>
+            <h1 className="text-6xl md:text-8xl font-serif text-[#4A3C31] mb-6 tracking-tight leading-none">
+              Slow Fermentation.<br />Real Bread.
+            </h1>
+            <p className="text-lg md:text-xl text-[#6B5A4E] mb-10 font-light max-w-xl mx-auto">
+              Handcrafted sourdough, laminated pastries, and specialty coffee. Baked fresh every morning using ancient grains and a 10-year-old starter.
+            </p>
+            <button className="bg-[#C17A4D] text-white px-8 py-4 rounded-full font-medium hover:bg-[#A6663E] transition-all transform hover:scale-105 shadow-xl shadow-[#C17A4D]/20">
+              Explore Our Menu
+            </button>
+          </motion.div>
+        </section>
+
+        {/* 2. Our Process (Features) */}
+        <section className="py-24 px-6 md:px-12 bg-[#FCF9F2] relative z-20">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12 text-center">
+            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ delay: 0.1 }}>
+              <div className="w-20 h-20 mx-auto bg-[#F4EBE1] rounded-full flex items-center justify-center mb-6 text-[#C17A4D]">
+                <Wheat className="w-10 h-10" />
+              </div>
+              <h3 className="text-2xl font-serif font-bold mb-4">Organic Flours</h3>
+              <p className="text-[#6B5A4E] leading-relaxed">
+                We mill a portion of our heritage grains in-house daily. Partnering only with sustainable, organic farms.
+              </p>
             </motion.div>
-            <motion.button
-              initial={{ opacity: 0, x: 50 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              className="uppercase tracking-widest text-sm md:text-base border-b border-[#E6C280] pb-1 hover:text-[#E6C280] transition-colors active:scale-95"
-              onMouseEnter={() => setIsHovering(true)}
-              onMouseLeave={() => setIsHovering(false)}
-            >
-              Ver menú completo
-            </motion.button>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 px-6 md:px-20 anime-pan-container">
-            {products.map((product, i) => (
-              <div 
-                key={i}
-                className="anime-pan-item opacity-0 group relative"
-                onMouseEnter={() => setIsHovering(true)}
-                onMouseLeave={() => setIsHovering(false)}
-              >
-                <div className="aspect-[3/4] overflow-hidden mb-4 border border-transparent md:group-hover:border-[#E6C280] transition-colors duration-500 p-2">
-                  <div className="w-full h-full overflow-hidden">
-                    <img src={product.img} alt="Item" className={`w-full h-full object-cover  scale-100 md:group-hover:scale-110 transition-transform duration-700`} />
-                  </div>
-                </div>
-                <div className="flex justify-between items-start pt-2">
-                  <h3 className="text-lg uppercase tracking-wide w-2/3">{product.name}</h3>
-                  <span className="text-[#E6C280] font-medium">{product.price}</span>
-                </div>
+            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ delay: 0.2 }}>
+              <div className="w-20 h-20 mx-auto bg-[#F4EBE1] rounded-full flex items-center justify-center mb-6 text-[#C17A4D]">
+                <Coffee className="w-10 h-10" />
               </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="py-32 md:py-40 px-6 bg-[#2C2C2C] text-center relative overflow-hidden flex items-center justify-center min-h-[60vh] md:min-h-[70vh]">
-        <div className="absolute inset-0 opacity-10 pointer-events-none">
-          <img src="/images/demo/panaderia/6.jpg" alt="Background" className="w-full h-full object-cover opacity-20" />
-        </div>
-        <motion.div 
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 1 }}
-          className="max-w-4xl mx-auto relative z-10 w-full"
-        >
-          <p 
-            className="text-4xl md:text-6xl text-[#E6C280] font-serif italic leading-tight mb-10 md:mb-12 tracking-tighter"
-          >
-            "El buen pan no es producto del tiempo, sino de la paciencia. Cada hogaza cuenta una historia de harina, agua y manos que saben esperar."
-          </p>
-          <div className="flex flex-col items-center">
-            <div className="w-12 md:w-16 h-[1px] bg-[#FAF9F6]/30 mb-6" />
-            <span className="uppercase tracking-[0.3em] text-sm md:text-base text-[#FAF9F6]">Jean-Paul Dubois</span>
-            <span className="text-[#FAF9F6]/50 text-sm md:text-base mt-2 italic">Maître Boulanger</span>
-          </div>
-        </motion.div>
-      </section>
-
-      <section className="flex flex-col md:flex-row min-h-[100dvh] md:min-h-screen bg-[#FAF9F6]">
-        <div className="w-full md:w-1/2 relative h-[40vh] md:h-screen">
-          <img src="/images/demo/panaderia/6.jpg" alt="Background" className="w-full h-full object-cover opacity-80" />
-        </div>
-        <div className="w-full md:w-1/2 flex items-center justify-center p-8 md:p-24 py-16 md:py-0">
-          <motion.div 
-            initial={{ opacity: 0, x: 50 }}
-            whileInView={{ opacity: 1, x: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="w-full max-w-md"
-          >
-            <h2 className="text-5xl md:text-7xl tracking-tighter text-[#6A3E1E] italic mb-10 md:mb-12 text-center md:text-left">Nuestra Casa</h2>
-            
-            <div className="space-y-8 text-[#2C2C2C]">
-              <div className="flex items-start gap-4 md:gap-6">
-                <MapPin className="text-[#E6C280] shrink-0 mt-1" size={20} />
-                <div>
-                  <h4 className="uppercase tracking-widest text-xs md:text-sm font-bold mb-1 md:mb-2">Visítanos</h4>
-                  <p className="font-light leading-relaxed text-sm md:text-base">Rue de l'Artisan, 12<br />75003 Paris, France</p>
-                </div>
+              <h3 className="text-2xl font-serif font-bold mb-4">Time & Patience</h3>
+              <p className="text-[#6B5A4E] leading-relaxed">
+                Every loaf undergoes a minimum 36-hour cold fermentation process to unlock maximum flavor and digestibility.
+              </p>
+            </motion.div>
+            <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={fadeUp} transition={{ delay: 0.3 }}>
+              <div className="w-20 h-20 mx-auto bg-[#F4EBE1] rounded-full flex items-center justify-center mb-6 text-[#C17A4D]">
+                <Croissant className="w-10 h-10" />
               </div>
+              <h3 className="text-2xl font-serif font-bold mb-4">Hand Laminated</h3>
+              <p className="text-[#6B5A4E] leading-relaxed">
+                Our viennoiserie is made with high-fat European butter, carefully folded over three days for ultimate flakiness.
+              </p>
+            </motion.div>
+          </div>
+        </section>
 
-              <div className="flex items-start gap-4 md:gap-6">
-                <Clock className="text-[#E6C280] shrink-0 mt-1" size={20} />
-                <div>
-                  <h4 className="uppercase tracking-widest text-xs md:text-sm font-bold mb-1 md:mb-2">Horario</h4>
-                  <p className="font-light leading-relaxed text-sm md:text-base">Martes a Domingo<br />06:30 - 19:00</p>
-                </div>
+        {/* 3. Products Grid */}
+        <section className="py-24 px-6 md:px-12 bg-[#F4EBE1]">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-8">
+              <div>
+                <h2 className="text-4xl md:text-6xl font-serif text-[#4A3C31] mb-4">Fresh from the Oven</h2>
+                <p className="text-[#6B5A4E] text-lg max-w-md">Our menu changes slightly with the seasons, but these classics are always on the rack.</p>
               </div>
-
-              <div className="flex items-start gap-4 md:gap-6">
-                <Phone className="text-[#E6C280] shrink-0 mt-1" size={20} />
-                <div>
-                  <h4 className="uppercase tracking-widest text-xs md:text-sm font-bold mb-1 md:mb-2">Contacto</h4>
-                  <p className="font-light leading-relaxed text-sm md:text-base">+33 1 23 45 67 89<br />bonjour@atelierdupain.fr</p>
-                </div>
+              <div className="flex gap-4">
+                {["All", "Bread", "Pastry", "Pantry"].map(f => (
+                  <button 
+                    key={f}
+                    onClick={() => setFilter(f)}
+                    className={`px-5 py-2 rounded-full font-medium transition-colors ${
+                      filter === f ? 'bg-[#C17A4D] text-white' : 'bg-white text-[#4A3C31] hover:bg-[#E5C7A3]/50'
+                    }`}
+                  >
+                    {f}
+                  </button>
+                ))}
               </div>
             </div>
 
-            <button 
-              className="mt-12 md:mt-16 w-full py-4 border border-[#6A3E1E] text-[#6A3E1E] uppercase tracking-widest text-sm md:text-base md:hover:bg-[#6A3E1E] md:hover:text-[#FAF9F6] transition-colors duration-300 active:scale-[0.98] active:bg-[#6A3E1E] active:text-[#FAF9F6]"
-              onMouseEnter={() => setIsHovering(true)}
-              onMouseLeave={() => setIsHovering(false)}
-            >
-              Hacer un encargo
-            </button>
-          </motion.div>
-        </div>
-      </section>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+              <AnimatePresence mode="popLayout">
+                {filteredProducts.map((product) => (
+                  <motion.div 
+                    key={product.id}
+                    layout
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ duration: 0.4 }}
+                    className="group bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300"
+                  >
+                    <div className="relative h-64 overflow-hidden">
+                      <img src={product.img} alt={product.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" />
+                      <div className="absolute top-4 left-4 bg-white/90 backdrop-blur px-3 py-1 rounded-full text-xs font-bold text-[#C17A4D] uppercase tracking-wider">
+                        {product.category}
+                      </div>
+                    </div>
+                    <div className="p-6">
+                      <div className="flex justify-between items-center mb-3">
+                        <h3 className="text-xl font-serif font-bold text-[#4A3C31]">{product.name}</h3>
+                        <span className="font-mono text-[#C17A4D] font-bold">{product.price}</span>
+                      </div>
+                      <p className="text-[#6B5A4E] text-sm leading-relaxed mb-6 line-clamp-2">{product.desc}</p>
+                      <button className="w-full py-3 border border-[#E5C7A3] text-[#C17A4D] font-medium rounded-xl hover:bg-[#C17A4D] hover:text-white transition-colors flex items-center justify-center gap-2">
+                        <Plus className="w-4 h-4" /> Add to Order
+                      </button>
+                    </div>
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
+          </div>
+        </section>
 
-      <footer className="bg-[#FAF9F6] pt-16 md:pt-20 pb-8 md:pb-10 px-6 border-t border-[#6A3E1E]/10">
-        <div className="max-w-7xl mx-auto flex flex-col items-center">
-          <div className="text-xl md:text-3xl font-bold tracking-[0.2em] text-[#6A3E1E] uppercase mb-10 md:mb-12 text-center w-full truncate">
-            L'Atelier du Pain
+        {/* 4. Split Banner (Story) */}
+        <section className="py-0 flex flex-col lg:flex-row bg-[#4A3C31] text-[#FCF9F2]">
+          <div className="w-full lg:w-1/2 min-h-[400px] lg:min-h-0 relative">
+            <img src="/images/demo/panaderia/4.jpg" alt="Baker shaping dough" className="absolute inset-0 w-full h-full object-cover" />
+          </div>
+          <div className="w-full lg:w-1/2 p-12 md:p-24 flex flex-col justify-center">
+            <span className="font-mono text-[#E5C7A3] tracking-[0.2em] uppercase text-sm mb-4 block">Meet the Baker</span>
+            <h2 className="text-4xl md:text-5xl font-serif mb-6 leading-tight">Baking with Intention.</h2>
+            <p className="text-[#E5C7A3] text-lg leading-relaxed mb-8 font-light">
+              "We opened Mie de Pain with a simple goal: to return to the roots of breadmaking. No commercial yeast, no dough conditioners. Just flour, water, salt, and time. When you pull a dark, crackling loaf from the hearth, it's a testament to the life inside the dough."
+            </p>
+            <div>
+              <p className="font-serif italic text-xl">— Elena Rossi, Founder & Head Baker</p>
+            </div>
+          </div>
+        </section>
+
+        {/* 5. Testimonials */}
+        <section className="py-24 px-6 md:px-12 bg-[#FCF9F2]">
+          <div className="max-w-7xl mx-auto">
+            <h2 className="text-center text-4xl font-serif text-[#4A3C31] mb-16">What the Neighborhood Says</h2>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+              {[
+                { name: "Sophie M.", text: "The almond croissants here rival the ones I had in Paris. Flaky, buttery perfection. Get here early before they sell out!" },
+                { name: "David K.", text: "Their country sourdough is a staple in my house. It lasts for days and makes the most incredible toast. The coffee is top-notch too." },
+                { name: "Emma R.", text: "The smell when you walk in is heavenly. The staff is so warm, and you can really taste the love and quality ingredients in every bite." }
+              ].map((review, idx) => (
+                <motion.div 
+                  key={idx}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: idx * 0.2 }}
+                  className="bg-white p-8 rounded-2xl shadow-sm border border-[#F4EBE1]"
+                >
+                  <div className="flex text-[#C17A4D] mb-4">
+                    {[1,2,3,4,5].map(i => <Star key={i} className="w-4 h-4 fill-current" />)}
+                  </div>
+                  <p className="text-[#6B5A4E] mb-6 italic leading-relaxed">"{review.text}"</p>
+                  <p className="font-bold text-[#4A3C31] uppercase tracking-wide text-sm">{review.name}</p>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* 6. FAQ */}
+        <section className="py-24 px-6 md:px-12 bg-[#F4EBE1]">
+          <div className="max-w-3xl mx-auto">
+            <div className="text-center mb-12">
+              <h2 className="text-4xl font-serif text-[#4A3C31] mb-4">Frequently Asked</h2>
+              <p className="text-[#6B5A4E]">Everything you need to know about our baked goods and process.</p>
+            </div>
+            
+            <div className="space-y-4">
+              {faqs.map((faq, idx) => (
+                <motion.div 
+                  key={idx}
+                  initial={{ opacity: 0 }} whileInView={{ opacity: 1 }} viewport={{ once: true }}
+                  className="bg-white rounded-xl overflow-hidden shadow-sm"
+                >
+                  <button 
+                    onClick={() => setActiveFaq(activeFaq === idx ? null : idx)}
+                    className="w-full px-6 py-5 flex justify-between items-center text-left text-[#4A3C31] font-bold text-lg hover:bg-[#FCF9F2] transition-colors"
+                  >
+                    <span>{faq.q}</span>
+                    {activeFaq === idx ? <Minus className="w-5 h-5 text-[#C17A4D]" /> : <Plus className="w-5 h-5 text-[#C17A4D]" />}
+                  </button>
+                  <AnimatePresence>
+                    {activeFaq === idx && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: 'auto', opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                      >
+                        <div className="px-6 pb-5 text-[#6B5A4E] leading-relaxed border-t border-[#F4EBE1] pt-4">
+                          {faq.a}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* 7. Footer */}
+        <footer className="bg-[#4A3C31] text-[#FCF9F2] pt-24 pb-12 px-6 md:px-12">
+          <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-16 mb-20">
+            <div className="lg:col-span-2">
+              <h3 className="font-serif text-3xl mb-4 text-white">MIE DE PAIN</h3>
+              <p className="text-[#E5C7A3] font-light max-w-sm mb-8 leading-relaxed">
+                Artisan bakery dedicated to slow fermentation, local organic grains, and the craft of traditional viennoiserie.
+              </p>
+              <div className="flex gap-2">
+                <input 
+                  type="email" 
+                  placeholder="Join our newsletter for weekend specials" 
+                  className="bg-white/10 border border-white/20 rounded-lg px-4 py-3 outline-none focus:border-[#C17A4D] text-sm w-full max-w-xs transition-colors"
+                />
+                <button className="bg-[#C17A4D] text-white px-6 py-3 rounded-lg hover:bg-[#A6663E] transition-colors font-medium">
+                  Subscribe
+                </button>
+              </div>
+            </div>
+            
+            <div>
+              <h4 className="font-mono text-xs uppercase tracking-widest text-[#E5C7A3] mb-6">Visit Us</h4>
+              <ul className="space-y-4 text-sm font-light text-white/80">
+                <li className="flex items-start gap-3"><MapPin className="w-5 h-5 text-[#C17A4D] shrink-0" /> 84 Baker Street<br/>Portland, OR 97204</li>
+                <li className="flex items-center gap-3"><Phone className="w-5 h-5 text-[#C17A4D]" /> (503) 555-0199</li>
+                <li className="flex items-center gap-3"><Mail className="w-5 h-5 text-[#C17A4D]" /> hello@miedepain.com</li>
+              </ul>
+            </div>
+            
+            <div>
+              <h4 className="font-mono text-xs uppercase tracking-widest text-[#E5C7A3] mb-6">Bakery Hours</h4>
+              <ul className="space-y-4 text-sm font-light text-white/80">
+                <li className="flex justify-between border-b border-white/10 pb-2"><span>Wednesday - Friday</span> <span>7am - 3pm</span></li>
+                <li className="flex justify-between border-b border-white/10 pb-2"><span>Saturday - Sunday</span> <span>8am - 2pm</span></li>
+                <li className="text-[#C17A4D] pt-2">Closed Monday & Tuesday</li>
+              </ul>
+            </div>
           </div>
           
-          <div className="flex flex-wrap justify-center gap-6 md:gap-8 mb-12 md:mb-16 text-sm md:text-base uppercase tracking-widest text-[#2C2C2C]/60">
-            <a href="#" className="md:hover:text-[#6A3E1E] active:text-[#6A3E1E] transition-colors">Instagram</a>
-            <a href="#" className="md:hover:text-[#6A3E1E] active:text-[#6A3E1E] transition-colors">Facebook</a>
-            <a href="#" className="md:hover:text-[#6A3E1E] active:text-[#6A3E1E] transition-colors">Prensa</a>
-          </div>
-
-          <div className="w-full flex flex-col md:flex-row justify-between items-center text-sm md:text-base text-[#2C2C2C]/40 uppercase tracking-widest pt-8 border-t border-[#6A3E1E]/10 gap-4 md:gap-0">
-            <p>© 2026 L'Atelier du Pain</p>
-            <div className="flex gap-4">
-              <a href="#" className="md:hover:text-[#6A3E1E] active:text-[#6A3E1E] transition-colors">Privacidad</a>
-              <a href="#" className="md:hover:text-[#6A3E1E] active:text-[#6A3E1E] transition-colors">Términos</a>
+          <div className="max-w-7xl mx-auto border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs font-mono text-white/50 uppercase tracking-widest">
+            <p>© {new Date().getFullYear()} Mie de Pain Bakery. All rights reserved.</p>
+            <div className="flex gap-6">
+              <a href="#" className="hover:text-white transition-colors flex items-center gap-2"><Instagram className="w-4 h-4" /> Instagram</a>
             </div>
           </div>
-        </div>
-      </footer>
-    </div>
+        </footer>
+        
+      </div>
     </DemoLayout>
-  )
+  );
 }

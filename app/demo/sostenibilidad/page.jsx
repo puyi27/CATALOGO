@@ -1,457 +1,407 @@
 "use client";
 
-import React, { useEffect, useRef } from "react";
-import { gsap } from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Bus, Clock3, Users, Megaphone, MapPin, ArrowRight, MessageSquareWarning, AlertCircle } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
+import Link from "next/link";
+import { ArrowRight, Leaf, Sun, Wind, Battery, ArrowUpRight, Globe, Users, Menu, X, Check } from "lucide-react";
 import DemoLayout from "@/components/DemoLayout";
 
-gsap.registerPlugin(ScrollTrigger);
+const fadeUp = {
+  hidden: { opacity: 0, y: 50 },
+  visible: { opacity: 1, y: 0, transition: { duration: 1, ease: [0.16, 1, 0.3, 1] } }
+};
 
-function CustomCursor() {
-  const cursorRef = useRef(null);
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.1 }
+  }
+};
+
+export default function EcoNovaDemo() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { scrollYProgress } = useScroll();
+  const heroY = useTransform(scrollYProgress, [0, 1], ["0%", "50%"]);
   
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      const xTo = gsap.quickTo(cursorRef.current, "x", { duration: 0.15, ease: "power2.out" });
-      const yTo = gsap.quickTo(cursorRef.current, "y", { duration: 0.15, ease: "power2.out" });
-      
-      const move = (e) => {
-        xTo(e.clientX);
-        yTo(e.clientY);
+  // Custom Cursor
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isHovering, setIsHovering] = useState(false);
 
-        const target = e.target;
-        const isInteractive = target.tagName === 'A' || target.tagName === 'BUTTON' || target.closest('a') || target.closest('button') || target.closest('.interactive-row');
+  useEffect(() => {
+    const updateMousePosition = (e) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    };
+    window.addEventListener("mousemove", updateMousePosition);
+    return () => window.removeEventListener("mousemove", updateMousePosition);
+  }, []);
+
+  const initiatives = [
+    { title: "Solar Microgrids", desc: "Empowering rural communities with decentralized, renewable solar energy networks.", icon: Sun, img: "1.jpg" },
+    { title: "Wind Farm Expansion", desc: "Scaling offshore wind capabilities to power urban centers cleanly and efficiently.", icon: Wind, img: "2.jpg" },
+    { title: "Battery Innovation", desc: "Investing in next-generation solid-state batteries for grid-level energy storage.", icon: Battery, img: "3.jpg" },
+    { title: "Reforestation", desc: "Rebuilding natural carbon sinks through massive community-led planting efforts.", icon: Leaf, img: "4.jpg" }
+  ];
+
+  const metrics = [
+    { value: "450", unit: "MW", label: "Clean Energy Generated" },
+    { value: "1.2", unit: "M", label: "Tons of CO2 Offset" },
+    { value: "85", unit: "k+", label: "Homes Powered" },
+    { value: "12", unit: "Yrs", label: "of Relentless Action" }
+  ];
+
+  return (
+    <DemoLayout title="EcoNova NGO">
+      <div className="bg-[#F4F4F4] text-[#1A1A1A] font-sans selection:bg-[#2E7D32] selection:text-white md:cursor-none min-h-screen overflow-x-hidden">
         
-        if (isInteractive) {
-          gsap.to(cursorRef.current, { scale: 4, duration: 0.3, ease: "power2.out" });
-        } else {
-          gsap.to(cursorRef.current, { scale: 1, duration: 0.3, ease: "power2.out" });
-        }
-      };
-      
-      window.addEventListener("mousemove", move);
-      return () => window.removeEventListener("mousemove", move);
-    });
-    return () => ctx.revert();
-  }, []);
+        {/* Custom Cursor */}
+        <motion.div
+          className="hidden md:flex fixed top-0 left-0 w-4 h-4 rounded-full bg-[#2E7D32] mix-blend-difference pointer-events-none z-[100] items-center justify-center transition-transform duration-100 ease-out"
+          animate={{
+            x: mousePosition.x - 8,
+            y: mousePosition.y - 8,
+            scale: isHovering ? 2.5 : 1,
+            opacity: isMenuOpen ? 0 : 1
+          }}
+        />
 
-  return (
-    <div 
-      ref={cursorRef} 
-      className="hidden md:block pointer-events-none fixed top-0 left-0 w-3 h-3 rounded-full bg-[#117C4E]/60 z-[10000] transform -translate-x-1/2 -translate-y-1/2 transition-transform duration-100 ease-out"
-    />
-  );
-}
+        {/* Navigation */}
+        <nav className="fixed w-full z-50 px-6 py-6 md:px-12 flex justify-between items-center mix-blend-difference text-white">
+          <Link href="/" className="text-xs font-bold tracking-widest uppercase flex items-center gap-2 hover:text-[#4CAF50] transition-colors">
+            <ArrowRight size={16} className="rotate-180" /> <span className="hidden md:inline">Back</span>
+          </Link>
+          <div className="text-xl font-black tracking-tight uppercase">ECONOVA.</div>
+          <button 
+            onClick={() => setIsMenuOpen(true)}
+            onMouseEnter={() => setIsHovering(true)}
+            onMouseLeave={() => setIsHovering(false)}
+            className="text-xs font-bold tracking-widest uppercase flex items-center gap-2 hover:text-[#4CAF50] transition-colors"
+          >
+            Menu <Menu size={16} />
+          </button>
+        </nav>
 
-export default function AlcalaSemeueveDemo() {
-  const containerRef = useRef(null);
-  
-  useEffect(() => {
-    const ctx = gsap.context(() => {
-      // Hero Parallax
-      gsap.to(".parallax-bg", {
-        yPercent: 25,
-        ease: "none",
-        scrollTrigger: {
-          trigger: ".hero-section",
-          start: "top top",
-          end: "bottom top",
-          scrub: 1.2,
-        },
-      });
+        {/* Fullscreen Menu */}
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: "-100%" }}
+              animate={{ opacity: 1, y: "0%" }}
+              exit={{ opacity: 0, y: "100%" }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              className="fixed inset-0 z-[110] bg-[#1A1A1A] text-white flex flex-col justify-center px-12 md:px-24"
+            >
+              <button 
+                onClick={() => setIsMenuOpen(false)}
+                className="absolute top-8 right-8 md:top-12 md:right-12 text-xs font-bold tracking-widest uppercase flex items-center gap-2 hover:text-[#4CAF50] transition-colors"
+              >
+                Close <X size={20} />
+              </button>
+              <div className="flex flex-col gap-4 md:gap-8 max-w-4xl">
+                {["Manifesto", "Initiatives", "Impact", "Get Involved"].map((item, i) => (
+                  <motion.a
+                    key={item}
+                    href="#"
+                    initial={{ opacity: 0, x: -40 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.3 + i * 0.1, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                    className="text-6xl md:text-[8rem] font-black tracking-tighter hover:text-[#4CAF50] transition-colors w-fit leading-none"
+                  >
+                    {item}
+                  </motion.a>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-      // Text Reveal Editorial
-      const revealWrappers = gsap.utils.toArray(".reveal-wrapper");
-      revealWrappers.forEach((wrapper) => {
-        const text = wrapper.querySelector(".reveal-text");
-        gsap.fromTo(text, 
-          { y: "110%", rotation: 2 },
-          {
-            y: "0%",
-            rotation: 0,
-            ease: "expo.out",
-            duration: 1.8,
-            scrollTrigger: {
-              trigger: wrapper,
-              start: "top 90%",
-              toggleActions: "play none none reverse",
-            }
-          }
-        );
-      });
-
-      // Líneas de impacto
-      const lines = gsap.utils.toArray(".impact-line");
-      lines.forEach((line) => {
-        gsap.fromTo(line,
-          { scaleX: 0 },
-          {
-            scaleX: 1,
-            ease: "power4.out",
-            duration: 2,
-            transformOrigin: "left center",
-            scrollTrigger: {
-              trigger: line,
-              start: "top 85%",
-            }
-          }
-        );
-      });
-      
-      // Animación de tarjetas de reportes
-      gsap.from(".report-card", {
-        y: 50,
-        opacity: 0,
-        stagger: 0.2,
-        duration: 1,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: ".reports-section",
-          start: "top 80%",
-        }
-      });
-
-      // Marquee infinito (Texto en movimiento)
-      gsap.to(".marquee-inner", {
-        xPercent: -50,
-        ease: "none",
-        duration: 15,
-        repeat: -1,
-      });
-
-      // Animación de las filas de estado
-      gsap.from(".status-row", {
-        opacity: 0,
-        x: -20,
-        stagger: 0.15,
-        duration: 1,
-        ease: "power3.out",
-        scrollTrigger: {
-          trigger: ".status-section",
-          start: "top 85%",
-        }
-      });
-
-    }, containerRef);
-
-    return () => ctx.revert();
-  }, []);
-
-  return (
-    <DemoLayout title="" year="Alcalá se Mueve">
-      <div ref={containerRef} className="bg-[#011B11] text-[#FBF5E9] font-sans selection:bg-[#117C4E] selection:text-white md:cursor-none overflow-x-hidden">
-        <CustomCursor />
-
-        {/* HERO SECTION */}
-        <section className="hero-section relative w-full h-[100svh] flex flex-col items-center justify-center overflow-hidden">
-          <div className="absolute inset-0 z-0 overflow-hidden">
-            <div 
-              className="parallax-bg w-full h-[125%] bg-cover bg-center"
-              style={{ backgroundImage: "url('/protesta/hero-autobus.jpg')" }}
-            />
-            <div className="absolute inset-0 bg-[#011B11]/70 mix-blend-multiply" />
-          </div>
+        {/* Hero Section */}
+        <section className="relative h-screen w-full overflow-hidden flex flex-col items-start justify-end pb-12 md:pb-24 px-6 md:px-12 bg-[#1A1A1A]">
+          <motion.div style={{ y: heroY }} className="absolute inset-0 z-0">
+            <img src="/images/demo/sostenibilidad/hero.jpg" alt="Wind Turbines" className="w-full h-full object-cover opacity-60" />
+            <div className="absolute inset-0 bg-gradient-to-t from-[#1A1A1A] via-transparent to-transparent opacity-90" />
+          </motion.div>
           
-          <div className="relative z-10 text-center px-4 w-full max-w-7xl flex flex-col items-center">
-            <div className="overflow-hidden mb-6">
-              <span className="block text-[#117C4E] text-xs md:text-sm uppercase tracking-[0.4em] font-light">
-                Plataforma Ciudadana
-              </span>
-            </div>
-            
-            <h1 className="text-7xl md:text-[10rem] font-serif text-[#FBF5E9] tracking-tighter leading-[0.85] w-full mix-blend-overlay">
-              Dignidad en<br />el Transporte
-            </h1>
-          </div>
-
-          <div className="absolute bottom-12 left-1/2 -translate-x-1/2 text-[#FBF5E9]/70 flex flex-col items-center gap-4 z-10 opacity-70">
-            <span className="text-[10px] uppercase tracking-[0.3em]">Nuestra Protesta</span>
-            <div className="w-[1px] h-16 bg-[#FBF5E9]/10 relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-1/2 bg-[#117C4E] animate-bounce-slow" />
-            </div>
+          <div className="relative z-10 w-full max-w-7xl mx-auto flex flex-col gap-6 text-white">
+            <motion.div
+              initial={{ opacity: 0, width: 0 }}
+              animate={{ opacity: 1, width: "100px" }}
+              transition={{ duration: 1, delay: 0.2 }}
+              className="h-1 bg-[#4CAF50] mb-4"
+            />
+            <motion.h1 
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1.2, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+              className="text-6xl md:text-[10rem] leading-[0.85] font-black tracking-tighter uppercase"
+            >
+              Powering <br /> Tomorrow.
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1.5, delay: 0.8 }}
+              className="text-lg md:text-2xl font-light tracking-wide text-gray-300 max-w-2xl mt-4"
+            >
+              Accelerating the global transition to 100% clean, renewable energy. Because the future depends on action today.
+            </motion.p>
           </div>
         </section>
 
-        {/* MARQUEE SECTION */}
-        <div className="w-full bg-[#117C4E] text-[#011B11] py-4 border-y border-[#117C4E] overflow-hidden flex items-center">
-          <div className="marquee-inner flex whitespace-nowrap min-w-[200%]">
-            <span className="text-sm md:text-lg uppercase tracking-[0.3em] font-medium px-8">TRANSPORTE DIGNO YA • NO MÁS ESPERAS • ALCALÁ SE MUEVE •</span>
-            <span className="text-sm md:text-lg uppercase tracking-[0.3em] font-medium px-8">TRANSPORTE DIGNO YA • NO MÁS ESPERAS • ALCALÁ SE MUEVE •</span>
-            <span className="text-sm md:text-lg uppercase tracking-[0.3em] font-medium px-8">TRANSPORTE DIGNO YA • NO MÁS ESPERAS • ALCALÁ SE MUEVE •</span>
-            <span className="text-sm md:text-lg uppercase tracking-[0.3em] font-medium px-8">TRANSPORTE DIGNO YA • NO MÁS ESPERAS • ALCALÁ SE MUEVE •</span>
-          </div>
+        {/* Marquee */}
+        <div className="bg-[#4CAF50] text-[#1A1A1A] py-4 border-y border-[#2E7D32] overflow-hidden flex items-center">
+          <motion.div 
+            animate={{ x: [0, -1000] }}
+            transition={{ repeat: Infinity, duration: 20, ease: "linear" }}
+            className="flex whitespace-nowrap min-w-max"
+          >
+            {[...Array(6)].map((_, i) => (
+              <span key={i} className="text-sm md:text-lg uppercase tracking-widest font-bold px-8">
+                ACT NOW • RENEWABLE FUTURE • ZERO EMISSIONS • 
+              </span>
+            ))}
+          </motion.div>
         </div>
 
-        {/* MANIFESTO SECTION */}
-        <section className="py-32 md:py-48 px-8 md:px-24 max-w-[100rem] mx-auto bg-[#FBF5E9] text-[#011B11]">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-16 md:gap-24">
-            <div className="md:col-span-4 flex flex-col gap-8 justify-start">
-              <Megaphone strokeWidth={0.5} className="w-16 h-16 text-[#117C4E]" />
-              <h2 className="text-4xl md:text-6xl font-serif leading-none tracking-tighter text-[#011B11]">
-                Alcalá<br />se planta.
+        {/* The Crisis / Manifesto */}
+        <section className="py-32 md:py-48 px-6 md:px-12 max-w-7xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-12 gap-12 md:gap-24">
+            <div className="md:col-span-4 flex flex-col gap-8">
+              <Globe className="w-16 h-16 text-[#4CAF50]" strokeWidth={1.5} />
+              <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter leading-none text-[#1A1A1A]">
+                The Time <br /> For Talk <br /> Is Over.
               </h2>
             </div>
-            <div className="md:col-span-8 flex flex-col gap-12 md:gap-16 pt-4">
-              <div className="reveal-wrapper overflow-hidden">
-                <p className="reveal-text text-3xl md:text-5xl tracking-tighter leading-[1.2] font-serif text-[#011B11]">
-                  Moverse por Alcalá no debería ser un privilegio, es un derecho. Exigimos un servicio de autobuses eficiente, puntual y digno para todos.
-                </p>
-              </div>
-              <div className="reveal-wrapper overflow-hidden">
-                <p className="reveal-text text-lg md:text-xl text-[#011B11]/70 font-light max-w-2xl leading-relaxed">
-                  No somos solo cifras en una parada. Somos trabajadores, estudiantes y familias que pierden horas de vida esperando un transporte que no llega, llega saturado o simplemente nos ignora. Nuestra protesta exige frecuencias reales, cumplimiento de horarios y un servicio nocturno digno.
-                </p>
-              </div>
+            <div className="md:col-span-8 flex flex-col justify-center">
+              <motion.p 
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 1 }}
+                className="text-3xl md:text-5xl font-medium tracking-tight leading-[1.1] text-[#1A1A1A] mb-8"
+              >
+                Climate change isn't a distant threat—it's an immediate reality. We are bridging the gap between policy and deployment.
+              </motion.p>
+              <motion.p
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 1, delay: 0.2 }}
+                className="text-lg text-gray-600 font-normal leading-relaxed max-w-3xl"
+              >
+                EcoNova operates at the intersection of technology, community, and capital. By funding rapid-deployment renewable energy grids in developing nations and pushing aggressive policy changes in developed ones, we don't just advocate for change—we build it.
+              </motion.p>
             </div>
           </div>
         </section>
 
-        {/* LINE STATUS SECTION */}
-        <section className="status-section py-20 px-8 md:px-24 w-full bg-[#011B11] text-[#FBF5E9] border-y border-[#117C4E]/20">
-          <div className="max-w-[100rem] mx-auto flex flex-col md:flex-row gap-16">
-            <div className="w-full md:w-1/3 flex flex-col justify-center">
-               <div className="reveal-wrapper overflow-hidden mb-6">
-                  <span className="reveal-text block text-xs uppercase tracking-[0.3em] font-medium text-[#117C4E]">
-                    Reporte en Tiempo Real
-                  </span>
-               </div>
-               <div className="reveal-wrapper overflow-hidden mb-8">
-                  <h3 className="reveal-text text-4xl md:text-6xl tracking-tighter font-serif text-[#FBF5E9] leading-[1]">
-                    Estado<br/>de la Red.
-                  </h3>
-               </div>
-               <p className="text-[#FBF5E9]/60 font-light max-w-sm leading-relaxed mb-8">
-                 Basado en los reportes de los usuarios en la última hora. Ayúdanos a mantener este panel actualizado.
-               </p>
+        {/* Active Initiatives Grid */}
+        <section className="py-24 md:py-32 bg-[#1A1A1A] text-white px-6 md:px-12">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex flex-col md:flex-row justify-between items-end mb-20 gap-8">
+              <div>
+                <span className="text-[#4CAF50] font-bold text-xs tracking-widest uppercase block mb-4">
+                  Our Solutions
+                </span>
+                <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter">
+                  Active Fronts.
+                </h2>
+              </div>
+              <button 
+                onMouseEnter={() => setIsHovering(true)}
+                onMouseLeave={() => setIsHovering(false)}
+                className="flex items-center gap-2 text-sm font-bold uppercase tracking-widest hover:text-[#4CAF50] transition-colors"
+              >
+                View Full Reports <ArrowUpRight size={20} />
+              </button>
             </div>
-            
-            <div className="w-full md:w-2/3 flex flex-col">
-              {[
-                { name: "M-121", route: "Alcalá - Sevilla (Centro)", status: "Colapsada", color: "bg-red-500", textAlert: "text-red-400" },
-                { name: "M-122", route: "Alcalá - Sevilla (Directo)", status: "Retrasos (+25m)", color: "bg-orange-500", textAlert: "text-orange-400" },
-                { name: "M-104", route: "Alcalá - Dos Hermanas", status: "Frecuencia Baja", color: "bg-orange-500", textAlert: "text-orange-400" },
-                { name: "Urbanos", route: "Líneas A, B, C, D", status: "Fluido", color: "bg-[#117C4E]", textAlert: "text-[#117C4E]" },
-              ].map((line, idx) => (
-                <div key={idx} className="status-row interactive-row group flex items-center justify-between py-6 border-b border-[#FBF5E9]/10 hover:border-[#117C4E] transition-colors cursor-pointer">
-                  <div className="flex items-center gap-6 md:gap-12 w-2/3">
-                    <span className="text-2xl md:text-4xl font-serif text-[#FBF5E9] group-hover:text-[#117C4E] transition-colors min-w-[80px]">
-                      {line.name}
-                    </span>
-                    <span className="text-sm md:text-base font-light text-[#FBF5E9]/60 truncate">
-                      {line.route}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-3 justify-end w-1/3">
-                    <span className={`text-xs md:text-sm uppercase tracking-[0.1em] ${line.textAlert} font-medium text-right hidden md:block`}>
-                      {line.status}
-                    </span>
-                    <div className="relative flex h-3 w-3">
-                      {line.status !== "Fluido" && (
-                         <span className={`animate-ping absolute inline-flex h-full w-full rounded-full ${line.color} opacity-75`}></span>
-                      )}
-                      <span className={`relative inline-flex rounded-full h-3 w-3 ${line.color}`}></span>
+
+            <motion.div 
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={staggerContainer}
+              className="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8"
+            >
+              {initiatives.map((init, i) => (
+                <motion.div 
+                  key={i}
+                  variants={fadeUp}
+                  className="group relative h-[400px] md:h-[500px] bg-zinc-800 overflow-hidden"
+                  onMouseEnter={() => setIsHovering(true)}
+                  onMouseLeave={() => setIsHovering(false)}
+                >
+                  <img 
+                    src={`/images/demo/sostenibilidad/${init.img}`} 
+                    alt={init.title}
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-60"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#1A1A1A] via-[#1A1A1A]/40 to-transparent" />
+                  
+                  <div className="absolute inset-0 p-8 md:p-12 flex flex-col justify-between">
+                    <div className="w-12 h-12 bg-white/10 backdrop-blur-md flex items-center justify-center rounded-full text-[#4CAF50]">
+                      <init.icon size={24} />
+                    </div>
+                    <div>
+                      <h3 className="text-3xl font-black uppercase tracking-tight mb-4 group-hover:text-[#4CAF50] transition-colors">{init.title}</h3>
+                      <p className="text-gray-300 max-w-sm">
+                        {init.desc}
+                      </p>
                     </div>
                   </div>
-                </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Impact Metrics */}
+        <section className="py-32 bg-[#4CAF50] text-[#1A1A1A] px-6 md:px-12">
+          <div className="max-w-7xl mx-auto">
+            <div className="mb-20 text-center">
+              <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter mb-6">
+                Measurable Impact.
+              </h2>
+              <p className="text-xl font-medium max-w-2xl mx-auto opacity-80">
+                We believe in complete transparency. Every dollar, every turbine, every tree—tracked and verified.
+              </p>
+            </div>
+            
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-12 md:gap-8">
+              {metrics.map((metric, i) => (
+                <motion.div 
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6, delay: i * 0.1 }}
+                  className="flex flex-col items-center text-center"
+                >
+                  <div className="flex items-baseline gap-2 mb-4">
+                    <span className="text-6xl md:text-8xl font-black tracking-tighter">{metric.value}</span>
+                    <span className="text-2xl md:text-4xl font-bold">{metric.unit}</span>
+                  </div>
+                  <span className="text-sm md:text-base font-bold uppercase tracking-widest opacity-80">{metric.label}</span>
+                </motion.div>
               ))}
             </div>
           </div>
         </section>
 
-        {/* IMAGE / PHILOSOPHY SPLIT */}
-        <section className="py-32 md:py-48 w-full bg-[#FBF5E9]">
-          <div className="flex flex-col md:flex-row w-full min-h-[80vh] px-8 md:px-0">
-            <div className="w-full md:w-1/2 md:p-12 h-[60vh] md:h-auto mb-12 md:mb-0">
-              <div className="w-full h-full relative overflow-hidden group rounded-2xl md:rounded-r-2xl md:rounded-l-none">
-                <img 
-                  src="/protesta/espera-parada.jpg" 
-                  alt="Urbano Alcalá conceptual" 
-                  className="w-full h-full object-cover grayscale transition-all duration-1000 ease-out md:group-hover:scale-105 md:group-hover:grayscale-0"
-                />
+        {/* Image Text Split */}
+        <section className="py-32 px-6 md:px-12 max-w-7xl mx-auto">
+          <div className="flex flex-col md:flex-row items-center gap-16 md:gap-24">
+            <motion.div 
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 1 }}
+              className="w-full md:w-1/2"
+            >
+              <div className="aspect-[4/5] bg-zinc-200 overflow-hidden relative">
+                <img src="/images/demo/sostenibilidad/5.jpg" alt="Team working" className="w-full h-full object-cover" />
+                <div className="absolute bottom-6 right-6 bg-white p-6 shadow-xl">
+                  <Users size={32} className="text-[#4CAF50] mb-2" />
+                  <div className="text-xl font-black uppercase">2.5k Volunteers</div>
+                </div>
               </div>
-            </div>
+            </motion.div>
             
-            <div className="w-full md:w-1/2 flex flex-col justify-center py-10 md:py-0 md:px-24 relative z-10 text-[#011B11]">
-               <div className="reveal-wrapper overflow-hidden mb-8">
-                  <span className="reveal-text block text-xs uppercase tracking-[0.3em] font-medium text-[#117C4E]">
-                    La Filosofía
-                  </span>
-               </div>
-               <div className="reveal-wrapper overflow-hidden">
-                  <h3 className="reveal-text text-5xl md:text-8xl tracking-tighter font-serif text-[#011B11] mb-10 leading-[0.9]">
-                    Datos contra<br />el ruido.
-                  </h3>
-               </div>
-               <div className="reveal-wrapper overflow-hidden">
-                  <p className="reveal-text text-[#011B11]/70 text-lg font-light max-w-md leading-relaxed">
-                    Las quejas individuales se pierden. Los datos agrupados generan cambios. Centralizamos la frustración diaria en un dashboard público imposible de ignorar por las administraciones.
-                  </p>
-               </div>
-            </div>
-          </div>
-        </section>
-
-        <ProtestMetricsSection />
-
-        {/* LATEST REPORTS */}
-        <section className="reports-section py-32 md:py-40 px-8 md:px-24 max-w-[100rem] mx-auto bg-[#FBF5E9] text-[#011B11]">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-16 mb-24 md:mb-32">
-            <div className="md:col-span-8">
-              <div className="reveal-wrapper overflow-hidden mb-8">
-                <span className="reveal-text block text-xs uppercase tracking-[0.3em] font-medium text-[#117C4E]">
-                  Voces de la Parada
-                </span>
-              </div>
-              <div className="reveal-wrapper overflow-hidden">
-                <h2 className="reveal-text text-4xl md:text-7xl tracking-tighter font-serif text-[#011B11] leading-[0.9]">
-                  Últimos Reportes<br />Ciudadanos.
-                </h2>
-              </div>
-            </div>
-            <div className="md:col-span-4 flex items-end justify-start md:justify-end">
-              <button className="group flex items-center gap-4 text-[#117C4E] pb-2 border-b border-[#117C4E]/20 hover:border-[#117C4E] transition-colors">
-                <span className="text-sm uppercase tracking-[0.2em]">Ver todos</span>
-                <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-2" />
+            <div className="w-full md:w-1/2 flex flex-col justify-center">
+              <span className="text-[#4CAF50] font-bold text-xs tracking-widest uppercase block mb-6">
+                Community First
+              </span>
+              <h2 className="text-4xl md:text-6xl font-black uppercase tracking-tighter mb-8 leading-[1]">
+                Built by people, <br /> for the planet.
+              </h2>
+              <p className="text-lg text-gray-600 font-normal leading-relaxed mb-8">
+                Technology alone won't solve the climate crisis. It requires a massive shift in human behavior and corporate accountability. Our global network of volunteers, scientists, and engineers work seamlessly to implement solutions that respect both the environment and local communities.
+              </p>
+              <ul className="flex flex-col gap-4 mb-10">
+                {["Local training programs", "Fair wage guarantees", "Indigenous land respect"].map((item, i) => (
+                  <li key={i} className="flex items-center gap-4 font-bold text-[#1A1A1A]">
+                    <div className="w-6 h-6 rounded-full bg-[#4CAF50]/20 flex items-center justify-center text-[#4CAF50]">
+                      <Check size={14} strokeWidth={3} />
+                    </div>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+              <button 
+                onMouseEnter={() => setIsHovering(true)}
+                onMouseLeave={() => setIsHovering(false)}
+                className="w-fit px-8 py-4 bg-[#1A1A1A] text-white text-xs font-bold uppercase tracking-widest hover:bg-[#4CAF50] transition-colors"
+              >
+                Join the Network
               </button>
             </div>
           </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {[
-              { line: "M-121", route: "Alcalá - Sevilla (Por P. Tecnológico)", grievance: "Retraso de 35 min. Bus lleno, gente de pie desde la primera parada. Nadie avisa.", time: "Hace 14 min." },
-              { line: "Urbanos", route: "Circular Urbana (H. San Agustín)", grievance: "Frecuencia fantasma. Espera de 1h en parada. El panel electrónico sigue apagado.", time: "Hace 22 min." },
-              { line: "M-120", route: "Alcalá - Dos Hermanas (Directo)", grievance: "Aire acondicionado averiado en hora punta. Calor insoportable y hacinamiento.", time: "Hace 1 hora." },
-            ].map((report, index) => (
-              <div 
-                key={index} 
-                className="report-card group bg-[#011B11] p-8 rounded-2xl flex flex-col gap-6 text-[#FBF5E9] border border-[#117C4E]/10 hover:border-[#117C4E]/40 transition-colors"
-                onMouseEnter={(e) => {
-                  import('animejs').then((animeModule) => {
-                    const anime = animeModule.default;
-                    anime.remove(e.currentTarget);
-                    anime({
-                      targets: e.currentTarget,
-                      scale: 1.02,
-                      translateY: -5,
-                      boxShadow: '0px 10px 20px rgba(17, 124, 78, 0.2)',
-                      duration: 400,
-                      easing: 'easeOutExpo'
-                    });
-                  });
-                }}
-                onMouseLeave={(e) => {
-                  import('animejs').then((animeModule) => {
-                    const anime = animeModule.default;
-                    anime.remove(e.currentTarget);
-                    anime({
-                      targets: e.currentTarget,
-                      scale: 1,
-                      translateY: 0,
-                      boxShadow: '0px 0px 0px rgba(17, 124, 78, 0)',
-                      duration: 600,
-                      easing: 'easeOutElastic(1, .8)'
-                    });
-                  });
-                }}
-              >
-                <div className="flex justify-between items-start gap-4">
-                  <div className="flex items-center gap-4">
-                    <div className="p-3 bg-[#117C4E]/20 rounded-full text-[#117C4E]">
-                      <AlertCircle size={20} strokeWidth={1.5} />
-                    </div>
-                    <div>
-                      <span className="block text-2xl font-serif tracking-tight">{report.line}</span>
-                      <span className="block text-[10px] md:text-xs uppercase tracking-[0.1em] text-[#117C4E]">{report.route}</span>
-                    </div>
-                  </div>
-                </div>
-                <p className="text-base text-[#FBF5E9]/80 font-light flex-grow leading-relaxed">
-                  "{report.grievance}"
-                </p>
-                <div className="flex justify-between items-end w-full">
-                   <span className="text-xs uppercase tracking-[0.1em] text-[#FBF5E9]/40">{report.time}</span>
-                   <span className="text-[10px] uppercase tracking-[0.3em] text-[#117C4E] font-medium opacity-0 group-hover:opacity-100 transition-opacity">Ver más</span>
-                </div>
-              </div>
-            ))}
-          </div>
         </section>
 
-        {/* MASSIVE CTA WITH GOOGLE FORM LINK */}
-        <section className="relative py-40 md:py-64 px-8 text-[#FBF5E9] flex flex-col items-center justify-center overflow-hidden">
-          <div className="absolute inset-0 z-0">
-            <div 
-              className="w-full h-full bg-cover bg-center"
-              style={{ backgroundImage: "url('/protesta/protesta-dignidad.jpg')" }}
-            />
-            <div className="absolute inset-0 bg-[#011B11]/90 mix-blend-multiply" />
-          </div>
-          <div className="relative z-10 max-w-5xl mx-auto text-center flex flex-col items-center w-full">
-            <h2 className="text-5xl md:text-[8rem] tracking-tighter font-serif mb-16 leading-[0.9] text-[#FBF5E9]">
-              Dales visibilidad.<br/>Únete a la queja.
+        {/* Join the Movement Form */}
+        <section className="py-32 md:py-48 bg-[#1A1A1A] text-white px-6 md:px-12 text-center border-t border-zinc-800">
+          <div className="max-w-4xl mx-auto">
+            <h2 className="text-5xl md:text-[7rem] font-black uppercase tracking-tighter mb-8 leading-[0.9]">
+              Take Action. <br /> Right Now.
             </h2>
-            {/* Aquí hemos cambiado el botón por un enlace <a> hacia tu formulario real */}
-            <a 
-              href="https://docs.google.com/forms/d/e/1FAIpQLSddnQ7lRKxyMImMjVOsMx6e-a8-GOJ4CIQShlj6znZmB-Tx2Q/viewform"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="group relative flex items-center justify-center gap-6 pb-4 border-b border-[#117C4E]/30 hover:border-[#117C4E] transition-colors duration-500 w-fit cursor-pointer"
-            >
-              <span className="text-sm md:text-base uppercase tracking-[0.3em] font-light text-[#117C4E]">
-                Reportar una incidencia
-              </span>
-              <ArrowRight className="w-5 h-5 text-[#117C4E] transition-transform duration-500 md:group-hover:translate-x-4" strokeWidth={1} />
-            </a>
+            <p className="text-xl text-gray-400 mb-16 max-w-2xl mx-auto">
+              Whether you want to donate, volunteer your skills, or partner your organization with EcoNova, the first step is here.
+            </p>
+            
+            <form className="space-y-8 text-left">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <input 
+                  type="text" 
+                  placeholder="FULL NAME"
+                  className="w-full bg-zinc-900 border border-zinc-800 p-6 outline-none font-bold placeholder:text-zinc-600 focus:border-[#4CAF50] transition-colors text-sm tracking-widest uppercase"
+                />
+                <input 
+                  type="email" 
+                  placeholder="EMAIL ADDRESS"
+                  className="w-full bg-zinc-900 border border-zinc-800 p-6 outline-none font-bold placeholder:text-zinc-600 focus:border-[#4CAF50] transition-colors text-sm tracking-widest uppercase"
+                />
+              </div>
+              <select className="w-full bg-zinc-900 border border-zinc-800 p-6 outline-none font-bold text-zinc-400 focus:border-[#4CAF50] transition-colors text-sm tracking-widest uppercase appearance-none cursor-pointer">
+                <option value="" disabled selected>HOW DO YOU WANT TO HELP?</option>
+                <option value="volunteer">Become a Volunteer</option>
+                <option value="donate">Make a Donation</option>
+                <option value="partner">Corporate Partnership</option>
+              </select>
+              <button 
+                type="button"
+                onMouseEnter={() => setIsHovering(true)}
+                onMouseLeave={() => setIsHovering(false)}
+                className="w-full py-6 bg-[#4CAF50] text-[#1A1A1A] text-sm font-black uppercase tracking-widest hover:bg-white transition-colors"
+              >
+                Submit Application
+              </button>
+            </form>
           </div>
         </section>
+
+        {/* Footer */}
+        <footer className="bg-[#1A1A1A] pt-24 pb-12 px-6 md:px-12 border-t border-zinc-800">
+          <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-12 md:gap-0">
+            <div className="text-4xl font-black tracking-tight uppercase text-white">ECONOVA.</div>
+            <div className="flex gap-8 md:gap-12 text-xs font-bold tracking-widest uppercase text-gray-500">
+              <a href="#" className="hover:text-white transition-colors">About</a>
+              <a href="#" className="hover:text-white transition-colors">Transparency</a>
+              <a href="#" className="hover:text-white transition-colors">Press</a>
+              <a href="#" className="hover:text-white transition-colors">Contact</a>
+            </div>
+          </div>
+          <div className="max-w-7xl mx-auto mt-16 flex flex-col md:flex-row justify-between items-center border-t border-zinc-800 pt-8 gap-4 md:gap-0">
+            <div className="text-[10px] font-bold tracking-widest uppercase text-gray-600">
+              © {new Date().getFullYear()} EcoNova Organization. All rights reserved.
+            </div>
+            <div className="flex gap-6 text-[10px] font-bold tracking-widest uppercase text-gray-600">
+              <a href="#" className="hover:text-[#4CAF50] transition-colors">Privacy Policy</a>
+              <a href="#" className="hover:text-[#4CAF50] transition-colors">Terms of Service</a>
+            </div>
+          </div>
+        </footer>
+
       </div>
     </DemoLayout>
-  );
-}
-
-function ProtestMetricsSection() {
-  const metrics = [
-    { label: "Líneas con Frecuencia Insuficiente", value: "78%", icon: <Bus strokeWidth={1} size={28} /> },
-    { label: "Quejas por Impuntualidad", value: "91%", icon: <Clock3 strokeWidth={1} size={28} /> },
-    { label: "Reportes de Hacinamiento en Hora Punta", value: "88%", icon: <Users strokeWidth={1} size={28} /> },
-    { label: "Barrios con Cobertura Deficiente", value: "65%", icon: <MapPin strokeWidth={1} size={28} /> },
-  ];
-
-  return (
-    <section className="py-32 md:py-40 px-8 md:px-24 max-w-[100rem] mx-auto bg-[#FBF5E9] text-[#011B11] border-t border-[#011B11]/10">
-      <div className="mb-24 md:mb-32">
-        <h2 className="text-4xl md:text-7xl tracking-tighter font-serif text-[#011B11] mb-8 leading-[0.9]">
-          La Ciudad en Datos.
-        </h2>
-        <p className="text-lg md:text-xl text-[#011B11]/70 font-light max-w-2xl leading-relaxed">
-          Estas no son cifras oficiales; son la realidad reportada por los usuarios de Alcalá se Mueve en el último mes. La transparencia comienza aquí.
-        </p>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-24 gap-y-20">
-        {metrics.map((metric, index) => (
-          <div key={index} className="flex flex-col gap-6">
-            <div className="flex justify-between items-end">
-              <div className="flex items-center gap-6 text-[#117C4E]">
-                {metric.icon}
-                <span className="text-sm md:text-base uppercase tracking-[0.2em] font-light text-[#011B11]">
-                  {metric.label}
-                </span>
-              </div>
-              <span className="text-4xl md:text-5xl font-serif tracking-tighter text-[#011B11]">
-                {metric.value}
-              </span>
-            </div>
-            <div className="w-full h-[1px] bg-[#011B11]/10">
-              <div 
-                className="impact-line h-full bg-[#117C4E]"
-                style={{ width: metric.value }}
-              />
-            </div>
-          </div>
-        ))}
-      </div>
-    </section>
   );
 }

@@ -1,357 +1,366 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { ArrowLeft, ArrowRight, Check, Leaf, Wind, Sun } from "lucide-react";
+import { ArrowLeft, ArrowRight, Wind, Sun, Leaf, Droplets, MapPin, Calendar, Check, Menu, X } from "lucide-react";
 import DemoLayout from "@/components/DemoLayout";
 
-export default function SatoriRetreat() {
+const fadeUp = {
+  hidden: { opacity: 0, y: 30 },
+  visible: { opacity: 1, y: 0, transition: { duration: 1.2, ease: [0.16, 1, 0.3, 1] } }
+};
+
+const staggerContainer = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: { staggerChildren: 0.15 }
+  }
+};
+
+export default function ZenRetreatDemo() {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeTab, setActiveTab] = useState(0);
+  const { scrollYProgress } = useScroll();
+  const heroY = useTransform(scrollYProgress, [0, 1], ["0%", "40%"]);
+  
+  // Custom Cursor
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
-  const [step, setStep] = useState(1);
-  const [formData, setFormData] = useState({ type: "", dates: "", name: "", email: "" });
   const [isHovering, setIsHovering] = useState(false);
-  const [carouselWidth, setCarouselWidth] = useState(0);
-  const carouselRef = useRef(null);
 
   useEffect(() => {
-    const handleMouseMove = (e) => {
+    const updateMousePosition = (e) => {
       setMousePosition({ x: e.clientX, y: e.clientY });
     };
-    window.addEventListener("mousemove", handleMouseMove);
-    return () => window.removeEventListener("mousemove", handleMouseMove);
+    window.addEventListener("mousemove", updateMousePosition);
+    return () => window.removeEventListener("mousemove", updateMousePosition);
   }, []);
 
-  useEffect(() => {
-    const updateWidth = () => {
-      if (carouselRef.current) {
-        setCarouselWidth(carouselRef.current.scrollWidth - carouselRef.current.offsetWidth);
-      }
-    };
-    updateWidth();
-    window.addEventListener("resize", updateWidth);
-    return () => window.removeEventListener("resize", updateWidth);
-  }, []);
-
-  useEffect(() => {
-    import('animejs').then((animeModule) => {
-      const anime = animeModule.default;
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          if (entry.isIntersecting) {
-            anime({
-              targets: '.anime-zen-item',
-              translateY: [40, 0],
-              opacity: [0, 1],
-              delay: anime.stagger(200, { start: 100 }),
-              easing: 'easeOutQuart',
-              duration: 1200
-            });
-            observer.disconnect();
-          }
-        });
-      });
-      const el = document.querySelector('.anime-zen-container');
-      if(el) observer.observe(el);
-    });
-  }, []);
-
-  const handleNext = () => {
-    if (step < 3) setStep(step + 1);
-  };
-
-  const handlePrev = () => {
-    if (step > 1) setStep(step - 1);
-  };
-
-  const retreatTypes = [
-    { id: "silent", title: "Silent Awakening", desc: "Three days of profound silence." },
-    { id: "nature", title: "Nature Immersion", desc: "Guided forest bathing and foraging." },
-    { id: "yoga", title: "Movement & Breath", desc: "Vinyasa and Pranayama focus." }
+  const itinerary = [
+    { time: "06:30 AM", title: "Sunrise Meditation", desc: "Awaken with the sun in our open-air pavilion. Guided Vipassana practice to ground your day." },
+    { time: "08:00 AM", title: "Vinyasa Flow", desc: "A dynamic yoga session to build heat and synchronize breath with mindful movement." },
+    { time: "10:30 AM", title: "Nourishment", desc: "Plant-based, locally sourced brunch curated by our holistic chef." },
+    { time: "02:00 PM", title: "Nature Immersion", desc: "Silent walking meditation through the surrounding ancient forest trails." },
+    { time: "05:00 PM", title: "Yin & Sound Healing", desc: "Deep restorative poses accompanied by Tibetan singing bowls." }
   ];
 
-  const dateOptions = [
-    "Oct 12 - Oct 15",
-    "Nov 02 - Nov 05",
-    "Dec 10 - Dec 13"
+  const spaces = [
+    { title: "The Shala", img: "1.jpg" },
+    { title: "Water Garden", img: "2.jpg" },
+    { title: "Sanctuary Rooms", img: "3.jpg" },
+    { title: "Tea Pavilion", img: "4.jpg" }
   ];
 
   return (
-    <DemoLayout title="Retiro Zen">
-    <div className="text-[#2C302E] font-sans selection:bg-[#E3E8E3] selection:text-[#2C302E] overflow-x-hidden md:cursor-none">
-      <motion.div
-        className="hidden md:flex fixed top-0 left-0 w-6 h-6 rounded-full bg-[#E3E8E3] mix-blend-difference pointer-events-none z-50 items-center justify-center"
-        animate={{
-          x: mousePosition.x - 12,
-          y: mousePosition.y - 12,
-          scale: isHovering ? 2.5 : 1,
-        }}
-        transition={{ type: "spring", stiffness: 300, damping: 25, mass: 0.5 }}
-      />
-
-      <nav className="fixed top-0 w-full z-40 px-6 py-6 flex justify-between items-center mix-blend-difference text-[#F5EFEB]">
-        <Link 
-          href="/" 
-          className="text-sm tracking-widest uppercase flex items-center gap-2 md:hover:opacity-70 active:scale-95 transition-all"
-          onMouseEnter={() => setIsHovering(true)}
-          onMouseLeave={() => setIsHovering(false)}
-        >
-          <ArrowLeft size={16} />
-          Catálogo
-        </Link>
-        <div className="text-xl tracking-[0.2em] font-light">SATORI</div>
-        <div className="text-sm tracking-widest uppercase hidden md:block">Book</div>
-      </nav>
-
-      <section className="relative h-[100svh] flex flex-col justify-center items-center px-6">
-        <div className="absolute inset-0 z-0">
-          <img src="/images/demo/zen/hero.jpg" alt="Background" className="w-full h-full object-cover opacity-60 mix-blend-multiply" />
-          <div className="absolute inset-0 bg-[#F5EFEB]/30" />
-        </div>
+    <DemoLayout title="Satori Retreat">
+      <div className="bg-[#EBE9E4] text-[#2C302E] font-serif selection:bg-[#4A5D4E] selection:text-white md:cursor-none min-h-screen overflow-x-hidden">
         
-        <div className="z-10 text-center flex flex-col items-center mt-12 md:mt-0">
-          <motion.h1 
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
-            className="text-[clamp(4rem,15vw,9rem)] leading-[0.85] font-extralight tracking-tighter text-[#2C302E] mb-6"
-          >
-            Find Your<br />Center
-          </motion.h1>
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 1.5, delay: 0.5 }}
-            className="text-base md:text-xl font-light tracking-wide max-w-md px-4"
-          >
-            A sanctuary for the wandering mind. Reconnect with silence.
-          </motion.p>
-        </div>
-      </section>
+        {/* Custom Cursor */}
+        <motion.div
+          className="hidden md:flex fixed top-0 left-0 w-3 h-3 rounded-full bg-[#4A5D4E] mix-blend-multiply pointer-events-none z-[100] items-center justify-center transition-transform duration-100 ease-out"
+          animate={{
+            x: mousePosition.x - 6,
+            y: mousePosition.y - 6,
+            scale: isHovering ? 3 : 1,
+            opacity: isMenuOpen ? 0 : 1
+          }}
+        />
 
-      <section className="py-24 md:py-32 px-6 md:px-20 bg-[#E3E8E3]">
-        <motion.div 
-          initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 1 }}
-          className="max-w-6xl mx-auto"
-        >
-          <div className="mb-16 md:mb-20 text-center md:text-left">
-            <h2 className="text-4xl md:text-5xl font-light tracking-tight mb-4">The Experience</h2>
-            <p className="text-xs md:text-sm tracking-widest uppercase opacity-60">Curated for stillness</p>
+        {/* Navigation */}
+        <nav className="fixed w-full z-50 px-6 py-6 md:px-12 flex justify-between items-center text-white mix-blend-difference">
+          <Link href="/" className="font-sans text-xs tracking-[0.2em] uppercase flex items-center gap-2 hover:opacity-70 transition-opacity">
+            <ArrowLeft size={16} /> <span className="hidden md:inline">Catalog</span>
+          </Link>
+          <div className="text-2xl font-light tracking-[0.3em] uppercase">Satori</div>
+          <button 
+            onClick={() => setIsMenuOpen(true)}
+            onMouseEnter={() => setIsHovering(true)}
+            onMouseLeave={() => setIsHovering(false)}
+            className="font-sans text-xs tracking-[0.2em] uppercase flex items-center gap-2 hover:opacity-70 transition-opacity"
+          >
+            Menu <Menu size={16} />
+          </button>
+        </nav>
+
+        {/* Fullscreen Menu */}
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, y: "-100%" }}
+              animate={{ opacity: 1, y: "0%" }}
+              exit={{ opacity: 0, y: "-100%" }}
+              transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+              className="fixed inset-0 z-[110] bg-[#2C302E] text-[#EBE9E4] flex flex-col justify-center px-12 md:px-24"
+            >
+              <button 
+                onClick={() => setIsMenuOpen(false)}
+                className="absolute top-8 right-8 md:top-12 md:right-12 font-sans text-xs tracking-[0.2em] uppercase flex items-center gap-2 hover:opacity-70 transition-opacity"
+              >
+                Close <X size={20} />
+              </button>
+              <div className="flex flex-col gap-6 md:gap-10">
+                {["The Retreat", "Philosophy", "Spaces", "Booking"].map((item, i) => (
+                  <motion.a
+                    key={item}
+                    href="#"
+                    initial={{ opacity: 0, y: 40 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: 0.3 + i * 0.1, duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                    className="text-5xl md:text-8xl font-light tracking-tighter hover:text-[#8C9A8E] transition-colors w-fit"
+                  >
+                    {item}
+                  </motion.a>
+                ))}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Hero Section */}
+        <section className="relative h-screen w-full overflow-hidden flex flex-col items-center justify-center pt-20">
+          <motion.div style={{ y: heroY }} className="absolute inset-0 z-0">
+            <img src="/images/demo/zen/hero.jpg" alt="Nature Retreat" className="w-full h-full object-cover opacity-80" />
+            <div className="absolute inset-0 bg-[#4A5D4E]/20 mix-blend-multiply" />
+            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#EBE9E4] opacity-90" />
+          </motion.div>
+          
+          <div className="relative z-10 text-center px-6 mt-32 md:mt-48">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 1.5, ease: "easeOut" }}
+              className="w-px h-24 bg-[#2C302E]/30 mx-auto mb-8"
+            />
+            <motion.h1 
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1.2, delay: 0.4, ease: [0.16, 1, 0.3, 1] }}
+              className="text-6xl md:text-[9rem] leading-[0.85] font-light tracking-tighter text-[#2C302E] mb-8"
+            >
+              Return to <br className="hidden md:block"/> Stillness.
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1.5, delay: 0.8 }}
+              className="font-sans text-sm md:text-base font-light tracking-wide uppercase text-[#2C302E]/60 max-w-md mx-auto"
+            >
+              A Sanctuary for the Wandering Mind
+            </motion.p>
           </div>
+        </section>
 
-          <div ref={carouselRef} className="overflow-hidden md:overflow-visible -mx-6 px-6 md:mx-0 md:px-0">
+        {/* Introduction */}
+        <section className="py-32 md:py-48 px-6 md:px-12 max-w-5xl mx-auto text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 40 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-100px" }}
+            transition={{ duration: 1.2 }}
+          >
+            <Leaf className="w-8 h-8 mx-auto mb-12 text-[#8C9A8E]" strokeWidth={1} />
+            <h2 className="text-3xl md:text-5xl font-light leading-snug tracking-tight text-[#2C302E] mb-12">
+              We provide the space. <br className="hidden md:block" />
+              You bring the presence.
+            </h2>
+            <p className="font-sans text-[#2C302E]/70 font-light leading-relaxed max-w-2xl mx-auto text-lg">
+              Satori is not a destination, but a state of being. Nestled deep within ancient woodlands, our retreat offers a radical departure from the noise of modern life. Here, luxury is defined by silence, connection, and the luxury of time.
+            </p>
+          </motion.div>
+        </section>
+
+        {/* Philosophy Grid */}
+        <section className="py-24 bg-[#2C302E] text-[#EBE9E4] px-6 md:px-12">
+          <div className="max-w-7xl mx-auto">
             <motion.div 
-              drag="x"
-              dragConstraints={{ right: 0, left: -carouselWidth }}
-              className="flex md:grid md:grid-cols-3 gap-6 md:gap-12 w-max md:w-auto pr-6 md:pr-0 cursor-grab active:cursor-grabbing md:cursor-auto"
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={staggerContainer}
+              className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-24"
             >
               {[
-                { icon: Leaf, title: "Meditation", text: "Guided sessions designed to anchor your awareness in the present moment." },
-                { icon: Wind, title: "Yoga", text: "Gentle flows to release physical tension and invite energetic balance." },
-                { icon: Sun, title: "Silence", text: "Dedicated periods of noble silence to foster deep internal listening." }
+                { icon: Wind, title: "Breath", text: "The anchor to the present moment. We teach ancient Pranayama techniques to regulate the nervous system." },
+                { icon: Droplets, title: "Flow", text: "Moving meditation. Our Vinyasa sequences are designed to release physical blockages and invite energetic balance." },
+                { icon: Sun, title: "Awareness", text: "Cultivating the witness consciousness through guided Vipassana and extended periods of noble silence." }
               ].map((item, i) => (
-                <motion.div 
-                  key={i}
-                  initial={{ opacity: 0, y: 30 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.8, delay: i * 0.2 }}
-                  className="w-[85vw] md:w-auto flex flex-col items-center md:items-start text-center md:text-left p-8 md:p-10 bg-[#F5EFEB] rounded-3xl shrink-0 transition-transform active:scale-[0.98] md:active:scale-100"
-                  onMouseEnter={() => setIsHovering(true)}
-                  onMouseLeave={() => setIsHovering(false)}
-                >
-                  <div className="w-16 h-16 rounded-full bg-[#E3E8E3] flex items-center justify-center mb-8">
-                    <item.icon size={24} strokeWidth={1} />
+                <motion.div key={i} variants={fadeUp} className="flex flex-col items-center text-center">
+                  <div className="w-16 h-16 rounded-full border border-[#EBE9E4]/20 flex items-center justify-center mb-8">
+                    <item.icon size={24} strokeWidth={1} className="text-[#8C9A8E]" />
                   </div>
-                  <h3 className="text-2xl font-light tracking-wide mb-4">{item.title}</h3>
-                  <p className="font-light opacity-70 leading-relaxed">{item.text}</p>
+                  <h3 className="text-3xl font-light mb-4">{item.title}</h3>
+                  <p className="font-sans text-sm leading-relaxed text-[#EBE9E4]/60 font-light">
+                    {item.text}
+                  </p>
                 </motion.div>
               ))}
             </motion.div>
           </div>
-        </motion.div>
-      </section>
+        </section>
 
-      <section className="py-24 md:py-32 px-6 md:px-20 bg-[#F5EFEB] border-t border-[#2C302E]/5">
-        <div className="max-w-6xl mx-auto">
-          <div className="mb-16 md:mb-20 text-center md:text-left">
-            <h2 className="text-4xl md:text-5xl font-light tracking-tight mb-4">Our Philosophy</h2>
-            <p className="text-xs md:text-sm tracking-widest uppercase opacity-60">The pillars of Satori</p>
-          </div>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 anime-zen-container">
-            {[
-              { num: "I", title: "Minimalism", text: "Removing the non-essential to reveal the profound." },
-              { num: "II", title: "Presence", text: "Being fully engaged with the current moment." },
-              { num: "III", title: "Harmony", text: "Aligning internal rhythms with natural cycles." },
-              { num: "IV", title: "Transience", text: "Embracing the impermanence of all things." }
-            ].map((pillar, i) => (
-              <div key={i} className="anime-zen-item opacity-0 p-8 border border-[#2C302E]/10 bg-white hover:bg-[#E3E8E3]/30 transition-colors rounded-3xl flex flex-col justify-between aspect-[4/5]">
-                <div className="text-[#2C302E]/40 font-serif italic text-2xl mb-8">{pillar.num}</div>
-                <div>
-                  <h3 className="text-2xl font-light mb-3">{pillar.title}</h3>
-                  <p className="font-light opacity-70 text-sm leading-relaxed">{pillar.text}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+        {/* The Spaces (Gallery) */}
+        <section className="py-32 md:py-48 px-6 md:px-12">
+          <div className="max-w-7xl mx-auto">
+            <div className="mb-20">
+              <span className="font-sans text-xs tracking-[0.2em] uppercase text-[#8C9A8E] block mb-4">
+                The Environment
+              </span>
+              <h2 className="text-5xl md:text-7xl font-light tracking-tighter">
+                Sacred Architecture.
+              </h2>
+            </div>
 
-      <section className="py-24 md:py-32 px-6 md:px-20 bg-[#E3E8E3] min-h-[100svh] flex items-center">
-        <div className="max-w-4xl mx-auto w-full">
-          <div className="mb-12 md:mb-16 text-center">
-            <h2 className="text-4xl md:text-5xl font-light tracking-tight mb-4">Reserve Your Journey</h2>
-            <div className="flex justify-center items-center gap-2 md:gap-4 mt-8">
-              {[1, 2, 3].map((num) => (
-                <div key={num} className="flex items-center gap-2 md:gap-4">
-                  <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm transition-colors duration-500 ${step >= num ? 'bg-[#2C302E] text-[#F5EFEB]' : 'border border-[#2C302E]/20 text-[#2C302E]/40'}`}>
-                    {step > num ? <Check size={14} /> : num}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12">
+              {spaces.map((space, i) => (
+                <motion.div 
+                  key={i}
+                  initial={{ opacity: 0, y: 50 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 1, delay: i * 0.1 }}
+                  className={`group relative overflow-hidden ${i % 2 !== 0 ? 'md:mt-24' : ''}`}
+                  onMouseEnter={() => setIsHovering(true)}
+                  onMouseLeave={() => setIsHovering(false)}
+                >
+                  <div className="aspect-[4/5] overflow-hidden bg-[#D1CECA]">
+                    <img 
+                      src={`/images/demo/zen/${space.img}`} 
+                      alt={space.title} 
+                      className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
+                    />
                   </div>
-                  {num < 3 && <div className={`w-8 md:w-12 h-[1px] transition-colors duration-500 ${step > num ? 'bg-[#2C302E]' : 'bg-[#2C302E]/20'}`} />}
-                </div>
+                  <div className="absolute inset-0 bg-black/10 group-hover:bg-black/0 transition-colors duration-500" />
+                  <div className="absolute bottom-8 left-8 text-white">
+                    <h3 className="text-3xl font-light">{space.title}</h3>
+                  </div>
+                </motion.div>
               ))}
             </div>
           </div>
+        </section>
 
-          <div className="relative min-h-[420px] bg-white p-6 md:p-16 rounded-3xl border border-stone-200 flex flex-col justify-between">
-            <AnimatePresence mode="wait">
-              {step === 1 && (
-                <motion.div
-                  key="step1"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.5, ease: "easeInOut" }}
-                  className="flex flex-col flex-grow"
+        {/* Daily Rhythm (Accordion / List) */}
+        <section className="py-32 bg-[#D1CECA] px-6 md:px-12">
+          <div className="max-w-5xl mx-auto">
+            <div className="text-center mb-24">
+              <span className="font-sans text-xs tracking-[0.2em] uppercase text-[#2C302E]/50 block mb-4">
+                The Schedule
+              </span>
+              <h2 className="text-5xl md:text-7xl font-light tracking-tighter">
+                Daily Rhythm.
+              </h2>
+            </div>
+
+            <div className="flex flex-col">
+              {itinerary.map((item, i) => (
+                <motion.div 
+                  key={i}
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8, delay: i * 0.1 }}
+                  className="flex flex-col md:flex-row md:items-start gap-4 md:gap-12 py-8 border-t border-[#2C302E]/10"
                 >
-                  <h3 className="text-2xl font-light mb-6 md:mb-8 text-center md:text-left">Choose Retreat Type</h3>
-                  <div className="space-y-4 flex-grow">
-                    {retreatTypes.map((type) => (
-                      <div 
-                        key={type.id}
-                        onClick={() => setFormData({ ...formData, type: type.id })}
-                        onMouseEnter={() => setIsHovering(true)}
-                        onMouseLeave={() => setIsHovering(false)}
-                        className={`p-5 md:p-6 border rounded-2xl cursor-pointer transition-all duration-300 active:scale-[0.98] ${formData.type === type.id ? 'border-[#2C302E] bg-[#F5EFEB]' : 'border-transparent bg-gray-50 md:hover:bg-[#E3E8E3]/30'}`}
-                      >
-                        <div className="text-lg tracking-wide mb-1 md:mb-2">{type.title}</div>
-                        <div className="text-sm font-light opacity-60">{type.desc}</div>
-                      </div>
-                    ))}
+                  <div className="font-sans text-sm font-medium tracking-[0.1em] text-[#8C9A8E] md:w-32 shrink-0 pt-1">
+                    {item.time}
+                  </div>
+                  <div>
+                    <h3 className="text-2xl md:text-3xl font-light mb-2">{item.title}</h3>
+                    <p className="font-sans text-[#2C302E]/60 font-light max-w-xl leading-relaxed">
+                      {item.desc}
+                    </p>
                   </div>
                 </motion.div>
-              )}
-
-              {step === 2 && (
-                <motion.div
-                  key="step2"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.5, ease: "easeInOut" }}
-                  className="flex flex-col flex-grow"
-                >
-                  <h3 className="text-2xl font-light mb-6 md:mb-8 text-center md:text-left">Select Dates</h3>
-                  <div className="space-y-4 flex-grow">
-                    {dateOptions.map((date) => (
-                      <div 
-                        key={date}
-                        onClick={() => setFormData({ ...formData, dates: date })}
-                        onMouseEnter={() => setIsHovering(true)}
-                        onMouseLeave={() => setIsHovering(false)}
-                        className={`p-5 md:p-6 border rounded-2xl cursor-pointer transition-all duration-300 active:scale-[0.98] ${formData.dates === date ? 'border-[#2C302E] bg-[#F5EFEB]' : 'border-transparent bg-gray-50 md:hover:bg-[#E3E8E3]/30'}`}
-                      >
-                        <div className="text-lg tracking-wide">{date}</div>
-                      </div>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-
-              {step === 3 && (
-                <motion.div
-                  key="step3"
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  exit={{ opacity: 0, x: -20 }}
-                  transition={{ duration: 0.5, ease: "easeInOut" }}
-                  className="flex flex-col flex-grow"
-                >
-                  <h3 className="text-2xl font-light mb-6 md:mb-8 text-center md:text-left">Guest Details</h3>
-                  <div className="space-y-8 md:space-y-12 flex-grow mt-4 md:mt-8">
-                    <div className="relative group">
-                      <input 
-                        type="text" 
-                        value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                        placeholder="Full Name"
-                        className="w-full bg-transparent border-b border-[#2C302E]/20 py-4 outline-none font-light placeholder:text-[#2C302E]/40 focus:border-transparent transition-colors peer rounded-none"
-                      />
-                      <div className="absolute bottom-0 left-0 w-0 h-[1px] bg-[#2C302E] transition-all duration-500 ease-out peer-focus:w-full" />
-                    </div>
-                    <div className="relative group">
-                      <input 
-                        type="email" 
-                        value={formData.email}
-                        onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                        placeholder="Email Address"
-                        className="w-full bg-transparent border-b border-[#2C302E]/20 py-4 outline-none font-light placeholder:text-[#2C302E]/40 focus:border-transparent transition-colors peer rounded-none"
-                      />
-                      <div className="absolute bottom-0 left-0 w-0 h-[1px] bg-[#2C302E] transition-all duration-500 ease-out peer-focus:w-full" />
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            <div className="mt-12 flex justify-between items-center border-t border-[#2C302E]/10 pt-6 md:pt-8">
-              <button 
-                onClick={handlePrev}
-                disabled={step === 1}
-                onMouseEnter={() => setIsHovering(true)}
-                onMouseLeave={() => setIsHovering(false)}
-                className={`uppercase tracking-widest text-xs md:text-sm flex items-center gap-2 transition-all active:scale-95 py-2 ${step === 1 ? 'opacity-0 pointer-events-none' : 'opacity-60 md:hover:opacity-100'}`}
-              >
-                <ArrowLeft size={16} /> <span className="hidden md:inline">Back</span>
-              </button>
-              
-              {step < 3 ? (
-                <button 
-                  onClick={handleNext}
-                  disabled={(step === 1 && !formData.type) || (step === 2 && !formData.dates)}
-                  onMouseEnter={() => setIsHovering(true)}
-                  onMouseLeave={() => setIsHovering(false)}
-                  className={`uppercase tracking-widest text-xs md:text-sm flex items-center gap-2 transition-all active:scale-95 py-2 ${((step === 1 && !formData.type) || (step === 2 && !formData.dates)) ? 'opacity-30 pointer-events-none' : 'opacity-100 md:hover:gap-4'}`}
-                >
-                  Continue <ArrowRight size={16} />
-                </button>
-              ) : (
-                <button 
-                  onMouseEnter={() => setIsHovering(true)}
-                  onMouseLeave={() => setIsHovering(false)}
-                  className="uppercase tracking-widest text-xs md:text-sm bg-[#2C302E] text-[#F5EFEB] px-6 md:px-8 py-3 md:py-4 rounded-full active:scale-95 md:hover:bg-black transition-all"
-                >
-                  Confirm
-                </button>
-              )}
+              ))}
+              <div className="border-t border-[#2C302E]/10" />
             </div>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <footer className="py-12 px-6 md:px-20 border-t border-[#2C302E]/10 flex flex-col md:flex-row justify-between items-center gap-8">
-        <div className="text-2xl font-light tracking-[0.2em]">SATORI</div>
-        <div className="text-xs md:text-sm font-light opacity-60">© {new Date().getFullYear()} Satori Retreat. All rights reserved.</div>
-        <div className="flex gap-6 text-xs md:text-sm tracking-widest uppercase opacity-80">
-          <Link href="#" className="md:hover:opacity-100 active:opacity-50 transition-opacity">Instagram</Link>
-          <Link href="#" className="md:hover:opacity-100 active:opacity-50 transition-opacity">Contact</Link>
-        </div>
-      </footer>
-    </div>
+        {/* Testimonial Quote */}
+        <section className="py-32 md:py-48 px-6 md:px-12 text-center max-w-4xl mx-auto">
+           <motion.div
+             initial={{ opacity: 0, scale: 0.9 }}
+             whileInView={{ opacity: 1, scale: 1 }}
+             viewport={{ once: true }}
+             transition={{ duration: 1.2 }}
+           >
+             <div className="text-6xl text-[#8C9A8E] mb-8 font-serif">"</div>
+             <p className="text-3xl md:text-5xl font-light leading-snug tracking-tight mb-12">
+               Three days of silence gave me more clarity than three years of searching. A profound return to center.
+             </p>
+             <div className="font-sans text-xs tracking-[0.2em] uppercase text-[#2C302E]/50">
+               — M. Lawson, 2025
+             </div>
+           </motion.div>
+        </section>
+
+        {/* Reservation Simple Form */}
+        <section className="py-32 md:py-48 bg-[#2C302E] text-[#EBE9E4] px-6 md:px-12">
+          <div className="max-w-4xl mx-auto">
+            <div className="mb-16 md:mb-24">
+              <h2 className="text-5xl md:text-7xl font-light tracking-tighter mb-6">
+                Reserve your space.
+              </h2>
+              <p className="font-sans text-[#EBE9E4]/60 font-light max-w-lg leading-relaxed">
+                Our retreats are limited to 12 participants to ensure an intimate and deeply supportive environment. Apply below to join our next gathering.
+              </p>
+            </div>
+
+            <form className="font-sans space-y-12">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <div className="relative group">
+                  <input 
+                    type="text" 
+                    placeholder="Full Name"
+                    className="w-full bg-transparent border-b border-[#EBE9E4]/20 py-4 outline-none font-light placeholder:text-[#EBE9E4]/30 focus:border-[#EBE9E4] transition-colors rounded-none text-lg"
+                  />
+                </div>
+                <div className="relative group">
+                  <input 
+                    type="email" 
+                    placeholder="Email Address"
+                    className="w-full bg-transparent border-b border-[#EBE9E4]/20 py-4 outline-none font-light placeholder:text-[#EBE9E4]/30 focus:border-[#EBE9E4] transition-colors rounded-none text-lg"
+                  />
+                </div>
+              </div>
+              <div className="relative group">
+                  <select className="w-full bg-transparent border-b border-[#EBE9E4]/20 py-4 outline-none font-light text-[#EBE9E4]/70 focus:border-[#EBE9E4] transition-colors rounded-none text-lg appearance-none cursor-pointer">
+                    <option value="" disabled selected className="bg-[#2C302E]">Select Retreat Date</option>
+                    <option value="oct" className="bg-[#2C302E]">Oct 12 - Oct 15: Silent Awakening</option>
+                    <option value="nov" className="bg-[#2C302E]">Nov 02 - Nov 05: Nature Immersion</option>
+                    <option value="dec" className="bg-[#2C302E]">Dec 10 - Dec 13: Movement & Breath</option>
+                  </select>
+              </div>
+              <button 
+                type="button"
+                onMouseEnter={() => setIsHovering(true)}
+                onMouseLeave={() => setIsHovering(false)}
+                className="mt-8 flex items-center gap-4 text-sm tracking-[0.2em] uppercase border-b border-[#8C9A8E] pb-2 hover:border-[#EBE9E4] transition-colors text-[#8C9A8E] hover:text-[#EBE9E4]"
+              >
+                Submit Application <ArrowRight size={16} />
+              </button>
+            </form>
+          </div>
+        </section>
+
+        {/* Footer */}
+        <footer className="bg-[#EBE9E4] pt-24 pb-12 px-6 md:px-12 border-t border-[#2C302E]/10">
+          <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-12 md:gap-0">
+            <div className="text-4xl font-light tracking-[0.2em] uppercase text-[#2C302E]">Satori</div>
+            <div className="flex gap-12 font-sans text-xs tracking-[0.2em] uppercase text-[#2C302E]/60">
+              <a href="#" className="hover:text-[#2C302E] transition-colors">Journal</a>
+              <a href="#" className="hover:text-[#2C302E] transition-colors">Instagram</a>
+              <a href="#" className="hover:text-[#2C302E] transition-colors">Contact</a>
+            </div>
+          </div>
+          <div className="max-w-7xl mx-auto mt-16 text-center font-sans text-[10px] tracking-[0.2em] uppercase text-[#2C302E]/40">
+            © {new Date().getFullYear()} Satori Retreat. All rights reserved.
+          </div>
+        </footer>
+
+      </div>
     </DemoLayout>
   );
 }
