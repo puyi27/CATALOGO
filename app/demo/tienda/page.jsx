@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion, AnimatePresence, useMotionValue, useSpring, useScroll, useTransform } from "framer-motion";
+import { motion, AnimatePresence, useMotionValue, useSpring } from "framer-motion";
 import Link from "next/link";
 import { 
-  ShoppingCart, X, ArrowLeft, ArrowRight, Heart, Sparkles, Star, Menu, ChevronRight,
-  Leaf, Droplet, Shield, Instagram, Plus
+  ShoppingCart, X, ArrowLeft, ArrowRight, Heart, Sparkles, Plus,
+  Leaf, Droplet, Shield, Instagram 
 } from 'lucide-react';
 import DemoLayout from "@/components/DemoLayout";
 
@@ -18,19 +18,11 @@ const products = [
   { id: 6, name: "CONJUNTO RAYAS", color: "AZUL NOCHE", price: "€52", status: "ÚLTIMAS", img: "/images/demo/tienda/6.jpg", sizes: ["18M","24M"], specs: "RAYAS MARINERAS. ESTILO CASUAL CHIC." },
 ];
 
-const reviews = [
-  { name: "Mamá de Leo", text: "El conjunto nube es un sueño. La tela es increíblemente suave y a Leo le encanta moverse libremente con él.", rating: 5, date: "24.10.2025" },
-  { name: "Papá de Sofía", text: "Compramos el vestido de flores para un evento y no podía estar más preciosa. La caída de la tela y los detalles son preciosos.", rating: 5, date: "12.09.2025" },
-  { name: "Lucía M.", text: "Los pijamas son un must. Resistentes a los lavados, suaves y con un diseño precioso que les ayuda a dormir relajados.", rating: 5, date: "03.11.2025" },
-];
-
 export default function LunaKidsApparel() {
   const [isCartOpen, setIsCartOpen] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [cart, setCart] = useState([]);
   
-  // Custom Cursor variables - FIXED
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
   const springConfig = { damping: 40, stiffness: 600, mass: 0.5 };
@@ -62,13 +54,11 @@ export default function LunaKidsApparel() {
     <DemoLayout title="Luna Kids">
     <div className="text-[#4a4a4a] font-sans selection:bg-[#FBCFE8] selection:text-[#333] md:cursor-none bg-[#FAFAF9] min-h-screen">
       
-      {/* CUSTOM CURSOR - NO CSS TRANSITIONS TO PREVENT LAG */}
       <motion.div
         className="hidden md:flex fixed top-0 left-0 w-3 h-3 rounded-full bg-[#f472b6] pointer-events-none z-[200] items-center justify-center transform-gpu will-change-transform shadow-md"
         style={{ x: cursorXSpring, y: cursorYSpring }}
       />
 
-      {/* NAV */}
       <nav className="fixed top-0 left-0 w-full p-6 flex justify-between items-center z-[90] pointer-events-none mix-blend-multiply">
         <div className="pointer-events-auto">
           <Link href="/" className="flex items-center gap-2 text-xs font-semibold tracking-wide hover:text-[#f472b6] transition-colors bg-white/80 px-4 py-2 rounded-full shadow-sm">
@@ -83,10 +73,8 @@ export default function LunaKidsApparel() {
         </div>
       </nav>
 
-      {/* ASYMMETRICAL HERO */}
       <header className="relative min-h-[100svh] w-full flex flex-col md:flex-row items-stretch overflow-hidden pt-24 md:pt-0">
         
-        {/* Left Side: Typography */}
         <div className="w-full md:w-1/2 flex flex-col justify-center px-8 md:px-16 lg:px-24 z-10 py-12">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease: "easeOut" }}>
             <h2 className="text-[#f472b6] font-semibold tracking-widest uppercase text-xs mb-6 flex items-center gap-3">
@@ -107,19 +95,17 @@ export default function LunaKidsApparel() {
           </motion.div>
         </div>
 
-        {/* Right Side: Editorial Arch Image */}
         <div className="w-full md:w-1/2 relative flex items-center justify-center p-8 md:p-16 h-[60vh] md:h-[100svh]">
           <motion.div 
             initial={{ opacity: 0, scale: 0.95, y: 50 }} 
             animate={{ opacity: 1, scale: 1, y: 0 }} 
             transition={{ duration: 1, ease: [0.16, 1, 0.3, 1], delay: 0.2 }}
             className="w-full h-full max-w-md overflow-hidden relative shadow-2xl"
-            style={{ borderRadius: "250px 250px 0 0" }} // ARCH SHAPE
+            style={{ borderRadius: "250px 250px 0 0" }}
           >
             <img src="/images/demo/tienda/hero.jpg" alt="Niños con ropa Luna Kids" className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
           </motion.div>
-          {/* Floating graphic */}
           <motion.div 
             animate={{ rotate: 360 }} 
             transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
@@ -132,7 +118,6 @@ export default function LunaKidsApparel() {
         </div>
       </header>
 
-      {/* INFINITE MARQUEE */}
       <div className="w-full overflow-hidden bg-[#FBCFE8] py-4 md:py-6 border-y border-pink-200">
         <div className="flex whitespace-nowrap animate-marquee">
           {[...Array(6)].map((_, i) => (
@@ -146,7 +131,6 @@ export default function LunaKidsApparel() {
         </div>
       </div>
 
-      {/* SUSTAINABILITY / TRUST BADGES */}
       <section className="py-20 bg-[#FAFAF9]">
         <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-12 text-center divide-y md:divide-y-0 md:divide-x divide-pink-100">
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="flex flex-col items-center pt-8 md:pt-0 px-6">
@@ -167,14 +151,12 @@ export default function LunaKidsApparel() {
         </div>
       </section>
 
-      {/* MASONRY CATALOG */}
       <section id="coleccion" className="py-24 md:py-32 px-6 md:px-12 max-w-[1600px] mx-auto">
         <div className="text-center mb-16 md:mb-24">
           <h2 className="text-4xl md:text-5xl font-serif text-[#333] mb-4">Nuestra Magia</h2>
           <p className="text-[#666] max-w-xl mx-auto">Prendas con estampados sutiles que nunca pasan de moda, logrando el equilibrio entre lo clásico y lo contemporáneo.</p>
         </div>
 
-        {/* CSS Masonry Layout */}
         <div className="columns-1 sm:columns-2 lg:columns-3 gap-8 space-y-8">
           {products.map((product, i) => (
             <motion.div 
@@ -187,7 +169,6 @@ export default function LunaKidsApparel() {
               onClick={() => setSelectedProduct(product)}
             >
               <div className="relative overflow-hidden rounded-2xl mb-4 bg-gray-50">
-                {/* Dynamically giving varying aspect ratios for masonry effect */}
                 <div className={`w-full ${i % 2 === 0 ? 'aspect-[3/4]' : 'aspect-square'}`}>
                   <img src={product.img} alt={product.name} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
                 </div>
@@ -196,7 +177,6 @@ export default function LunaKidsApparel() {
                     {product.status}
                   </div>
                 )}
-                {/* Quick Add Overlay */}
                 <div className="absolute bottom-4 right-4 translate-y-4 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 transition-all duration-300">
                   <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-[#f472b6] shadow-lg">
                     <ShoppingCart size={16} />
@@ -215,7 +195,6 @@ export default function LunaKidsApparel() {
         </div>
       </section>
 
-      {/* PHILOSOPHY ACCORDION (Instead of generic text blocks) */}
       <section className="py-24 bg-[#FFFDFD] border-t border-gray-100">
         <div className="max-w-6xl mx-auto px-6 md:px-12 grid grid-cols-1 md:grid-cols-2 gap-16 items-start">
           <div className="sticky top-24">
@@ -231,21 +210,18 @@ export default function LunaKidsApparel() {
           </div>
           
           <div className="flex flex-col gap-6">
-            {/* Accordion Item 1 */}
             <div className="p-8 bg-[#FAFAF9] rounded-3xl border border-gray-100 hover:border-pink-200 transition-colors">
               <h3 className="text-2xl font-serif text-[#f472b6] mb-4">Comodidad y Movimiento</h3>
               <p className="text-[#666] leading-relaxed">
                 El diseño infantil debe estar al servicio de la diversión. Huimos de las prendas rígidas y apostamos por un estilo casual-chic donde cada pieza está pensada para que los niños puedan correr, explorar y soñar con total libertad.
               </p>
             </div>
-            {/* Accordion Item 2 */}
             <div className="p-8 bg-[#FAFAF9] rounded-3xl border border-gray-100 hover:border-pink-200 transition-colors">
               <h3 className="text-2xl font-serif text-[#f472b6] mb-4">El Valor de las Texturas</h3>
               <p className="text-[#666] leading-relaxed">
                 Destacamos tejidos nobles y amables con la piel, como algodones suaves, linos transpirables y puntos ligeros. El mimo en los pequeños detalles: un lazo bien estructurado, un volante sutil o un botón de madera.
               </p>
             </div>
-            {/* Accordion Item 3 */}
             <div className="p-8 bg-[#FAFAF9] rounded-3xl border border-gray-100 hover:border-pink-200 transition-colors">
               <h3 className="text-2xl font-serif text-[#f472b6] mb-4">Paleta de Ensueño</h3>
               <p className="text-[#666] leading-relaxed">
@@ -256,7 +232,6 @@ export default function LunaKidsApparel() {
         </div>
       </section>
 
-      {/* INTERACTIVE LOOKBOOK */}
       <section className="py-24 bg-[#FAFAF9]">
         <div className="max-w-[1400px] mx-auto px-6 text-center mb-12">
           <h2 className="text-4xl md:text-5xl font-serif text-[#333] mb-4">Shop The Look</h2>
@@ -264,18 +239,15 @@ export default function LunaKidsApparel() {
         </div>
         <div className="max-w-[1200px] mx-auto px-6 relative">
           <div className="relative w-full aspect-[4/3] md:aspect-[21/9] rounded-3xl overflow-hidden shadow-2xl group">
-            {/* Using hero.jpg as fallback, user can replace with lookbook.jpg */}
             <img src="/images/demo/tienda/hero.jpg" alt="Lookbook" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-[2s]" />
             <div className="absolute inset-0 bg-black/10 transition-colors group-hover:bg-black/30" />
             
-            {/* Hotspot 1 */}
             <div className="absolute top-[40%] left-[30%] group/hotspot">
               <div className="relative">
                 <div className="absolute inset-0 bg-white rounded-full animate-ping opacity-75" />
                 <button className="relative z-10 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform text-[#f472b6]">
                   <Plus size={16} strokeWidth={3} />
                 </button>
-                {/* Tooltip */}
                 <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 w-48 bg-white rounded-2xl p-3 shadow-xl opacity-0 translate-y-4 group-hover/hotspot:opacity-100 group-hover/hotspot:translate-y-0 transition-all pointer-events-none group-hover/hotspot:pointer-events-auto">
                   <p className="text-xs font-semibold text-[#888] uppercase mb-1">Look 1</p>
                   <p className="text-sm font-bold text-[#333] mb-1">Conjunto Nube</p>
@@ -285,14 +257,12 @@ export default function LunaKidsApparel() {
               </div>
             </div>
 
-            {/* Hotspot 2 */}
             <div className="absolute top-[60%] left-[70%] group/hotspot">
               <div className="relative">
                 <div className="absolute inset-0 bg-white rounded-full animate-ping opacity-75" />
                 <button className="relative z-10 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform text-[#f472b6]">
                   <Plus size={16} strokeWidth={3} />
                 </button>
-                {/* Tooltip */}
                 <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 w-48 bg-white rounded-2xl p-3 shadow-xl opacity-0 translate-y-4 group-hover/hotspot:opacity-100 group-hover/hotspot:translate-y-0 transition-all pointer-events-none group-hover/hotspot:pointer-events-auto">
                   <p className="text-xs font-semibold text-[#888] uppercase mb-1">Look 2</p>
                   <p className="text-sm font-bold text-[#333] mb-1">Peto Lino</p>
@@ -305,7 +275,6 @@ export default function LunaKidsApparel() {
         </div>
       </section>
 
-      {/* INSTAGRAM WALL */}
       <section className="bg-white py-24 border-t border-gray-100 overflow-hidden">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-serif text-[#333] mb-2 flex items-center justify-center gap-3">
@@ -325,7 +294,6 @@ export default function LunaKidsApparel() {
         </div>
       </section>
 
-      {/* FOOTER */}
       <footer className="bg-white pt-24 pb-12 border-t border-gray-100 text-center relative overflow-hidden">
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-px bg-gradient-to-r from-transparent via-pink-200 to-transparent"></div>
         <h2 className="text-6xl font-serif font-light text-[#f472b6] mb-6">Luna <span className="italic">Kids</span></h2>
@@ -333,7 +301,6 @@ export default function LunaKidsApparel() {
         <p className="text-sm text-gray-400">© 2026 LUNA KIDS. Todos los derechos reservados.</p>
       </footer>
 
-      {/* PRODUCT MODAL */}
       <AnimatePresence>
         {selectedProduct && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
@@ -380,7 +347,6 @@ export default function LunaKidsApparel() {
         )}
       </AnimatePresence>
 
-      {/* SHOPPING CART SIDEBAR */}
       <AnimatePresence>
         {isCartOpen && (
           <>
@@ -433,7 +399,6 @@ export default function LunaKidsApparel() {
         )}
       </AnimatePresence>
 
-      {/* Global CSS for Marquee */}
       <style dangerouslySetInnerHTML={{__html: `
         @keyframes marquee {
           0% { transform: translateX(0); }
