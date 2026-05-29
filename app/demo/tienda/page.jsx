@@ -4,7 +4,8 @@ import { useState, useEffect } from "react";
 import { motion, AnimatePresence, useMotionValue, useSpring, useScroll, useTransform } from "framer-motion";
 import Link from "next/link";
 import { 
-  ShoppingCart, X, ArrowLeft, ArrowRight, Heart, Sparkles, Star, Menu, ChevronRight
+  ShoppingCart, X, ArrowLeft, ArrowRight, Heart, Sparkles, Star, Menu, ChevronRight,
+  Leaf, Droplet, Shield, Instagram, Plus
 } from 'lucide-react';
 import DemoLayout from "@/components/DemoLayout";
 
@@ -145,6 +146,27 @@ export default function LunaKidsApparel() {
         </div>
       </div>
 
+      {/* SUSTAINABILITY / TRUST BADGES */}
+      <section className="py-20 bg-[#FAFAF9]">
+        <div className="max-w-6xl mx-auto px-6 grid grid-cols-1 md:grid-cols-3 gap-12 text-center divide-y md:divide-y-0 md:divide-x divide-pink-100">
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="flex flex-col items-center pt-8 md:pt-0 px-6">
+            <div className="w-16 h-16 rounded-full bg-[#E9F8E5] text-[#076D29] flex items-center justify-center mb-6 shadow-sm"><Leaf size={28} /></div>
+            <h3 className="text-xl font-serif text-[#333] mb-3">100% Orgánico</h3>
+            <p className="text-[#666] text-sm leading-relaxed">Algodón cultivado sin pesticidas, respetando el medio ambiente y la piel de tu bebé.</p>
+          </motion.div>
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.2 }} className="flex flex-col items-center pt-8 md:pt-0 px-6">
+            <div className="w-16 h-16 rounded-full bg-[#CBE5FF] text-[#0457CB] flex items-center justify-center mb-6 shadow-sm"><Droplet size={28} /></div>
+            <h3 className="text-xl font-serif text-[#333] mb-3">Tintes Naturales</h3>
+            <p className="text-[#666] text-sm leading-relaxed">Colores empolvados conseguidos con tintes vegetales hipoalergénicos.</p>
+          </motion.div>
+          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ delay: 0.4 }} className="flex flex-col items-center pt-8 md:pt-0 px-6">
+            <div className="w-16 h-16 rounded-full bg-[#FCD9E5] text-[#BB0844] flex items-center justify-center mb-6 shadow-sm"><Shield size={28} /></div>
+            <h3 className="text-xl font-serif text-[#333] mb-3">Hecho a Mano</h3>
+            <p className="text-[#666] text-sm leading-relaxed">Cada prenda es revisada a mano para garantizar costuras planas que no rozan.</p>
+          </motion.div>
+        </div>
+      </section>
+
       {/* MASONRY CATALOG */}
       <section id="coleccion" className="py-24 md:py-32 px-6 md:px-12 max-w-[1600px] mx-auto">
         <div className="text-center mb-16 md:mb-24">
@@ -231,6 +253,75 @@ export default function LunaKidsApparel() {
               </p>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* INTERACTIVE LOOKBOOK */}
+      <section className="py-24 bg-[#FAFAF9]">
+        <div className="max-w-[1400px] mx-auto px-6 text-center mb-12">
+          <h2 className="text-4xl md:text-5xl font-serif text-[#333] mb-4">Shop The Look</h2>
+          <p className="text-[#666]">Navega por nuestros conjuntos recomendados de la temporada.</p>
+        </div>
+        <div className="max-w-[1200px] mx-auto px-6 relative">
+          <div className="relative w-full aspect-[4/3] md:aspect-[21/9] rounded-3xl overflow-hidden shadow-2xl group">
+            {/* Using hero.jpg as fallback, user can replace with lookbook.jpg */}
+            <img src="/images/demo/tienda/hero.jpg" alt="Lookbook" className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-[2s]" />
+            <div className="absolute inset-0 bg-black/10 transition-colors group-hover:bg-black/30" />
+            
+            {/* Hotspot 1 */}
+            <div className="absolute top-[40%] left-[30%] group/hotspot">
+              <div className="relative">
+                <div className="absolute inset-0 bg-white rounded-full animate-ping opacity-75" />
+                <button className="relative z-10 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform text-[#f472b6]">
+                  <Plus size={16} strokeWidth={3} />
+                </button>
+                {/* Tooltip */}
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 w-48 bg-white rounded-2xl p-3 shadow-xl opacity-0 translate-y-4 group-hover/hotspot:opacity-100 group-hover/hotspot:translate-y-0 transition-all pointer-events-none group-hover/hotspot:pointer-events-auto">
+                  <p className="text-xs font-semibold text-[#888] uppercase mb-1">Look 1</p>
+                  <p className="text-sm font-bold text-[#333] mb-1">Conjunto Nube</p>
+                  <p className="text-[#f472b6] font-medium text-sm mb-2">€45</p>
+                  <button onClick={() => addToCart(products[0], "12M")} className="w-full py-2 bg-[#FAFAF9] hover:bg-[#FBCFE8] hover:text-pink-700 text-xs font-semibold rounded-xl transition-colors">Añadir</button>
+                </div>
+              </div>
+            </div>
+
+            {/* Hotspot 2 */}
+            <div className="absolute top-[60%] left-[70%] group/hotspot">
+              <div className="relative">
+                <div className="absolute inset-0 bg-white rounded-full animate-ping opacity-75" />
+                <button className="relative z-10 w-8 h-8 bg-white/90 backdrop-blur-sm rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition-transform text-[#f472b6]">
+                  <Plus size={16} strokeWidth={3} />
+                </button>
+                {/* Tooltip */}
+                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-4 w-48 bg-white rounded-2xl p-3 shadow-xl opacity-0 translate-y-4 group-hover/hotspot:opacity-100 group-hover/hotspot:translate-y-0 transition-all pointer-events-none group-hover/hotspot:pointer-events-auto">
+                  <p className="text-xs font-semibold text-[#888] uppercase mb-1">Look 2</p>
+                  <p className="text-sm font-bold text-[#333] mb-1">Peto Lino</p>
+                  <p className="text-[#f472b6] font-medium text-sm mb-2">€55</p>
+                  <button onClick={() => addToCart(products[1], "24M")} className="w-full py-2 bg-[#FAFAF9] hover:bg-[#FBCFE8] hover:text-pink-700 text-xs font-semibold rounded-xl transition-colors">Añadir</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* INSTAGRAM WALL */}
+      <section className="bg-white py-24 border-t border-gray-100 overflow-hidden">
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-serif text-[#333] mb-2 flex items-center justify-center gap-3">
+            <Instagram className="text-[#f472b6]" /> @ModaInfantilLunaKids
+          </h2>
+          <p className="text-[#666]">Únete a nuestra pequeña gran familia</p>
+        </div>
+        <div className="flex flex-nowrap w-full overflow-hidden">
+          {[1, 2, 3, 4, 5, 6].map((num) => (
+            <a key={num} href="#" className="relative block w-1/2 md:w-1/4 lg:w-1/6 aspect-square shrink-0 group">
+              <img src={`/images/demo/tienda/${num}.jpg`} alt={`Instagram post ${num}`} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+              <div className="absolute inset-0 bg-[#f472b6]/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                <Heart className="text-white w-8 h-8 fill-white" />
+              </div>
+            </a>
+          ))}
         </div>
       </section>
 
